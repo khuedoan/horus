@@ -3,16 +3,30 @@
 Always free (as in beer) multicloud infrastructure.
 Can be used for personal use, student projects, or even start up PoC.
 
+We will mostly use Oracle Cloud because they have the most generous free tier.
+
 - An S3 bucket for Terraform backend
-- Multicloud Kubernetes (k3s) cluster
-  - Wireguard VPN
-- Databases
+- A Kubernetes cluster (4 nodes with 1 ARM core and 6 GB of memory)
+- Databases:
+  - Firestore
+  - Azure Cosmos DB
+- Bandwidth:
+  - Unlimited inbound transfer
+  - Inbound transfer (per month):
+    - Oracle Cloud: 10 TB (yes, **Terabytes**)
+    - Google Cloud: TODO
+    - AWS: TODO
+    - Azure: 5 GB
 
 ## Get started
 
-The default set up will creates all resources on all major cloud providers.
+The default set up will creates all resources.
 
 ### Prerequisites
+
+- Fork this repository because you will need to customize it for your needs.
+- A credit/debit card to register for the accounts.
+- Basic knowledge on Terraform and Ansible (optional, but will help a lot)
 
 Create initial configurations, it will prompt you for the information.
 
@@ -20,9 +34,9 @@ Create initial configurations, it will prompt you for the information.
 make prerequisites
 ```
 
-Continue reading to see what to fill in
+Continue reading to see what to fill in.
 
-#### Oracle Cloud
+<details> <summary>Oracle Cloud</summary>
 
 - Create an Oracle Cloud account
 - Generate an API signing key:
@@ -30,32 +44,34 @@ Continue reading to see what to fill in
   - Select Generate API Key Pair, download the private key and click Add
   - Check the Configuration File Preview for the values
 
-Put those values in `./terraform.auto.tfvars`:
+</details>
 
-#### Google Cloud
+<details> <summary>Google Cloud</summary>
 
-TODO
+No resource on GCP yet
 
-#### Azure
+</details>
 
-TODO
+<details> <summary>AWS</summary>
 
-#### AWS
+No resource on AWS yet
 
-TODO
+</details>
+
+<details> <summary>Azure</summary>
+
+No resource on Azure yet
+
+</details>
+
+Remember to backup the credential files (you can put them in a password manager)
 
 ### Provision
-
-Create Terraform backend:
-
-```sh
-make backend
-```
 
 Build the infrastructure:
 
 ```sh
-make init apply
+make infra
 ```
 
 ## Usage
@@ -65,5 +81,5 @@ make init apply
 Get QR code for mobile:
 
 ```sh
-make vpn-config
+./scripts/vpn-config
 ```
