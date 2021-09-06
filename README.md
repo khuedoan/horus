@@ -1,6 +1,7 @@
 # Free Infrastructure
 
-Always free (as in beer) multicloud infrastructure.
+Always free (as in beer) cloud infrastructure.
+
 Can be used for self-hosting, student projects...
 
 ## Features
