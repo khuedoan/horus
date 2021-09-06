@@ -1,26 +1,34 @@
 # Free Infrastructure
 
 Always free (as in beer) multicloud infrastructure.
-Can be used for personal use, student projects, or even start up PoC.
+Can be used for self-hosting, student projects...
 
-We will mostly use Oracle Cloud because they have the most generous free tier.
+## Features
 
-- An S3 bucket for Terraform backend
-- A Kubernetes cluster (4 nodes with 1 ARM core and 6 GB of memory)
-- Databases:
-  - Firestore
-  - Azure Cosmos DB
-- Bandwidth:
-  - Unlimited inbound transfer
-  - Inbound transfer (per month):
-    - Oracle Cloud: 10 TB (yes, **Terabytes**)
-    - Google Cloud: TODO
-    - AWS: TODO
-    - Azure: 5 GB
+### Infrastructure
+
+- 1 VM for a VPN server
+- 1 VM for a mail server
+- 1 Kubernetes cluser
+
+## Applications
+
+- Wireguard VPN server
+- Mailcow mail server
+- CI/CD with Tekton and ArgoCD
+- TBD
+
+### Free tier limits
+
+The following list only includes the services that we use in this repository.
+
+| Cloud | Name | Purpose | Using | Limit | Notes |
+| ----- | ---- | ------- | ----- | ----- | ----- |
+| AWS | S3 | Terraform backend | 1 | 1 | Normal Terraform usage should not exceed the capacity or bandwidth limit |
+| Oracle Cloud | VM (x86) | Mail and VPN server | 2 | 2 | None |
+| Oracle Cloud | VM (ARM) | Kubernetes cluster | 4 | 4 | None |
 
 ## Get started
-
-The default set up will creates all resources.
 
 ### Prerequisites
 
