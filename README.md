@@ -43,16 +43,20 @@ The following list only includes the services that we use in this repository.
 
 Configuration files:
 
-<details> <summary>Terraform Cloud (`~/.terraform.d/credentials.tfrc.json`)</summary>
+<details>
 
-- Create a Terraform account
+<summary>Terraform Cloud</summary>
+
+- Create a Terraform Cloud account at <https://app.terraform.io>
 - Run `terraform login` and follow the instruction
 
 </details>
 
-<details> <summary>Oracle Cloud (`~/.oci/config` and `~/.oci/private.pem`)</summary>
+<details>
 
-- Create an Oracle Cloud account
+<summary>Oracle Cloud</summary>
+
+- Create an Oracle Cloud account at <https://cloud.oracle.com>
 - Generate an API signing key:
   - Profile menu (User menu icon) -> User Settings -> API Keys -> Add API Key
   - Select Generate API Key Pair, download the private key to `~/.oci/private.pem` and click Add
@@ -60,7 +64,11 @@ Configuration files:
 
 </details>
 
-Remember to backup the credential files (you can put them in a password manager)
+Remember to backup the following credential files (you can put them in a password manager):
+
+- `~/.terraform.d/credentials.tfrc.json`
+- `~/.oci/config`
+- `~/.oci/private.pem`
 
 ### Provision
 
