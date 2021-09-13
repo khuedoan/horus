@@ -41,39 +41,22 @@ The following list only includes the services that we use in this repository.
 - A credit/debit card to register for the accounts.
 - Basic knowledge on Terraform and Ansible (optional, but will help a lot)
 
-Create initial configurations, it will prompt you for the information.
+Configuration files:
 
-```sh
-make prereqs
-```
+<details> <summary>Terraform Cloud (`~/.terraform.d/credentials.tfrc.json`)</summary>
 
-Continue reading to see what to fill in.
+- Create a Terraform account
+- Run `terraform login` and follow the instruction
 
-<details> <summary>Oracle Cloud</summary>
+</details>
+
+<details> <summary>Oracle Cloud (`~/.oci/config` and `~/.oci/private.pem`)</summary>
 
 - Create an Oracle Cloud account
 - Generate an API signing key:
   - Profile menu (User menu icon) -> User Settings -> API Keys -> Add API Key
-  - Select Generate API Key Pair, download the private key and click Add
-  - Check the Configuration File Preview for the values
-
-</details>
-
-<details> <summary>Google Cloud</summary>
-
-No resource on GCP yet
-
-</details>
-
-<details> <summary>AWS</summary>
-
-No resource on AWS yet
-
-</details>
-
-<details> <summary>Azure</summary>
-
-No resource on Azure yet
+  - Select Generate API Key Pair, download the private key to `~/.oci/private.pem` and click Add
+  - Copy the Configuration File Preview to `~/.oci/config` and change `key_file` to `~/.oci/private.pem`
 
 </details>
 

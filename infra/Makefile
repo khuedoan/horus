@@ -1,7 +1,10 @@
-default: apply
+default: init apply
+
+init:
+	terraform init
 
 plan:
-	terragrunt run-all plan
+	terraform plan
 
 apply:
-	terragrunt run-all apply
+	terraform apply
