@@ -44,7 +44,7 @@ The following list only includes the services that we use in this repository.
 Create initial configurations, it will prompt you for the information.
 
 ```sh
-make prerequisites
+make prereqs
 ```
 
 Continue reading to see what to fill in.
