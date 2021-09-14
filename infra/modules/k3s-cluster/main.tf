@@ -18,12 +18,12 @@ resource "oci_core_instance_configuration" "test_instance_configuration" {
 
 resource "oci_core_instance_pool" "agent_pool" {
   #Required
-  compartment_id = var.compartment_id
+  compartment_id            = var.compartment_id
   instance_configuration_id = oci_core_instance_configuration.test_instance_configuration.id
   placement_configurations {
-      #Required
-      availability_domain = "gHLA:US-SANJOSE-1-AD-1"
-      primary_subnet_id = var.subnet_id
+    #Required
+    availability_domain = "gHLA:US-SANJOSE-1-AD-1"
+    primary_subnet_id   = var.subnet_id
 
   }
   size = var.agent_count

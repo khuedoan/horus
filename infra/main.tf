@@ -14,5 +14,5 @@ module "k3s_cluster" {
   server_count   = 1
   agent_count    = 3
   ssh_public_key = tls_private_key.ssh.public_key_openssh
-  subnet_id = module.network.subnet_id
+  subnet_id      = module.network.subnet_id
 }
