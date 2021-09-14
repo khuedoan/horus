@@ -32,7 +32,7 @@ The following list only includes the services that we use in this repository.
 | Terraform Cloud | Workspace | 1 | None |  |
 | Oracle Cloud | VM (x86) | 2 | 2 |  |
 | Oracle Cloud | VM (ARM) | 4 | 4 |  |
-| Oracle Cloud | Virtual Cloud Network | 2 | 2 |  |
+| Oracle Cloud | Virtual Cloud Network | 1 | 2 |  |
 
 ## Get started
 
