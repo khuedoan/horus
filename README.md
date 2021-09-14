@@ -27,11 +27,12 @@ This repo is meant to be forked to customize for your needs, it can be used for 
 
 The following list only includes the services that we use in this repository.
 
-| Cloud | Name | Purpose | Using | Limit | Notes |
-| ----- | ---- | ------- | ----- | ----- | ----- |
-| AWS | S3 | Terraform backend | 1 | 1 | Normal Terraform usage should not exceed the capacity or bandwidth limit |
-| Oracle Cloud | VM (x86) | Mail and VPN server | 2 | 2 | None |
-| Oracle Cloud | VM (ARM) | Kubernetes cluster | 4 | 4 | None |
+| Provider | Service | Using | Limit | Notes |
+| ---- | ------- | ----- | ----- | ----- |
+| Terraform Cloud | Workspace | 1 | None |  |
+| Oracle Cloud | VM (x86) | 2 | 2 |  |
+| Oracle Cloud | VM (ARM) | 4 | 4 |  |
+| Oracle Cloud | Virtual Cloud Network | 2 | 2 |  |
 
 ## Get started
 
