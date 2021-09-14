@@ -12,27 +12,19 @@ This repo is meant to be forked to customize for your needs, it can be used for 
 
 ### Infrastructure
 
-- 1 VM for a VPN server
-- 1 VM for a mail server
-- 1 Kubernetes cluser
-
-## Applications
-
-- Wireguard VPN server
-- Mailcow mail server
-- CI/CD with Tekton and ArgoCD
-- TBD
-
-### Free tier limits
-
-The following list only includes the services that we use in this repository.
-
 | Provider | Service | Using | Limit | Notes |
 | ---- | ------- | ----- | ----- | ----- |
 | Terraform Cloud | Workspace | 1 | None |  |
 | Oracle Cloud | VM (x86) | 2 | 2 |  |
 | Oracle Cloud | VM (ARM) | 4 | 4 |  |
 | Oracle Cloud | Virtual Cloud Network | 1 | 2 |  |
+
+### Applications
+
+- Wireguard VPN server
+- Mailcow mail server
+- CI/CD with Tekton and ArgoCD
+- TBD
 
 ## Get started
 
