@@ -10,12 +10,10 @@ variable "instance_image_id" {
   default = "ocid1.image.oc1.us-sanjose-1.aaaaaaaan4g4q527bljtyczck6xrsutbzps6h7mut2xcfhnbzw66sbbsvwoq"
 }
 
-variable "vcn_cidr_blocks" {
-  default = [
-    "10.0.0.0/16"
-  ]
+variable "subnet_id" {
+  description = "ID of the subnet for the virtual machine"
 }
 
-variable "subnet_cidr_block" {
-  default = "10.0.0.0/24"
+variable "ssh_public_key" {
+  description = "SSH public key to add to all nodes"
 }
