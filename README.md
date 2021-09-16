@@ -80,3 +80,7 @@ Get QR code for mobile:
 ```sh
 ./scripts/vpn-config
 ```
+
+## Acknowledgements
+
+- Some reference from the official [Oracle Terraform Modules](https://github.com/oracle-terraform-modules)

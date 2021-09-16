@@ -1,13 +1,17 @@
 variable "compartment_id" {
-  default = "ocid1.compartment.oc1..aaaaaaaasvkl7yw6gj2pytybimo6ax7fg2jq7m4t5aueig3xrnfxwo7xwulq"
+  description = "Compartment ID where to create all resources"
+  type        = string
 }
 
 variable "vcn_cidr_blocks" {
+  description = "The list of IPv4 CIDR blocks the VCN will use"
+  type = list(string)
   default = [
     "10.0.0.0/16"
   ]
 }
 
 variable "subnet_cidr_block" {
+  type = string
   default = "10.0.0.0/24"
 }
