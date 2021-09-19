@@ -1,11 +1,13 @@
 resource "oci_core_vcn" "vcn" {
   cidr_blocks    = var.vcn_cidr_blocks
   compartment_id = var.compartment_id
+  freeform_tags  = var.tags
 }
 
 resource "oci_core_security_list" "security_list" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
+  freeform_tags  = var.tags
 
   ingress_security_rules {
     description = "Wireguard"
@@ -64,6 +66,7 @@ resource "oci_core_subnet" "subnet" {
   compartment_id = var.compartment_id
   route_table_id = oci_core_vcn.vcn.default_route_table_id
   vcn_id         = oci_core_vcn.vcn.id
+  freeform_tags  = var.tags
 
   security_list_ids = [
     oci_core_vcn.vcn.default_security_list_id,
@@ -74,6 +77,7 @@ resource "oci_core_subnet" "subnet" {
 resource "oci_core_internet_gateway" "internet_gateway" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.vcn.id
+  freeform_tags  = var.tags
 }
 
 resource "oci_core_default_route_table" "default_route_table" {
@@ -83,4 +87,5 @@ resource "oci_core_default_route_table" "default_route_table" {
     network_entity_id = oci_core_internet_gateway.internet_gateway.id
   }
   manage_default_resource_id = oci_core_vcn.vcn.default_route_table_id
+  freeform_tags  = var.tags
 }

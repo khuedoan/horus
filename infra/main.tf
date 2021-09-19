@@ -5,9 +5,10 @@ resource "tls_private_key" "ssh" {
   ecdsa_curve = "P256"
 }
 
-module "network" {
-  source         = "./modules/network"
+module "base" {
+  source         = "./modules/base"
   compartment_id = var.compartment_id
+  tags           = var.common_tags
 }
 
 # module "k3s_cluster" {
