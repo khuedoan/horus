@@ -1,3 +1,8 @@
+variable "compartment_id" {
+  description = "Compartment ID where to create all resources"
+  type        = string
+}
+
 variable "server_count" {
   description = "Number of server (master) nodes"
 }
@@ -13,7 +18,10 @@ variable "ssh_public_key" {
   description = "SSH public key to add to all nodes"
 }
 
-variable "compartment_id" {
-  default = "ocid1.compartment.oc1..aaaaaaaasvkl7yw6gj2pytybimo6ax7fg2jq7m4t5aueig3xrnfxwo7xwulq"
+variable "image_operating_system" {
+  default = "Canonical Ubuntu"
 }
 
+variable "image_operating_system_version" {
+  default = "20.04"
+}

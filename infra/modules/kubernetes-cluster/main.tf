@@ -1,30 +1,24 @@
-# module "server_pool" {
-#   count  = var.server_count
-#   source = "../virtual-machine"
-#   subnet_id = var.subnet_id
-#   ssh_public_key = var.ssh_public_key
-# }
+data "oci_identity_availability_domains" "availability_domains" {
+  compartment_id = var.compartment_id
+}
 
-# module "agent_pool" {
-#   count  = var.agent_count
-#   source = "../virtual-machine"
-#   subnet_id = var.subnet_id
-#   ssh_public_key = var.ssh_public_key
-# }
+data "oci_core_images" "ubuntu" {
+  compartment_id = var.compartment_id
+  operating_system = var.image_operating_system
+  operating_system_version = var.image_operating_system_version
+}
 
-resource "oci_core_instance_configuration" "test_instance_configuration" {
+resource "oci_core_instance_configuration" "k3s_node" {
   compartment_id = var.compartment_id
 }
 
 resource "oci_core_instance_pool" "agent_pool" {
-  #Required
   compartment_id            = var.compartment_id
-  instance_configuration_id = oci_core_instance_configuration.test_instance_configuration.id
-  placement_configurations {
-    #Required
-    availability_domain = "gHLA:US-SANJOSE-1-AD-1"
-    primary_subnet_id   = var.subnet_id
-
-  }
+  instance_configuration_id = oci_core_instance_configuration.k3s_node.id
   size = var.agent_count
+
+  placement_configurations {
+    availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
+    primary_subnet_id   = var.subnet_id
+  }
 }

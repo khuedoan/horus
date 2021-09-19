@@ -23,10 +23,11 @@ module "base" {
   tags           = var.common_tags
 }
 
-# module "k3s_cluster" {
-#   source         = "./modules/k3s-cluster"
-#   server_count   = 1
-#   agent_count    = 3
-#   ssh_public_key = tls_private_key.ssh.public_key_openssh
-#   subnet_id      = module.network.subnet_id
-# }
+module "kubernetes_cluster" {
+  source         = "./modules/kubernetes-cluster"
+  compartment_id = oci_identity_compartment.freecloud.id
+  server_count   = 1
+  agent_count    = 3
+  ssh_public_key = tls_private_key.ssh.public_key_openssh
+  subnet_id      = module.base.subnet_id
+}
