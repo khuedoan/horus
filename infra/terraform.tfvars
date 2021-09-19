@@ -1,1 +1,1 @@
-compartment_id = "ocid1.compartment.oc1..aaaaaaaasvkl7yw6gj2pytybimo6ax7fg2jq7m4t5aueig3xrnfxwo7xwulq"
+parent_compartment_id = "ocid1.tenancy.oc1..aaaaaaaavge5xuefgatecpqozjzpux5getu6o4s5wzdwduv36pur63fxoxua"
