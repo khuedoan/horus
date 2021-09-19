@@ -3,17 +3,17 @@ data "oci_identity_availability_domains" "availability_domains" {
 }
 
 data "oci_core_images" "image" {
-  compartment_id = var.compartment_id
-  operating_system = var.image.operating_system
+  compartment_id           = var.compartment_id
+  operating_system         = var.image.operating_system
   operating_system_version = var.image.version
-  shape = var.shape
-  sort_by = "TIMECREATED"
-  sort_order = "DESC"
+  shape                    = var.shape
+  sort_by                  = "TIMECREATED"
+  sort_order               = "DESC"
 }
 
 resource "oci_core_instance_configuration" "worker" {
   compartment_id = var.compartment_id
-  freeform_tags = var.tags
+  freeform_tags  = var.tags
 
   instance_details {
     instance_type = "compute"
@@ -25,7 +25,7 @@ resource "oci_core_instance_configuration" "worker" {
         assign_public_ip = false
         hostname_label   = "master"
         # nsg_ids          = [var.nsg_id]
-        subnet_id        = var.subnet_id
+        subnet_id = var.subnet_id
       }
 
       extended_metadata = {
@@ -42,6 +42,11 @@ resource "oci_core_instance_configuration" "worker" {
         source_type = "image"
         image_id    = data.oci_core_images.image.images[0].id
       }
+
+      shape_config {
+        ocpus         = var.shape_config.cpus
+        memory_in_gbs = var.shape_config.memory
+      }
     }
   }
 }
@@ -49,7 +54,7 @@ resource "oci_core_instance_configuration" "worker" {
 resource "oci_core_instance_pool" "worker" {
   compartment_id            = var.compartment_id
   instance_configuration_id = oci_core_instance_configuration.worker.id
-  size = var.size
+  size                      = var.size
 
   placement_configurations {
     availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
