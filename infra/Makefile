@@ -1,4 +1,4 @@
-default: init plan
+default: init apply
 
 init:
 	terraform init
