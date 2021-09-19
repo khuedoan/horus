@@ -81,6 +81,7 @@ Get QR code for mobile:
 ./scripts/vpn-config
 ```
 
-## Acknowledgements
+## Acknowledgments and References
 
-- Some reference from the official [Oracle Terraform Modules](https://github.com/oracle-terraform-modules)
+- [Oracle Terraform Modules](https://github.com/oracle-terraform-modules)
+- [Rancher k3s cluster on AWS Terraform module](https://github.com/rancher/terraform-k3s-aws-cluster)
