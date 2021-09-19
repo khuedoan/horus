@@ -1,4 +1,6 @@
 terraform {
+  required_version = "~> 1.0.0"
+
   backend "remote" {
     organization = "khuedoan"
 
@@ -10,7 +12,7 @@ terraform {
   required_providers {
     oci = {
       source  = "hashicorp/oci"
-      version = "4.43.0"
+      version = "~> 4.44.0"
     }
   }
 }
