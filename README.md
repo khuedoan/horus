@@ -1,7 +1,7 @@
 # Free Infrastructure
 
 ```diff
-! ⚠️ WORK IN PROGRESS
+- ⚠️  WIP, DO NOT USE, VERY EARLY STAGE
 ```
 
 Always free (as in beer) cloud infrastructure.
