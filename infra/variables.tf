@@ -1,5 +1,5 @@
-variable "parent_compartment_id" {
-  description = "Compartment ID where to create the subcompartment for this project (usually the root compartment)"
+variable "tenancy_id" {
+  description = "The ID of the tenancy (same with the root compartment ID)"
   type        = string
 }
 
