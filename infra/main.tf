@@ -25,7 +25,7 @@ module "base" {
 module "kubernetes_cluster" {
   source         = "./modules/kubernetes-cluster"
   compartment_id = oci_identity_compartment.freecloud.id
-  master_count   = 1
+  master_count   = 2
   worker_count   = 2
   ssh_public_key = tls_private_key.ssh.public_key_openssh
   subnet_id      = module.base.subnet_id

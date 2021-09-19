@@ -11,7 +11,7 @@ data "oci_core_images" "image" {
   sort_order               = "DESC"
 }
 
-resource "oci_core_instance_configuration" "worker" {
+resource "oci_core_instance_configuration" "node_pool" {
   compartment_id = var.compartment_id
   freeform_tags  = var.tags
 
@@ -51,9 +51,9 @@ resource "oci_core_instance_configuration" "worker" {
   }
 }
 
-resource "oci_core_instance_pool" "worker" {
+resource "oci_core_instance_pool" "node_pool" {
   compartment_id            = var.compartment_id
-  instance_configuration_id = oci_core_instance_configuration.worker.id
+  instance_configuration_id = oci_core_instance_configuration.node_pool.id
   size                      = var.size
 
   placement_configurations {
