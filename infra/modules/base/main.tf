@@ -1,12 +1,3 @@
-# module "vcn" {
-#   source  = "oracle-terraform-modules/vcn/oci"
-#   version = "2.3.0"
-
-#   # general oci parameters
-#   compartment_id = var.compartment_id
-#   # tags           = var.tags
-# }
-
 resource "oci_core_vcn" "vcn" {
   cidr_blocks    = var.vcn_cidr_blocks
   compartment_id = var.compartment_id
