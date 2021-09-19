@@ -12,12 +12,12 @@ This repo is meant to be forked to customize for your needs, it can be used for 
 
 ### Infrastructure
 
-| Provider | Service | Using | Limit | Notes |
-| ---- | ------- | ----- | ----- | ----- |
-| Terraform Cloud | Workspace | 1 | None |  |
-| Oracle Cloud | VM (x86) | 2 | 2 |  |
-| Oracle Cloud | VM (ARM) | 4 | 4 |  |
-| Oracle Cloud | Virtual Cloud Network | 1 | 2 |  |
+| Provider          | Service                 | Using   | Limit   | Notes                      |
+| ----------------- | ----------------------- | ------- | ------- | -------------------------- |
+| Terraform Cloud   | Workspace               | 1       | None    |                            |
+| Oracle Cloud      | Virtual Machine (x86)   | 2       | 2       | `VM.Standard.E2.1.Micro`   |
+| Oracle Cloud      | Virtual Machine (ARM)   | 4       | 4       | `VM.Standard.A1.Flex`      |
+| Oracle Cloud      | Virtual Cloud Network   | 1       | 2       |                            |
 
 ### Applications
 
