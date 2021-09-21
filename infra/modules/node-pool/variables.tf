@@ -4,25 +4,15 @@ variable "compartment_id" {
 }
 
 variable "shape" {
-  description = "The shape of the nodes"
-}
-
-variable "shape_config" {
   description = "The shape configuration requested for the nodes"
   type = object({
-    cpus   = number
-    memory = number
+    name = string
+    config = map(any)
   })
-  default = {
-    cpus   = null
-    memory = null
+  validation {
+    condition = !(can(regex("Flex", var.shape.name)) && length(var.shape.config) == 0)
+    error_message = "Shape config not found. Shape Config is required while using flexible shapes."
   }
-
-  # TODO https://github.com/hashicorp/terraform/issues/25609
-  # validation {
-  #   condition = !(can(regex("Flex", var.image_id)) && length(var.shape_config) == 0)
-  #   error_message = "Shape config not found. Shape Config is required while using flexible shapes."
-  # }
 }
 
 variable "size" {

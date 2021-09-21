@@ -4,7 +4,10 @@ module "master_pool" {
   subnet_id = var.subnet_id
   ssh_public_key = var.ssh_public_key
   size = var.master_count
-  shape = var.master_shape
+  shape = {
+    name = var.master_shape
+    config = {}
+  }
   tags = var.tags
 }
 
@@ -14,10 +17,12 @@ module "worker_pool" {
   subnet_id = var.subnet_id
   ssh_public_key = var.ssh_public_key
   size = var.worker_count
-  shape = var.worker_shape
-  shape_config = {
-    cpus = 2
-    memory = 12
+  shape = {
+    name = var.worker_shape
+    config = {
+      cpus = 2
+      memory = 12
+    }
   }
   tags = var.tags
 }
