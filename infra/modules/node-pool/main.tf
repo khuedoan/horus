@@ -63,4 +63,9 @@ resource "oci_core_instance_pool" "node_pool" {
     availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
     primary_subnet_id   = var.subnet_id
   }
+
+  # TODO
+  # timeouts {
+  #   create = "3m"
+  # }
 }
