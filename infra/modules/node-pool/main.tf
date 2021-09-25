@@ -13,6 +13,7 @@ data "oci_core_images" "image" {
 
 resource "oci_core_instance_configuration" "node_pool" {
   compartment_id = var.compartment_id
+  display_name   = "k3s-${var.role}"
   freeform_tags  = var.tags
 
   instance_details {
@@ -23,9 +24,9 @@ resource "oci_core_instance_configuration" "node_pool" {
 
       create_vnic_details {
         assign_public_ip = false
-        hostname_label   = "master"
+        hostname_label   = "k3s-${var.role}"
         # nsg_ids          = [var.nsg_id]
-        subnet_id = var.subnet_id
+        subnet_id        = var.subnet_id
       }
 
       extended_metadata = {
@@ -73,6 +74,7 @@ resource "oci_core_instance_configuration" "node_pool" {
 
 resource "oci_core_instance_pool" "node_pool" {
   compartment_id            = var.compartment_id
+  display_name              = "k3s-${var.role}s"
   instance_configuration_id = oci_core_instance_configuration.node_pool.id
   size                      = var.size
 
