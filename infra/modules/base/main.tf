@@ -1,3 +1,12 @@
+locals {
+  protocols = {
+    icmp = "1",
+    icmpv6 = "58",
+    tcp = "6",
+    udp = "17"
+  }
+}
+
 resource "oci_core_vcn" "vcn" {
   cidr_blocks    = var.vcn_cidr_blocks
   compartment_id = var.compartment_id
@@ -11,7 +20,7 @@ resource "oci_core_security_list" "security_list" {
 
   ingress_security_rules {
     description = "Wireguard"
-    protocol    = "17" # UDP
+    protocol    = local.protocols["udp"]
     source      = "0.0.0.0/0"
     stateless   = false
 
@@ -28,7 +37,7 @@ resource "oci_core_security_list" "security_list" {
 
   ingress_security_rules {
     description = "HTTP"
-    protocol    = "6" # TCP
+    protocol    = local.protocols["tcp"]
     source      = "0.0.0.0/0"
     stateless   = false
 
@@ -45,7 +54,7 @@ resource "oci_core_security_list" "security_list" {
 
   ingress_security_rules {
     description = "HTTPS"
-    protocol    = "6" # TCP
+    protocol    = local.protocols["tcp"]
     source      = "0.0.0.0/0"
     stateless   = false
 
