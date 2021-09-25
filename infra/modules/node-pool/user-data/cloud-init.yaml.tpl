@@ -13,5 +13,5 @@ write_files:
     permission: '0644'
 
 runcmd:
-  - curl https://github.com/k3s-io/k3s/releases/download/v1.21.4+k3s1/k3s -o /usr/local/bin/k3s
+  - curl -L 'https://github.com/k3s-io/k3s/releases/download/v1.21.4+k3s1/k3s' -o /usr/local/bin/k3s
   - systemctl enable --now k3s
