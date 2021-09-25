@@ -87,16 +87,16 @@ resource "oci_core_default_route_table" "default_route_table" {
     network_entity_id = oci_core_internet_gateway.internet_gateway.id
   }
   manage_default_resource_id = oci_core_vcn.vcn.default_route_table_id
-  freeform_tags  = var.tags
+  freeform_tags              = var.tags
 }
 
 resource "oci_bastion_bastion" "bastion" {
-  bastion_type = "STANDARD"
-  compartment_id = var.compartment_id
+  bastion_type     = "STANDARD"
+  compartment_id   = var.compartment_id
   target_subnet_id = oci_core_subnet.subnet.id
   client_cidr_block_allow_list = [
     # TODO secure bastion allow list
     "0.0.0.0/0"
   ]
-  freeform_tags  = var.tags
+  freeform_tags = var.tags
 }

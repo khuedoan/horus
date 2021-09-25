@@ -6,11 +6,11 @@ variable "compartment_id" {
 variable "shape" {
   description = "The shape configuration requested for the nodes"
   type = object({
-    name = string
+    name   = string
     config = map(any)
   })
   validation {
-    condition = !(can(regex("Flex", var.shape.name)) && length(var.shape.config) == 0)
+    condition     = !(can(regex("Flex", var.shape.name)) && length(var.shape.config) == 0)
     error_message = "Shape config not found. Shape Config is required while using flexible shapes."
   }
 }
@@ -46,15 +46,15 @@ variable "image" {
 
 variable "role" {
   description = "Node pool role"
-  type = string
+  type        = string
   validation {
-    condition = contains(["server", "agent"], var.role)
+    condition     = contains(["server", "agent"], var.role)
     error_message = "Node pool role must be server or agent."
   }
 }
 
 variable "token" {
   description = "Shared secret used to join a server or agent to a cluster"
-  type = string
+  type        = string
   sensitive   = true
 }

@@ -18,7 +18,7 @@ variable "agent_count" {
 
 variable "agent_shape" {
   description = "The shape of agent nodes"
-  default = "VM.Standard.A1.Flex"
+  default     = "VM.Standard.A1.Flex"
 }
 
 variable "subnet_id" {
@@ -29,6 +29,6 @@ variable "ssh_public_key" {
 }
 
 variable "tags" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }

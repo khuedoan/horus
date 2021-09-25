@@ -26,7 +26,7 @@ resource "oci_core_instance_configuration" "node_pool" {
         assign_public_ip = false
         hostname_label   = "k3s-${var.role}"
         # nsg_ids          = [var.nsg_id]
-        subnet_id        = var.subnet_id
+        subnet_id = var.subnet_id
       }
 
       extended_metadata = {
@@ -35,13 +35,13 @@ resource "oci_core_instance_configuration" "node_pool" {
 
       metadata = {
         ssh_authorized_keys = var.ssh_public_key
-        user_data           = base64encode(templatefile(
+        user_data = base64encode(templatefile(
           "${path.module}/user-data/cloud-init.yaml.tpl",
           {
             k3s_config = base64encode(templatefile(
               "${path.module}/user-data/k3s-config.yaml.tpl",
               {
-                role = var.role
+                role  = var.role
                 token = var.token
               }
             )),

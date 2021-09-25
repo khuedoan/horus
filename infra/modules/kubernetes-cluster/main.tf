@@ -1,18 +1,18 @@
 resource "random_password" "token" {
-  length           = 64
-  special          = false
+  length  = 64
+  special = false
 }
 
 module "server_pool" {
-  source = "../node-pool"
+  source         = "../node-pool"
   compartment_id = var.compartment_id
-  subnet_id = var.subnet_id
+  subnet_id      = var.subnet_id
   ssh_public_key = var.ssh_public_key
-  role = "server"
-  token = random_password.token.result
-  size = var.server_count
+  role           = "server"
+  token          = random_password.token.result
+  size           = var.server_count
   shape = {
-    name = var.server_shape
+    name   = var.server_shape
     config = {}
   }
   tags = var.tags
@@ -36,15 +36,15 @@ module "server_pool" {
 # }
 
 module "agent_pool_temp" {
-  source = "../node-pool"
+  source         = "../node-pool"
   compartment_id = var.compartment_id
-  subnet_id = var.subnet_id
+  subnet_id      = var.subnet_id
   ssh_public_key = var.ssh_public_key
-  role = "agent"
-  token = random_password.token.result
-  size = var.server_count
+  role           = "agent"
+  token          = random_password.token.result
+  size           = var.server_count
   shape = {
-    name = var.server_shape
+    name   = var.server_shape
     config = {}
   }
   tags = var.tags

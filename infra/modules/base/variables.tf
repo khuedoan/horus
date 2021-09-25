@@ -5,18 +5,18 @@ variable "compartment_id" {
 
 variable "vcn_cidr_blocks" {
   description = "The list of IPv4 CIDR blocks the VCN will use"
-  type = list(string)
+  type        = list(string)
   default = [
     "10.0.0.0/16"
   ]
 }
 
 variable "subnet_cidr_block" {
-  type = string
+  type    = string
   default = "10.0.0.0/24"
 }
 
 variable "tags" {
-  type = map(string)
+  type    = map(string)
   default = {}
 }
