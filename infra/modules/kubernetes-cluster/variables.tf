@@ -3,21 +3,21 @@ variable "compartment_id" {
   type        = string
 }
 
-variable "master_count" {
-  description = "Number of master nodes"
+variable "server_count" {
+  description = "Number of server nodes"
 }
 
-variable "master_shape" {
-  description = "The shape of master nodes"
+variable "server_shape" {
+  description = "The shape of server nodes"
   default     = "VM.Standard.E2.1.Micro"
 }
 
-variable "worker_count" {
-  description = "Number of worker nodes"
+variable "agent_count" {
+  description = "Number of agent nodes"
 }
 
-variable "worker_shape" {
-  description = "The shape of worker nodes"
+variable "agent_shape" {
+  description = "The shape of agent nodes"
   default = "VM.Standard.A1.Flex"
 }
 

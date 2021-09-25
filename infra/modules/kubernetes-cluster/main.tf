@@ -3,30 +3,30 @@ resource "random_password" "token" {
   special          = false
 }
 
-module "master_pool" {
+module "server_pool" {
   source = "../node-pool"
   compartment_id = var.compartment_id
   subnet_id = var.subnet_id
   ssh_public_key = var.ssh_public_key
   role = "server"
   token = random_password.token.result
-  size = var.master_count
+  size = var.server_count
   shape = {
-    name = var.master_shape
+    name = var.server_shape
     config = {}
   }
   tags = var.tags
 }
 
 # TODO workaround until there's ARM capacity
-# module "worker_pool" {
+# module "agent_pool" {
 #   source = "../node-pool"
 #   compartment_id = var.compartment_id
 #   subnet_id = var.subnet_id
 #   ssh_public_key = var.ssh_public_key
-#   size = var.worker_count
+#   size = var.agent_count
 #   shape = {
-#     name = var.worker_shape
+#     name = var.agent_shape
 #     config = {
 #       cpus = 2
 #       memory = 12
@@ -35,16 +35,16 @@ module "master_pool" {
 #   tags = var.tags
 # }
 
-module "worker_pool_temp" {
+module "agent_pool_temp" {
   source = "../node-pool"
   compartment_id = var.compartment_id
   subnet_id = var.subnet_id
   ssh_public_key = var.ssh_public_key
   role = "agent"
   token = random_password.token.result
-  size = var.master_count
+  size = var.server_count
   shape = {
-    name = var.master_shape
+    name = var.server_shape
     config = {}
   }
   tags = var.tags

@@ -1,5 +1,5 @@
 %{ if role == "server" }
-# TODO multi master with embedded etcd in the same pool
+# TODO multi server with embedded etcd in the same pool
 cluster-init: true
 disable:
 - local-storage
