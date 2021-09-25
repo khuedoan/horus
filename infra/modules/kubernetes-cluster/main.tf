@@ -1,8 +1,15 @@
+resource "random_password" "token" {
+  length           = 64
+  special          = false
+}
+
 module "master_pool" {
   source = "../node-pool"
   compartment_id = var.compartment_id
   subnet_id = var.subnet_id
   ssh_public_key = var.ssh_public_key
+  role = "server"
+  token = random_password.token.result
   size = var.master_count
   shape = {
     name = var.master_shape
@@ -33,6 +40,8 @@ module "worker_pool_temp" {
   compartment_id = var.compartment_id
   subnet_id = var.subnet_id
   ssh_public_key = var.ssh_public_key
+  role = "agent"
+  token = random_password.token.result
   size = var.master_count
   shape = {
     name = var.master_shape

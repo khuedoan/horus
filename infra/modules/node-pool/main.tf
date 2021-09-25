@@ -34,7 +34,24 @@ resource "oci_core_instance_configuration" "node_pool" {
 
       metadata = {
         ssh_authorized_keys = var.ssh_public_key
-        # user_data           = data.template_cloudinit_config.master.rendered
+        user_data           = base64encode(templatefile(
+          "${path.module}/user-data/cloud-init.yaml.tpl",
+          {
+            k3s_config = base64encode(templatefile(
+              "${path.module}/user-data/k3s-config.yaml.tpl",
+              {
+                role = var.role
+                token = var.token
+              }
+            )),
+            k3s_service = base64encode(templatefile(
+              "${path.module}/user-data/k3s.service.tpl",
+              {
+                role = var.role
+              }
+            ))
+          }
+        ))
       }
 
       shape = var.shape.name
