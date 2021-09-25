@@ -1,9 +1,9 @@
 locals {
   protocols = {
-    icmp = "1",
+    icmp   = "1",
     icmpv6 = "58",
-    tcp = "6",
-    udp = "17"
+    tcp    = "6",
+    udp    = "17"
   }
 }
 
@@ -85,18 +85,19 @@ resource "oci_core_subnet" "subnet" {
 
 resource "oci_core_internet_gateway" "internet_gateway" {
   compartment_id = var.compartment_id
+  display_name   = "internet-gateway"
   vcn_id         = oci_core_vcn.vcn.id
   freeform_tags  = var.tags
 }
 
 resource "oci_core_default_route_table" "default_route_table" {
+  manage_default_resource_id = oci_core_vcn.vcn.default_route_table_id
   route_rules {
     destination       = "0.0.0.0/0"
     destination_type  = "CIDR_BLOCK"
     network_entity_id = oci_core_internet_gateway.internet_gateway.id
   }
-  manage_default_resource_id = oci_core_vcn.vcn.default_route_table_id
-  freeform_tags              = var.tags
+  freeform_tags = var.tags
 }
 
 resource "oci_bastion_bastion" "bastion" {
