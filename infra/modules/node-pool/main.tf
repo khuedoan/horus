@@ -23,7 +23,7 @@ resource "oci_core_instance_configuration" "node_pool" {
       compartment_id = var.compartment_id
 
       create_vnic_details {
-        assign_public_ip = false
+        assign_public_ip = true # TODO check if we can disable this
         hostname_label   = "k3s-${var.role}"
         # nsg_ids          = [var.nsg_id]
         subnet_id = var.subnet_id
