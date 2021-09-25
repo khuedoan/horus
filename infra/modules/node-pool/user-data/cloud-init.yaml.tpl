@@ -15,4 +15,5 @@ write_files:
 runcmd:
   - curl -L "https://github.com/k3s-io/k3s/releases/download/v1.21.4+k3s1/k3s$(case $(uname -m) in arm64) echo '-arm64' ;; x86_64) echo '' ;; esac)" -o /usr/local/bin/k3s
   - chmod +x /usr/local/bin/k3s
+  - ln -s /usr/local/bin/k3s /usr/local/bin/kubectl
   - systemctl enable --now k3s
