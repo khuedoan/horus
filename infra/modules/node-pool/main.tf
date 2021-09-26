@@ -11,6 +11,12 @@ data "oci_core_images" "image" {
   sort_order               = "DESC"
 }
 
+module "cloud_init" {
+  source = "../cloud-init"
+  role   = var.role
+  token  = var.token
+}
+
 resource "oci_core_instance_configuration" "node_pool" {
   compartment_id = var.compartment_id
   display_name   = "k3s-${var.role}"
@@ -35,24 +41,7 @@ resource "oci_core_instance_configuration" "node_pool" {
 
       metadata = {
         ssh_authorized_keys = var.ssh_public_key
-        user_data = base64encode(templatefile(
-          "${path.module}/user-data/cloud-init.yaml.tpl",
-          {
-            k3s_config = base64encode(templatefile(
-              "${path.module}/user-data/k3s-config.yaml.tpl",
-              {
-                role  = var.role
-                token = var.token
-              }
-            )),
-            k3s_service = base64encode(templatefile(
-              "${path.module}/user-data/k3s.service.tpl",
-              {
-                role = var.role
-              }
-            ))
-          }
-        ))
+        user_data = base64encode(module.cloud_init.cloud_init)
       }
 
       shape = var.shape.name
