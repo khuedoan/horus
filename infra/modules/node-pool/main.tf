@@ -59,6 +59,10 @@ resource "oci_core_instance_configuration" "node_pool" {
       }
     }
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "oci_core_instance_pool" "node_pool" {
