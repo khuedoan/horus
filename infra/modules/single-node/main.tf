@@ -25,8 +25,6 @@ resource "oci_core_instance" "node" {
 
   create_vnic_details {
     assign_public_ip = true # TODO check if we can disable this
-    hostname_label   = "k3s-${var.role}"
-    # nsg_ids          = [var.nsg_id]
     subnet_id = var.subnet_id
   }
 
