@@ -56,6 +56,11 @@ Configuration files:
   - Select Generate API Key Pair, download the private key to `~/.oci/private.pem` and click Add
   - Copy the Configuration File Preview to `~/.oci/config` and change `key_file` to `~/.oci/private.pem`
 
+If you see a warning like this, try to avoid those regions:
+
+> ⚠️ Because of high demand for Arm Ampere A1 Compute capacity in the Foo and Bar regions, A1 instance availability in these regions is limited.
+> If you plan to create A1 instances, we recommend choosing another region as your home region
+
 </details>
 
 Remember to backup the following credential files (you can put them in a password manager):
