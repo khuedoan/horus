@@ -12,20 +12,21 @@ data "oci_core_images" "image" {
 }
 
 module "cloud_init" {
-  source = "../cloud-init"
-  role   = var.role
-  token  = var.token
+  source         = "../cloud-init"
+  role           = var.role
+  server_address = var.server_address
+  token          = var.token
 }
 
 resource "oci_core_instance" "node" {
-  compartment_id = var.compartment_id
-  display_name   = "k3s-${var.role}"
+  compartment_id      = var.compartment_id
+  display_name        = "k3s-${var.role}"
   availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
-  freeform_tags  = var.tags
+  freeform_tags       = var.tags
 
   create_vnic_details {
     assign_public_ip = true # TODO check if we can disable this
-    subnet_id = var.subnet_id
+    subnet_id        = var.subnet_id
   }
 
   extended_metadata = {
@@ -34,7 +35,7 @@ resource "oci_core_instance" "node" {
 
   metadata = {
     ssh_authorized_keys = var.ssh_public_key
-    user_data = base64encode(module.cloud_init.cloud_init)
+    user_data           = base64encode(module.cloud_init.cloud_init)
   }
 
   shape = var.shape.name

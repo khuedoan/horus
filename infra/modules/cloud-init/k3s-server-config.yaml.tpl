@@ -1,10 +1,11 @@
-%{ if role == "server" }
-# TODO multi server with embedded etcd in the same pool
+%{ if server_address == "" }
 cluster-init: true
+%{ else }
+server: https://${server_address}:6443
+%{ endif }
 disable-cloud-controller: true
 disable:
 - local-storage
 - servicelb
 - traefik
-%{ endif }
 token: ${token}

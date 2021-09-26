@@ -12,9 +12,10 @@ data "oci_core_images" "image" {
 }
 
 module "cloud_init" {
-  source = "../cloud-init"
-  role   = var.role
-  token  = var.token
+  source         = "../cloud-init"
+  role           = var.role
+  server_address = var.server_address
+  token          = var.token
 }
 
 resource "oci_core_instance_configuration" "node_pool" {
@@ -41,7 +42,7 @@ resource "oci_core_instance_configuration" "node_pool" {
 
       metadata = {
         ssh_authorized_keys = var.ssh_public_key
-        user_data = base64encode(module.cloud_init.cloud_init)
+        user_data           = base64encode(module.cloud_init.cloud_init)
       }
 
       shape = var.shape.name

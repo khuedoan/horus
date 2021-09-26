@@ -24,12 +24,13 @@ module "agent_pool" {
   subnet_id      = var.subnet_id
   ssh_public_key = var.ssh_public_key
   role           = "agent"
+  server_address = module.server_nodes[0].ip_address
   token          = random_password.token.result
   size           = var.agent_count
   shape = {
     name = var.agent_shape
     config = {
-      cpus = 2
+      cpus   = 2
       memory = 12
     }
   }

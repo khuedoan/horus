@@ -55,3 +55,8 @@ variable "token" {
   type        = string
   sensitive   = true
 }
+
+variable "server_address" {
+  type    = string
+  default = ""
+}
