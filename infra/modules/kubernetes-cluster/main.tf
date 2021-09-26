@@ -26,17 +26,12 @@ module "agent_pool" {
   role           = "agent"
   token          = random_password.token.result
   size           = var.agent_count
-  # TODO workaround until there's ARM capacity
-  # shape = {
-  #   name = var.agent_shape
-  #   config = {
-  #     cpus = 2
-  #     memory = 12
-  #   }
-  # }
   shape = {
-    name   = var.server_shape
-    config = {}
+    name = var.agent_shape
+    config = {
+      cpus = 2
+      memory = 12
+    }
   }
   tags = var.tags
 }
