@@ -3,14 +3,14 @@ resource "random_password" "token" {
   special = false
 }
 
-module "server_pool" {
-  source         = "../node-pool"
+module "server_nodes" {
+  count          = var.server_count
+  source         = "../single-node"
   compartment_id = var.compartment_id
   subnet_id      = var.subnet_id
   ssh_public_key = var.ssh_public_key
   role           = "server"
   token          = random_password.token.result
-  size           = var.server_count
   shape = {
     name   = var.server_shape
     config = {}
