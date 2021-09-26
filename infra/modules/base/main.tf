@@ -8,13 +8,15 @@ locals {
 }
 
 resource "oci_core_vcn" "vcn" {
-  cidr_blocks    = var.vcn_cidr_blocks
   compartment_id = var.compartment_id
+  display_name   = "vcn"
+  cidr_blocks    = var.vcn_cidr_blocks
   freeform_tags  = var.tags
 }
 
-resource "oci_core_security_list" "security_list" {
+resource "oci_core_security_list" "base" {
   compartment_id = var.compartment_id
+  display_name   = "base"
   vcn_id         = oci_core_vcn.vcn.id
   freeform_tags  = var.tags
 
@@ -71,15 +73,16 @@ resource "oci_core_security_list" "security_list" {
 }
 
 resource "oci_core_subnet" "subnet" {
-  cidr_block     = var.subnet_cidr_block
   compartment_id = var.compartment_id
+  display_name   = "subnet"
+  cidr_block     = var.subnet_cidr_block
   route_table_id = oci_core_vcn.vcn.default_route_table_id
   vcn_id         = oci_core_vcn.vcn.id
   freeform_tags  = var.tags
 
   security_list_ids = [
     oci_core_vcn.vcn.default_security_list_id,
-    oci_core_security_list.security_list.id
+    oci_core_security_list.base.id
   ]
 }
 
@@ -101,8 +104,8 @@ resource "oci_core_default_route_table" "default_route_table" {
 }
 
 resource "oci_bastion_bastion" "bastion" {
-  bastion_type     = "STANDARD"
   compartment_id   = var.compartment_id
+  bastion_type     = "STANDARD"
   target_subnet_id = oci_core_subnet.subnet.id
   client_cidr_block_allow_list = [
     # TODO secure bastion allow list

@@ -74,7 +74,7 @@ resource "oci_core_instance_configuration" "node_pool" {
 
 resource "oci_core_instance_pool" "node_pool" {
   compartment_id            = var.compartment_id
-  display_name              = "k3s-${var.role}s"
+  display_name              = "k3s-${var.role}"
   instance_configuration_id = oci_core_instance_configuration.node_pool.id
   size                      = var.size
 
