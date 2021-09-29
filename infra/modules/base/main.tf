@@ -1,5 +1,6 @@
 locals {
   protocols = {
+    all    = "all",
     icmp   = "1",
     icmpv6 = "58",
     tcp    = "6",
@@ -69,6 +70,14 @@ resource "oci_core_security_list" "base" {
       min = 443
       max = 443
     }
+  }
+
+  # TODO tighten this security rule
+  ingress_security_rules {
+    description = "Kube"
+    protocol    = local.protocols["all"]
+    source      = "0.0.0.0/0"
+    stateless   = false
   }
 }
 
