@@ -1,2 +1,3 @@
 .terraform*
 *.auto.tfvars
+private.pem
