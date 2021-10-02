@@ -1,3 +1,4 @@
-.terraform*
 *.auto.tfvars
+.terraform*
+kubeconfig.yaml
 private.pem
