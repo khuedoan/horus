@@ -13,7 +13,10 @@ module "server_nodes" {
   token          = random_password.token.result
   shape = {
     name   = var.server_shape
-    config = {}
+    config = {
+      cpus   = 2
+      memory = 12
+    }
   }
   tags = var.tags
 }

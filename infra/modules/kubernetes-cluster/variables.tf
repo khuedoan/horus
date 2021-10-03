@@ -9,7 +9,7 @@ variable "server_count" {
 
 variable "server_shape" {
   description = "The shape of server nodes"
-  default     = "VM.Standard.E2.1.Micro"
+  default     = "VM.Standard.A1.Flex"
 }
 
 variable "agent_count" {
