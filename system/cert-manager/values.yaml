@@ -1,5 +1,0 @@
-cert-manager:
-  installCRDs: true
-
-issuer:
-  email: khuedoan98@gmail.com
