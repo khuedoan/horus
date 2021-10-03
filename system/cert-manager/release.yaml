@@ -17,7 +17,4 @@ spec:
     remediation:
       retries: 3
   values:
-    cert-manager:
-      installCRDs: true
-    issuer:
-      email: khuedoan98@gmail.com
+    installCRDs: true
