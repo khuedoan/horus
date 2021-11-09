@@ -111,14 +111,3 @@ resource "oci_core_default_route_table" "default_route_table" {
   }
   freeform_tags = var.tags
 }
-
-resource "oci_bastion_bastion" "bastion" {
-  compartment_id   = var.compartment_id
-  bastion_type     = "STANDARD"
-  target_subnet_id = oci_core_subnet.subnet.id
-  client_cidr_block_allow_list = [
-    # TODO secure bastion allow list
-    "0.0.0.0/0"
-  ]
-  freeform_tags = var.tags
-}
