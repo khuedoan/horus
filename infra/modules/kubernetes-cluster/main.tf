@@ -5,7 +5,7 @@ resource "random_password" "token" {
 
 module "server_nodes" {
   count          = var.server_count
-  source         = "../single-node"
+  source         = "../node"
   compartment_id = var.compartment_id
   subnet_id      = var.subnet_id
   ssh_public_key = var.ssh_public_key
