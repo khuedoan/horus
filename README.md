@@ -91,3 +91,4 @@ Get QR code for mobile:
 
 - [Oracle Terraform Modules](https://github.com/oracle-terraform-modules)
 - [Rancher k3s cluster on AWS Terraform module](https://github.com/rancher/terraform-k3s-aws-cluster)
+- [k3s cluster template with Flux](https://github.com/k8s-at-home/template-cluster-k3s)
