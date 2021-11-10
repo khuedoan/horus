@@ -53,7 +53,11 @@ module "agent_pool" {
 }
 
 resource "null_resource" "kubeconfig" {
-  # TODO triggers for kubeconfig
+  triggers = {
+    # TODO optimize trigger
+    file_exists = fileexists("${path.root}/kubeconfig.yaml")
+  }
+
   provisioner "local-exec" {
     command = "ssh -o 'StrictHostKeyChecking no' -i ${local_file.ssh_private_key.filename} ubuntu@${module.server_nodes[0].public_ip} sudo cat /etc/rancher/k3s/k3s.yaml | sed 's/127.0.0.1/${module.server_nodes[0].public_ip}/g'> ${path.root}/kubeconfig.yaml"
   }
