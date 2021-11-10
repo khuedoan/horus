@@ -4,3 +4,4 @@ resources:
 - bitnami.yaml
 - ingress-nginx.yaml
 - jetstack.yaml
+- prometheus.yaml

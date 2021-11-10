@@ -1,23 +1,18 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: cert-manager
-  namespace: cert-manager
+  name: kube-prometheus-stack
+  namespace: monitoring-system
 spec:
-  releaseName: cert-manager
+  releaseName: kube-prometheus-stack
   chart:
     spec:
-      chart: cert-manager
+      chart: kube-prometheus-stack
       sourceRef:
         kind: HelmRepository
-        name: jetstack
+        name: prometheus
         namespace: flux-system
   interval: 5m
   install:
     remediation:
       retries: 3
-  values:
-    cert-manager:
-      installCRDs: true
-    issuer:
-      email: khuedoan98@gmail.com

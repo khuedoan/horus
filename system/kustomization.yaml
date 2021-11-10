@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
 - ./cert-manager
 - ./ingress-nginx
-# - ./monitoring-system
+- ./monitoring-system
