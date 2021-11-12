@@ -1,3 +1,5 @@
+.POSIX:
+
 default: init apply
 
 init:

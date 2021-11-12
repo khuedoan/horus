@@ -1,13 +1,13 @@
 # Bootstrap
 
-## Generate Flux manifests
+## Apply Flux and bootstrap components
 
 ```sh
-flux install --export > flux-system/gotk-components.yaml
+make
 ```
 
-## Install Flux and bootstrap components
+## Upgrade Flux manifests
 
 ```sh
-kustomize build flux-system | kubectl apply -f -
+make upgrade
 ```
