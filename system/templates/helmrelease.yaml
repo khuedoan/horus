@@ -7,11 +7,11 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 spec:
   releaseName: {{ .name }}
-  version: {{ .version }}
   targetNamespace: {{ .namespace }}
   chart:
     spec:
       chart: {{ .name }}
+      version: {{ .version }}
       sourceRef:
         kind: HelmRepository
         name: {{ .repository }}
