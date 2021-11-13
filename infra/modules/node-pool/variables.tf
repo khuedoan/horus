@@ -40,7 +40,7 @@ variable "image" {
 
   default = {
     operating_system = "Canonical Ubuntu"
-    version          = "20.04"
+    version          = "20.04 Minimal"
   }
 }
 
