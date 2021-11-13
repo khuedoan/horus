@@ -1,5 +1,7 @@
 .POSIX:
 
+default: infra bootstrap
+
 .PHONY: infra
 infra:
 	make -C infra
