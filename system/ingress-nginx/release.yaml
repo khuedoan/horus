@@ -10,7 +10,7 @@ spec:
       chart: ingress-nginx
       sourceRef:
         kind: HelmRepository
-        name: ingress-nginx
+        name: nginx
         namespace: flux-system
   interval: 5m
   install:

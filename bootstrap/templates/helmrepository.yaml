@@ -1,0 +1,11 @@
+{{- range $key, $value := .Values.helmRepositories }}
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: {{ $key }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  interval: 30m
+  url: {{ $value }}
+{{- end }}

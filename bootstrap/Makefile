@@ -1,9 +1,9 @@
 .POSIX:
 
-default: apply
+default: install
 
-apply:
-	kustomize build flux-system | kubectl apply -f -
+install:
+	helm install bootstrap .
 
-upgrade:
-	flux install --export > flux-system/gotk-components.yaml
+upgrade-flux:
+	flux install --export > crds/gotk-components.yaml

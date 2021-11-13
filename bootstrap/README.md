@@ -1,13 +1,13 @@
 # Bootstrap
 
-## Apply Flux and bootstrap components
+## Install Flux and bootstrap components
 
 ```sh
 make
 ```
 
-## Upgrade Flux manifests
+## Upgrade Flux CRDs
 
 ```sh
-make upgrade
+make upgrade-flux
 ```

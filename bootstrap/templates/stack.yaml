@@ -1,0 +1,17 @@
+{{- range .Values.stacks }}
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1beta1
+kind: HelmRelease
+metadata:
+  name: {{ . }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  releaseName: {{ . }}
+  chart:
+    spec:
+      chart: ./{{ . }}
+      sourceRef:
+        kind: GitRepository
+        name: {{ $.Values.gitRepository.name }}
+  interval: 3m
+{{- end }}
