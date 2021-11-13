@@ -12,9 +12,9 @@ resource "oci_identity_policy" "cloud_controller_manager" {
   description    = "Policy to allow Kubernetes nodes to call services"
   statements     = [
     # https://github.com/oracle/oci-cloud-controller-manager/blob/master/manifests/provider-config-example.yaml
-    "Allow dynamic-group ${oci_identity_dynamic_group.kubernetes_nodes.name} to read instance-family in compartment ${var.compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.kubernetes_nodes.name} to use virtual-network-family in compartment ${var.compartment_id}",
-    "Allow dynamic-group ${oci_identity_dynamic_group.kubernetes_nodes.name} to manage load-balancers in compartment ${var.compartment_id}",
+    "Allow dynamic-group ${oci_identity_dynamic_group.kubernetes_nodes.name} to read instance-family in compartment id ${var.compartment_id}",
+    "Allow dynamic-group ${oci_identity_dynamic_group.kubernetes_nodes.name} to use virtual-network-family in compartment id ${var.compartment_id}",
+    "Allow dynamic-group ${oci_identity_dynamic_group.kubernetes_nodes.name} to manage load-balancers in compartment id ${var.compartment_id}",
 
     # https://github.com/oracle/oci-cloud-controller-manager/blob/master/flex-volume-provisioner.md
     "Allow dynamic-group ${oci_identity_dynamic_group.kubernetes_nodes.name} to manage volumes in compartment id ${var.compartment_id}",
