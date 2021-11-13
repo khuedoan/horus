@@ -1,0 +1,21 @@
+{{- range .Values.charts }}
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  releaseName: {{ .name }}
+  version: {{ .version }}
+  targetNamespace: {{ .namespace }}
+  chart:
+    spec:
+      chart: {{ .name }}
+      sourceRef:
+        kind: HelmRepository
+        name: {{ .repository }}
+  install:
+    createNamespace: true
+  interval: 3m
+{{- end }}

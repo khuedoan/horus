@@ -7,6 +7,7 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 spec:
   releaseName: {{ . }}
+  targetNamespace: {{ $.Release.namespace }}
   chart:
     spec:
       chart: ./{{ . }}
