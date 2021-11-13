@@ -6,7 +6,7 @@ KUBECONFIG = ../infra/kubeconfig.yaml
 default: install
 
 install:
-	helm install bootstrap .
+	helm --namespace flux-system install bootstrap .
 
 upgrade-flux:
 	flux install --export > crds/gotk-components.yaml
