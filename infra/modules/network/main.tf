@@ -8,6 +8,10 @@ locals {
   }
 }
 
+data "http" "public_ipv4" {
+  url = "https://ipv4.icanhazip.com"
+}
+
 resource "oci_core_vcn" "vcn" {
   compartment_id = var.compartment_id
   display_name   = "vcn"
@@ -20,26 +24,9 @@ resource "oci_core_security_list" "base" {
   vcn_id         = oci_core_vcn.vcn.id
 
   ingress_security_rules {
-    description = "Wireguard"
-    protocol    = local.protocols["udp"]
-    source      = "0.0.0.0/0"
-    stateless   = false
-
-    udp_options {
-      source_port_range {
-        min = 1
-        max = 65535
-      }
-
-      min = 51820
-      max = 51820
-    }
-  }
-
-  ingress_security_rules {
-    description = "HTTP"
+    description = "SSH"
     protocol    = local.protocols["tcp"]
-    source      = "0.0.0.0/0"
+    source      = "${chomp(data.http.public_ipv4.body)}/32"
     stateless   = false
 
     tcp_options {
@@ -48,8 +35,25 @@ resource "oci_core_security_list" "base" {
         max = 65535
       }
 
-      min = 80
-      max = 80
+      min = 22
+      max = 22
+    }
+  }
+
+  ingress_security_rules {
+    description = "Kubernetes API"
+    protocol    = local.protocols["tcp"]
+    source      = "${chomp(data.http.public_ipv4.body)}/32"
+    stateless   = false
+
+    tcp_options {
+      source_port_range {
+        min = 1
+        max = 65535
+      }
+
+      min = 6443
+      max = 6443
     }
   }
 
@@ -69,23 +73,6 @@ resource "oci_core_security_list" "base" {
       max = 443
     }
   }
-
-  ingress_security_rules {
-    description = "Kubernetes API"
-    protocol    = local.protocols["tcp"]
-    source      = "0.0.0.0/0"
-    stateless   = false
-
-    tcp_options {
-      source_port_range {
-        min = 1
-        max = 65535
-      }
-
-      min = 6443
-      max = 6443
-    }
-  }
 }
 
 resource "oci_core_subnet" "subnet" {
@@ -96,7 +83,6 @@ resource "oci_core_subnet" "subnet" {
   vcn_id         = oci_core_vcn.vcn.id
 
   security_list_ids = [
-    oci_core_vcn.vcn.default_security_list_id,
     oci_core_security_list.base.id
   ]
 }
