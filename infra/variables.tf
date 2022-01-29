@@ -14,11 +14,3 @@ variable "compartment_description" {
   type        = string
   default     = "freecloud"
 }
-
-variable "common_tags" {
-  description = "Common tags for all resources"
-  type        = map(string)
-  default = {
-    project = "freecloud"
-  }
-}

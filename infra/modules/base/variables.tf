@@ -1,22 +1,14 @@
-variable "compartment_id" {
-  description = "Compartment ID where to create all resources"
+variable "tenancy_id" {
+  description = "The ID of the tenancy (same with the root compartment ID)"
   type        = string
 }
 
-variable "vcn_cidr_blocks" {
-  description = "The list of IPv4 CIDR blocks the VCN will use"
-  type        = list(string)
-  default = [
-    "10.0.0.0/16"
-  ]
+variable "compartment_name" {
+  description = "Name of the compartment where to create all resources"
+  type        = string
 }
 
-variable "subnet_cidr_block" {
-  type    = string
-  default = "10.0.0.0/24"
-}
-
-variable "tags" {
-  type    = map(string)
-  default = {}
+variable "compartment_description" {
+  description = "Description of the compartment where to create all resources"
+  type        = string
 }

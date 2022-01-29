@@ -22,11 +22,6 @@ variable "ssh_public_key" {
   description = "SSH public key to add to all nodes"
 }
 
-variable "tags" {
-  type    = map(string)
-  default = {}
-}
-
 variable "image" {
   description = "OS image properties"
 

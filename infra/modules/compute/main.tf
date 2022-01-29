@@ -15,7 +15,6 @@ resource "oci_core_instance" "node" {
   compartment_id      = var.compartment_id
   display_name        = "horus"
   availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
-  freeform_tags       = var.tags
 
   create_vnic_details {
     assign_public_ip = true # TODO check if we can disable this
