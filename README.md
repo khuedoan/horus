@@ -6,9 +6,8 @@
 
 > The name is from [Horus the Child, or Harpocrates](https://en.wikipedia.org/wiki/Harpocrates)
 
-Horus is an opinionated framework for self-hosting on a free/low cost VPS,
-to take back the control of your data.
-This repo is meant to be forked to customize for your needs.
+Horus is an opinionated framework for self-hosting on a free or low-cost VPS in order to reclaim control over your data.
+This repository is intended to be forked in order to be customized to your specific needs.
 
 ## Features
 
