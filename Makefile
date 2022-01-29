@@ -1,11 +1,11 @@
 .POSIX:
 
-default: infra config
+default: infra cluster
 
 .PHONY: infra
 infra:
 	make -C infra
 
-.PHONY: config
-config:
-	make -C config
+.PHONY: cluster
+cluster:
+	make -C cluster
