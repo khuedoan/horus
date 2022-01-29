@@ -13,12 +13,14 @@ This repository is intended to be forked in order to be customized to your speci
 
 ### Infrastructure
 
-| Provider        | Service                     | Using             | Limit             | Notes                               |
-| :--             | :--                         | :--               | :--               | :--                                 |
-| Terraform Cloud | Workspace                   | 1                 | None              |                                     |
-| Oracle Cloud    | Virtual Cloud Network       | 1                 | 2                 |                                     |
-| Oracle Cloud    | `VM.Standard.A1.Flex` (ARM) | 4 cores, 24GB mem | 4 cores, 24GB mem | Single node                         |
-| Oracle Cloud    | Block Storage               | 200GB             | 200GB             | 50GB boot volume, 150GB data volume |
+Oracle Cloud was chosen due to their very generous free tier.
+
+| Provider        | Service                     | Usage             | Pricing                        |
+| :--             | :--                         | :--               | :--                            |
+| Terraform Cloud | Workspace                   | 1                 | Free                           |
+| Oracle Cloud    | Virtual Cloud Network       | 1                 | Free                           |
+| Oracle Cloud    | `VM.Standard.A1.Flex` (ARM) | 4 cores, 24GB mem | Free (yes, you read it right!) |
+| Oracle Cloud    | Block Storage               | 200GB             | Free                           |
 
 ### Applications
 
