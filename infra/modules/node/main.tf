@@ -11,16 +11,9 @@ data "oci_core_images" "image" {
   sort_order               = "DESC"
 }
 
-module "cloud_init" {
-  source         = "../cloud-init"
-  role           = var.role
-  server_address = var.server_address
-  token          = var.token
-}
-
 resource "oci_core_instance" "node" {
   compartment_id      = var.compartment_id
-  display_name        = "k3s-${var.role}"
+  display_name        = "horus"
   availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
   freeform_tags       = var.tags
 
@@ -35,7 +28,6 @@ resource "oci_core_instance" "node" {
 
   metadata = {
     ssh_authorized_keys = var.ssh_public_key
-    user_data           = base64encode(module.cloud_init.cloud_init)
   }
 
   shape = var.shape.name

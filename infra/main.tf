@@ -15,11 +15,18 @@ module "base" {
   tags           = var.common_tags
 }
 
-module "kubernetes_cluster" {
-  source         = "./modules/kubernetes-cluster"
+module "vm" {
+  count          = 1
+  source         = "./modules/node"
   compartment_id = oci_identity_compartment.freecloud.id
-  server_count   = 1 # TODO multi master with embedded etcd in the same pool
-  agent_count    = 1
   subnet_id      = module.base.subnet_id
+  ssh_public_key = file("~/.ssh/id_ed25519.pub")
+  shape = {
+    name   = "VM.Standard.A1.Flex"
+    config = {
+      cpus   = 4
+      memory = 24
+    }
+  }
   tags           = var.common_tags
 }

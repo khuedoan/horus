@@ -1,5 +1,0 @@
-useInstancePrincipals: true
-vcn: ${vcn_id}
-loadBalancer:
-  subnet1: ${subnet_id}
-  securityListManagementMode: All

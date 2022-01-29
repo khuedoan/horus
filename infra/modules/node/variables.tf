@@ -40,23 +40,3 @@ variable "image" {
     version          = "20.04"
   }
 }
-
-variable "role" {
-  description = "Node pool role"
-  type        = string
-  validation {
-    condition     = contains(["server", "agent"], var.role)
-    error_message = "Node pool role must be server or agent."
-  }
-}
-
-variable "token" {
-  description = "Shared secret used to join a server or agent to a cluster"
-  type        = string
-  sensitive   = true
-}
-
-variable "server_address" {
-  type    = string
-  default = ""
-}
