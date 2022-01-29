@@ -1,4 +1,5 @@
 - hosts: all
   become: yes
   roles:
+    - role: firewall
     - role: k3s
