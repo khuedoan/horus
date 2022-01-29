@@ -58,6 +58,23 @@ resource "oci_core_security_list" "base" {
   }
 
   ingress_security_rules {
+    description = "HTTP"
+    protocol    = local.protocols["tcp"]
+    source      = "0.0.0.0/0"
+    stateless   = false
+
+    tcp_options {
+      source_port_range {
+        min = 1
+        max = 65535
+      }
+
+      min = 80
+      max = 80
+    }
+  }
+
+  ingress_security_rules {
     description = "HTTPS"
     protocol    = local.protocols["tcp"]
     source      = "0.0.0.0/0"
