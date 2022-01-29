@@ -1,0 +1,50 @@
+- name: Download k3s binary
+  get_url:
+    url: https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-arm64
+    checksum: sha256:https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/sha256sum-arm64.txt
+    dest: /usr/local/bin/k3s
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Ensure config directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  loop:
+    - /etc/rancher/k3s
+
+- name: Copy k3s config files
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  loop:
+    - src: config.yaml.j2
+      dest: "{{ k3s_config_file }}"
+    - src: k3s.service.j2
+      dest: "{{ k3s_service_file }}"
+
+- name: Enable k3s service
+  systemd:
+    name: k3s
+    enabled: true
+    state: started
+  register: k3s_service
+  until: k3s_service is succeeded
+  retries: 5
+
+- name: Get Kubernetes config file
+  run_once: true
+  slurp:
+    src: /etc/rancher/k3s/k3s.yaml
+  register: kubeconfig_base64
+
+- name: Write Kubernetes config file with the correct cluster address
+  become: false
+  copy:
+    content: "{{ kubeconfig_base64.content | b64decode | replace('127.0.0.1', inventory_hostname) }}"
+    dest: "{{ playbook_dir }}/kubeconfig.yaml"
+    mode: 0600
+  delegate_to: localhost
