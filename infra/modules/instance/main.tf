@@ -13,7 +13,7 @@ data "oci_core_images" "image" {
 
 resource "oci_core_instance" "node" {
   compartment_id      = var.compartment_id
-  display_name        = "horus"
+  display_name        = var.display_name
   availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
 
   create_vnic_details {
@@ -31,8 +31,9 @@ resource "oci_core_instance" "node" {
 
   shape = var.shape.name
   source_details {
-    source_type = "image"
-    source_id   = data.oci_core_images.image.images[0].id
+    boot_volume_size_in_gbs = var.boot_volume_size
+    source_type             = "image"
+    source_id               = data.oci_core_images.image.images[0].id
   }
 
   dynamic "shape_config" {
@@ -42,4 +43,17 @@ resource "oci_core_instance" "node" {
       memory_in_gbs = tonumber(lookup(var.shape.config, "memory", 0))
     }
   }
+}
+
+resource "oci_core_volume" "data" {
+  compartment_id      = var.compartment_id
+  display_name        = "${var.display_name}-data"
+  availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
+  size_in_gbs         = var.data_volume_size
+}
+
+resource "oci_core_volume_attachment" "data" {
+  instance_id     = oci_core_instance.node.id
+  volume_id       = oci_core_volume.data.id
+  attachment_type = "paravirtualized"
 }

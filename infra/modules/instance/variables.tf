@@ -1,3 +1,8 @@
+variable "display_name" {
+  description = "Display name of the instance"
+  type        = string
+}
+
 variable "compartment_id" {
   description = "Compartment ID where to create all resources"
   type        = string
@@ -16,10 +21,32 @@ variable "shape" {
 }
 
 variable "subnet_id" {
+  type = string
 }
 
 variable "ssh_public_key" {
   description = "SSH public key to add to all nodes"
+  type        = string
+}
+
+variable "boot_volume_size" {
+  description = "The size of the boot volume in GBs"
+  type        = number
+  default     = 50
+
+  validation {
+    condition = (
+      var.boot_volume_size >= 50 &&
+      var.boot_volume_size <= 32768
+    )
+    error_message = "Minimum value is 50 GB and maximum value is 32,768 GB (32 TB)."
+  }
+}
+
+variable "data_volume_size" {
+  description = "The size of the data volume in GBs"
+  type        = number
+  default     = 150
 }
 
 variable "image" {
