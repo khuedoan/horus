@@ -1,12 +1,16 @@
 .POSIX:
 
-default: init apply
+default: apply
 
-init:
+~/.terraform.d/credentials.tfrc.json:
+	terraform login
+
+.terraform.lock.hcl: ~/.terraform.d/credentials.tfrc.json versions.tf modules
 	terraform init
+	touch .terraform.lock.hcl
 
-plan:
+plan: .terraform.lock.hcl
 	terraform plan
 
-apply:
+apply: .terraform.lock.hcl
 	terraform apply
