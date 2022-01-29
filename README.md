@@ -85,5 +85,4 @@ TBD
 ## Acknowledgments and References
 
 - [Oracle Terraform Modules](https://github.com/oracle-terraform-modules)
-- [Rancher k3s cluster on AWS Terraform module](https://github.com/rancher/terraform-k3s-aws-cluster)
-- [k3s cluster template with Flux](https://github.com/k8s-at-home/template-cluster-k3s)
+- [Official k3s systemd service file](https://github.com/k3s-io/k3s/blob/master/k3s.service)
