@@ -17,7 +17,7 @@ resource "oci_core_instance" "instance" {
   availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
 
   create_vnic_details {
-    assign_public_ip = true # TODO check if we can disable this
+    assign_public_ip = false
     subnet_id        = var.subnet_id
   }
 
@@ -56,4 +56,23 @@ resource "oci_core_volume_attachment" "data" {
   instance_id     = oci_core_instance.instance.id
   volume_id       = oci_core_volume.data.id
   attachment_type = "paravirtualized"
+}
+
+data "oci_core_vnic_attachments" "vnic_attachments" {
+  compartment_id = var.compartment_id
+  instance_id    = oci_core_instance.instance.id
+}
+
+data "oci_core_vnic" "vnic" {
+  vnic_id = lookup(data.oci_core_vnic_attachments.vnic_attachments.vnic_attachments[0], "vnic_id")
+}
+
+data "oci_core_private_ips" "private_ip" {
+  vnic_id = data.oci_core_vnic.vnic.id
+}
+
+resource "oci_core_public_ip" "public_ip" {
+  compartment_id = var.compartment_id
+  lifetime       = "RESERVED"
+  private_ip_id  = lookup(data.oci_core_private_ips.private_ip.private_ips[0], "id")
 }
