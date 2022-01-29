@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blog
+  # annotations:
+  #   cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  # ingressClassName: traefik
+  rules:
+    - host: &host www.khuedoan.com
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: blog
+                port:
+                  name: http
+  # tls:
+  #   - hosts:
+  #       - *host
+  #     secretName: blog-tls-certificate
