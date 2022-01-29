@@ -43,6 +43,12 @@ resource "oci_core_instance" "instance" {
       memory_in_gbs = tonumber(lookup(var.shape.config, "memory", 0))
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      metadata
+    ]
+  }
 }
 
 resource "oci_core_volume" "data" {
