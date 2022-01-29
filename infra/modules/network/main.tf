@@ -70,12 +70,21 @@ resource "oci_core_security_list" "base" {
     }
   }
 
-  # TODO tighten this security rule
   ingress_security_rules {
-    description = "Kube"
-    protocol    = local.protocols["all"]
+    description = "Kubernetes API"
+    protocol    = local.protocols["tcp"]
     source      = "0.0.0.0/0"
     stateless   = false
+
+    tcp_options {
+      source_port_range {
+        min = 1
+        max = 65535
+      }
+
+      min = 6443
+      max = 6443
+    }
   }
 }
 
