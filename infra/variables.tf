@@ -12,5 +12,5 @@ variable "compartment_name" {
 variable "compartment_description" {
   description = "Description of the compartment where to create all resources"
   type        = string
-  default     = "freecloud"
+  default     = "Free Cloud"
 }
