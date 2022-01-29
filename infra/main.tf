@@ -10,9 +10,8 @@ module "network" {
   compartment_id = module.base.compartment_id
 }
 
-module "compute" {
-  count          = 1
-  source         = "./modules/compute"
+module "instance" {
+  source         = "./modules/instance"
   compartment_id = module.base.compartment_id
   subnet_id      = module.network.subnet_id
   ssh_public_key = file("~/.ssh/id_ed25519.pub")
