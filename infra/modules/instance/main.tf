@@ -11,7 +11,7 @@ data "oci_core_images" "image" {
   sort_order               = "DESC"
 }
 
-resource "oci_core_instance" "node" {
+resource "oci_core_instance" "instance" {
   compartment_id      = var.compartment_id
   display_name        = var.display_name
   availability_domain = data.oci_identity_availability_domains.availability_domains.availability_domains[0].name
@@ -53,7 +53,7 @@ resource "oci_core_volume" "data" {
 }
 
 resource "oci_core_volume_attachment" "data" {
-  instance_id     = oci_core_instance.node.id
+  instance_id     = oci_core_instance.instance.id
   volume_id       = oci_core_volume.data.id
   attachment_type = "paravirtualized"
 }

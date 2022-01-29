@@ -9,7 +9,7 @@ variable "compartment_id" {
 }
 
 variable "shape" {
-  description = "The shape configuration requested for the nodes"
+  description = "The shape configuration requested for the instance"
   type = object({
     name   = string
     config = map(any)
@@ -25,7 +25,7 @@ variable "subnet_id" {
 }
 
 variable "ssh_public_key" {
-  description = "SSH public key to add to all nodes"
+  description = "SSH public key to add to the instance"
   type        = string
 }
 
