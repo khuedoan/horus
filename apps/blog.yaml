@@ -1,9 +1,16 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: blog
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     app: blog
   name: blog
+  namespace: blog
 spec:
   selector:
     matchLabels:
@@ -44,3 +51,37 @@ spec:
           emptyDir: {}
         - name: static
           emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: blog
+  name: blog
+  namespace: blog
+spec:
+  type: ClusterIP
+  selector:
+    app: blog
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: blog
+  namespace: blog
+spec:
+  rules:
+    - host: www.khuedoan.com
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: blog
+                port:
+                  name: http
