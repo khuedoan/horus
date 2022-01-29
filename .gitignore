@@ -1,4 +1,4 @@
-*.auto.tfvars
+*.tfvars
 .terraform*
 kubeconfig.yaml
 private.pem
