@@ -5,7 +5,7 @@ terraform {
     organization = "khuedoan"
 
     workspaces {
-      name = "freecloud"
+      name = "horus"
     }
   }
 

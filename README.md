@@ -1,31 +1,33 @@
-# Free Infrastructure
+# Horus
 
 ```diff
 ! ⚠️ WORK IN PROGRESS
 ```
 
-Always free (as in beer) cloud infrastructure.
+> The name is from [Horus the Child, or Harpocrates](https://en.wikipedia.org/wiki/Harpocrates)
 
-This repo is meant to be forked to customize for your needs, it can be used for self-hosting, hobby projects, student assignments...
+Horus is an opinionated framework for self-hosting on a free/low cost VPS,
+to take back the control of your data.
+This repo is meant to be forked to customize for your needs.
 
 ## Features
 
 ### Infrastructure
 
-| Provider        | Service                        | Using             | Limit             | Notes                 |
-|-----------------|--------------------------------|-------------------|-------------------|-----------------------|
-| Terraform Cloud | Workspace                      | 1                 | None              |                       |
-| Oracle Cloud    | `VM.Standard.E2.1.Micro` (x86) | 2 instances       | 2 instances       |                       |
-| Oracle Cloud    | `VM.Standard.A1.Flex` (ARM)    | 4 cores, 24GB mem | 4 cores, 24GB mem | 2x(2 cores, 12GB mem) |
-| Oracle Cloud    | Block Storage                  | 200GB             | 200GB             | 50GB per VM           |
-| Oracle Cloud    | Virtual Cloud Network          | 1                 | 2                 |                       |
+| Provider        | Service                     | Using             | Limit             | Notes                               |
+| :--             | :--                         | :--               | :--               | :--                                 |
+| Terraform Cloud | Workspace                   | 1                 | None              |                                     |
+| Oracle Cloud    | Virtual Cloud Network       | 1                 | 2                 |                                     |
+| Oracle Cloud    | `VM.Standard.A1.Flex` (ARM) | 4 cores, 24GB mem | 4 cores, 24GB mem | Single node                         |
+| Oracle Cloud    | Block Storage               | 200GB             | 200GB             | 50GB boot volume, 150GB data volume |
 
 ### Applications
 
-- Wireguard VPN server
-- Mailcow mail server
-- CI/CD with Tekton and ArgoCD
-- TBD
+- [x] Hugo blog
+- [ ] Web analytics
+- [ ] Wireguard VPN server
+- [ ] Mail server
+- [ ] TBD
 
 ## Get started
 
@@ -33,7 +35,7 @@ This repo is meant to be forked to customize for your needs, it can be used for 
 
 - Fork this repository because you will need to customize it for your needs.
 - A credit/debit card to register for the accounts.
-- Basic knowledge on Terraform and Ansible (optional, but will help a lot)
+- Basic knowledge on Terraform, Ansible and Kubernetes (optional, but will help a lot)
 
 Configuration files:
 
@@ -74,19 +76,15 @@ Remember to backup the following credential files (you can put them in a passwor
 Build the infrastructure:
 
 ```sh
-make infra
+make
 ```
 
 ## Usage
 
-### VPN
-
-Get QR code for mobile:
-
-```sh
-./scripts/vpn-config
-```
+TBD
 
 ## Acknowledgments and References
 
 - [Oracle Terraform Modules](https://github.com/oracle-terraform-modules)
+- [Rancher k3s cluster on AWS Terraform module](https://github.com/rancher/terraform-k3s-aws-cluster)
+- [k3s cluster template with Flux](https://github.com/k8s-at-home/template-cluster-k3s)

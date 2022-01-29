@@ -13,7 +13,7 @@ module "network" {
 module "instance" {
   source         = "./modules/instance"
   compartment_id = module.base.compartment_id
-  display_name   = "freecloud"
+  display_name   = "horus"
   subnet_id      = module.network.subnet_id
   ssh_public_key = file("~/.ssh/id_ed25519.pub")
   shape = {

@@ -6,11 +6,11 @@ variable "tenancy_id" {
 variable "compartment_name" {
   description = "Name of the compartment where to create all resources"
   type        = string
-  default     = "freecloud"
+  default     = "horus"
 }
 
 variable "compartment_description" {
   description = "Description of the compartment where to create all resources"
   type        = string
-  default     = "Free Cloud"
+  default     = "Horus Project"
 }
