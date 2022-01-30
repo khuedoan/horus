@@ -23,11 +23,16 @@ resource "oci_core_security_list" "base" {
   display_name   = "base"
   vcn_id         = oci_core_vcn.vcn.id
 
+  egress_security_rules {
+    description = "Internet"
+    protocol    = local.protocols["all"]
+    destination = "0.0.0.0/0"
+  }
+
   ingress_security_rules {
     description = "SSH"
     protocol    = local.protocols["tcp"]
     source      = "${chomp(data.http.public_ipv4.body)}/32"
-    stateless   = false
 
     tcp_options {
       source_port_range {
@@ -44,7 +49,6 @@ resource "oci_core_security_list" "base" {
     description = "Kubernetes API"
     protocol    = local.protocols["tcp"]
     source      = "${chomp(data.http.public_ipv4.body)}/32"
-    stateless   = false
 
     tcp_options {
       source_port_range {
@@ -61,7 +65,6 @@ resource "oci_core_security_list" "base" {
     description = "HTTP"
     protocol    = local.protocols["tcp"]
     source      = "0.0.0.0/0"
-    stateless   = false
 
     tcp_options {
       source_port_range {
@@ -78,7 +81,6 @@ resource "oci_core_security_list" "base" {
     description = "HTTPS"
     protocol    = local.protocols["tcp"]
     source      = "0.0.0.0/0"
-    stateless   = false
 
     tcp_options {
       source_port_range {
