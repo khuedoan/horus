@@ -64,7 +64,7 @@ spec:
       hostname: mail
       containers:
         - name: mailserver
-          image: docker.io/docker-mailserver/docker-mailserver:latest
+          image: docker.io/mailserver/docker-mailserver:latest
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -101,10 +101,10 @@ spec:
               memory: 1Gi
               cpu: 100m
           volumeMounts:
-            - name: files
-              subPath: postfix-accounts.cf
-              mountPath: /tmp/docker-mailserver/postfix-accounts.cf
-              readOnly: true
+            # - name: files
+            #   subPath: postfix-accounts.cf
+            #   mountPath: /tmp/docker-mailserver/postfix-accounts.cf
+            #   readOnly: true
             # PVCs
             - name: data
               mountPath: /var/mail
@@ -140,9 +140,9 @@ spec:
       restartPolicy: Always
       volumes:
         # configuration files
-        - name: files
-          configMap:
-            name: mailserver.files
+        # - name: files
+        #   configMap:
+        #     name: mailserver.files
         # PVCs
         - name: data
           persistentVolumeClaim:
