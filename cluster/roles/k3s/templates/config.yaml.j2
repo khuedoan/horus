@@ -1,2 +1,3 @@
 cluster-init: true
+node-external-ip: {{ ansible_host }}
 {{ k3s_server_config | to_nice_yaml }}
