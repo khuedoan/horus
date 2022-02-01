@@ -2,4 +2,5 @@
   become: yes
   roles:
     - role: firewall
+    - role: data
     - role: k3s

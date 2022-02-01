@@ -1,0 +1,19 @@
+- name: Create data partition on data disk
+  parted:
+    device: /dev/sdb
+    number: 1
+    flags:
+      - lvm
+    state: present
+
+- name: Format data partition
+  filesystem:
+    fstype: ext4
+    dev: /dev/sdb1
+
+- name: Mount data partition
+  mount:
+    src: /dev/sdb1
+    path: /var/lib/rancher/k3s/storage
+    fstype: ext4
+    state: mounted
