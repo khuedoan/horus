@@ -77,9 +77,11 @@ kind: Ingress
 metadata:
   name: homelab-docs
   namespace: homelab-docs
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   rules:
-    - host: homelab.khuedoan.com
+    - host: &host homelab.khuedoan.com
       http:
         paths:
           - pathType: ImplementationSpecific
@@ -88,3 +90,7 @@ spec:
                 name: homelab-docs
                 port:
                   name: http
+  tls:
+    - secretName: homelab-docs-tls-certificate
+      hosts:
+        - *host
