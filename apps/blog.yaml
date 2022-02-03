@@ -74,9 +74,11 @@ kind: Ingress
 metadata:
   name: blog
   namespace: blog
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   rules:
-    - host: www.khuedoan.com
+    - host: &host www.khuedoan.com
       http:
         paths:
           - pathType: ImplementationSpecific
@@ -85,3 +87,7 @@ spec:
                 name: blog
                 port:
                   name: http
+  tls:
+    - secretName: blog-tls-certificate
+      hosts:
+        - *host
