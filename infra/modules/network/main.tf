@@ -92,6 +92,70 @@ resource "oci_core_security_list" "base" {
       max = 443
     }
   }
+
+  ingress_security_rules {
+    description = "SMTP"
+    protocol    = local.protocols["tcp"]
+    source      = "0.0.0.0/0"
+
+    tcp_options {
+      source_port_range {
+        min = 1
+        max = 65535
+      }
+
+      min = 25
+      max = 25
+    }
+  }
+
+  ingress_security_rules {
+    description = "ESMTP Explicit TLS"
+    protocol    = local.protocols["tcp"]
+    source      = "0.0.0.0/0"
+
+    tcp_options {
+      source_port_range {
+        min = 1
+        max = 65535
+      }
+
+      min = 587
+      max = 587
+    }
+  }
+
+  ingress_security_rules {
+    description = "ESMTP Implicit TLS"
+    protocol    = local.protocols["tcp"]
+    source      = "0.0.0.0/0"
+
+    tcp_options {
+      source_port_range {
+        min = 1
+        max = 65535
+      }
+
+      min = 465
+      max = 465
+    }
+  }
+
+  ingress_security_rules {
+    description = "IMAP4 Implicit TLS"
+    protocol    = local.protocols["tcp"]
+    source      = "0.0.0.0/0"
+
+    tcp_options {
+      source_port_range {
+        min = 1
+        max = 65535
+      }
+
+      min = 993
+      max = 993
+    }
+  }
 }
 
 resource "oci_core_subnet" "subnet" {
