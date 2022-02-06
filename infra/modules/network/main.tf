@@ -142,6 +142,22 @@ resource "oci_core_security_list" "base" {
   }
 
   ingress_security_rules {
+    description = "IMAP4 Explicit TLS"
+    protocol    = local.protocols["tcp"]
+    source      = "0.0.0.0/0"
+
+    tcp_options {
+      source_port_range {
+        min = 1
+        max = 65535
+      }
+
+      min = 143
+      max = 143
+    }
+  }
+
+  ingress_security_rules {
     description = "IMAP4 Implicit TLS"
     protocol    = local.protocols["tcp"]
     source      = "0.0.0.0/0"

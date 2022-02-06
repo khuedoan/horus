@@ -134,6 +134,9 @@ spec:
             - name: imap-implicit
               containerPort: 993
               protocol: TCP
+            - name: imap-explicit
+              containerPort: 143
+              protocol: TCP
           envFrom:
             - configMapRef:
                 name: mailserver.environment
@@ -179,4 +182,8 @@ spec:
     - name: imap-implicit
       port: 993
       targetPort: imap-implicit
+      protocol: TCP
+    - name: imap-explicit
+      port: 143
+      targetPort: imap-explicit
       protocol: TCP
