@@ -25,9 +25,9 @@ Oracle Cloud was chosen due to their very generous free tier.
 ### Applications
 
 - [x] Hugo blog
+- [x] Mail server (receive only, [outbound SMTP is blocked by default](https://docs.oracle.com/en-us/iaas/releasenotes/changes/f7e95770-9844-43db-916c-6ccbaf2cfe24/), you must upgrade to a paid account to open a service limits request to request an exemption)
 - [ ] Web analytics
 - [ ] Wireguard VPN server
-- [ ] Mail server
 - [ ] TBD
 
 ## Get started
