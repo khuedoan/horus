@@ -30,6 +30,18 @@ data:
   ENABLE_SPAMASSASSIN: '1'
   SUPERVISOR_LOGLEVEL: warn
   SPAMASSASSIN_SPAM_TO_INBOX: '1'
+  SSL_TYPE: manual
+  SSL_CERT_PATH: /tmp/certificate/tls.crt
+  SSL_KEY_PATH: /tmp/certificate/tls.key
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mailserver.files
+  namespace: mailserver
+data:
+  postfix-accounts.cf: |
+  # TODO
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -43,6 +55,19 @@ spec:
   resources:
     requests:
       storage: 10Gi
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: mailserver-tls-certificate
+  namespace: mailserver
+spec:
+  dnsNames:
+    - mail.khuedoan.com
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt-prod
+  secretName: mailserver-tls-certificate
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -101,10 +126,13 @@ spec:
               memory: 1Gi
               cpu: 100m
           volumeMounts:
-            # - name: files
-            #   subPath: postfix-accounts.cf
-            #   mountPath: /tmp/docker-mailserver/postfix-accounts.cf
-            #   readOnly: true
+            - name: files
+              subPath: postfix-accounts.cf
+              mountPath: /tmp/docker-mailserver/postfix-accounts.cf
+              readOnly: true
+            - name: certificate
+              mountPath: /tmp/certificate
+              readOnly: true
             # PVCs
             - name: data
               mountPath: /var/mail
@@ -143,9 +171,12 @@ spec:
       restartPolicy: Always
       volumes:
         # configuration files
-        # - name: files
-        #   configMap:
-        #     name: mailserver.files
+        - name: files
+          configMap:
+            name: mailserver.files
+        - name: certificate
+          secret:
+            secretName: mailserver-tls-certificate
         # PVCs
         - name: data
           persistentVolumeClaim:
