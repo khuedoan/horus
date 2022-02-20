@@ -30,6 +30,7 @@ resource "oci_core_instance" "instance" {
   }
 
   shape = var.shape.name
+
   source_details {
     boot_volume_size_in_gbs = var.boot_volume_size
     source_type             = "image"
@@ -38,6 +39,7 @@ resource "oci_core_instance" "instance" {
 
   dynamic "shape_config" {
     for_each = length(var.shape.config) > 0 ? [1] : []
+
     content {
       ocpus         = tonumber(lookup(var.shape.config, "cpus", 0))
       memory_in_gbs = tonumber(lookup(var.shape.config, "memory", 0))
@@ -46,7 +48,8 @@ resource "oci_core_instance" "instance" {
 
   lifecycle {
     ignore_changes = [
-      metadata
+      metadata,
+      source_details
     ]
   }
 }
