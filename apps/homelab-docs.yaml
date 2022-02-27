@@ -42,7 +42,8 @@ spec:
                 make diagrams
                 mdbook build . --dest-dir /usr/share/nginx/html
                 sleep 120
-                git pull
+                git fetch origin
+                git reset --hard origin/master
               done
           volumeMounts:
             - mountPath: /usr/local/src
