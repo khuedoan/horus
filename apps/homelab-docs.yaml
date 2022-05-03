@@ -24,8 +24,8 @@ spec:
         - name: nginx
           image: nginx:latest
           volumeMounts:
-            - mountPath: /usr/share/nginx/html
-              name: static
+            - name: static
+              mountPath: /usr/share/nginx/html
         - name: build
           image: alpine:latest
           workingDir: /usr/local/src
@@ -34,17 +34,24 @@ spec:
             - -c
           args:
             - |
-              apk add font-noto font-noto-emoji git graphviz make python3
+              apk add git make cargo
               apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" mdbook
+              cargo install --root /usr/local mdbook-mermaid
               git clone https://github.com/khuedoan/homelab .
               cd docs
               while true; do
-                make diagrams
+                mdbook-mermaid install .
                 mdbook build . --dest-dir /usr/share/nginx/html
                 sleep 120
                 git fetch origin
                 git reset --hard origin/master
               done
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 3
           volumeMounts:
             - mountPath: /usr/local/src
               name: source
