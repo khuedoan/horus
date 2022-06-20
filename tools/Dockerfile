@@ -13,3 +13,6 @@ RUN apk add --no-cache \
 RUN apk add --no-cache --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" \
     helm \
     kubectl
+
+RUN pip install \
+    kubernetes

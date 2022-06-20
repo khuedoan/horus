@@ -4,3 +4,6 @@
     - role: firewall
     - role: data
     - role: k3s
+- hosts: localhost
+  roles:
+    - role: bootstrap

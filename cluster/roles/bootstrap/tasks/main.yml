@@ -1,0 +1,61 @@
+- name: Deploy ArgoCD
+  kubernetes.core.helm:
+    name: argocd
+    chart_repo_url: https://argoproj.github.io/argo-helm
+    chart_ref: argo-cd
+    chart_version: "{{ argocd_version }}"
+    release_namespace: "{{ namespace }}"
+    create_namespace: true
+    wait: True
+    kubeconfig: "{{ kubeconfig }}"
+    values:
+      server:
+        extraArgs:
+          - --insecure
+        ingress:
+          enabled: true
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-prod
+          hosts:
+            - "{{ argocd_host }}"
+          tls:
+            - secretName: argocd-tls-certificate
+              hosts:
+                - "{{ argocd_host }}"
+      dex:
+        enabled: false
+
+- name: Deploy ApplicationSets
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    definition:
+      apiVersion: argoproj.io/v1alpha1
+      kind: ApplicationSet
+      metadata:
+        name: apps
+        namespace: "{{ namespace }}"
+      spec:
+        generators:
+          - git:
+              repoURL: "{{ gitops_repo }}"
+              revision: "{{ gitops_revision }}"
+              directories:
+                - path: apps/*
+        template:
+          metadata:
+            name: "{{ '{{path.basename}}' }}"
+          spec:
+            destination:
+              name: in-cluster
+              namespace: "{{ '{{path.basename}}' }}"
+            project: default # TODO
+            source:
+              repoURL: "{{ gitops_repo }}"
+              path: "{{ '{{path}}' }}"
+              targetRevision: "{{ gitops_revision }}"
+            syncPolicy:
+              automated:
+                prune: true
+                selfHeal: true
+              syncOptions:
+                - CreateNamespace=true
