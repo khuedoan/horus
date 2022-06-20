@@ -72,6 +72,11 @@ Remember to backup the following credential files (you can put them in a passwor
 - `~/.oci/config`
 - `~/.oci/private.pem`
 
+Install the following packages:
+
+- `make`
+- `docker`
+
 ### Provision
 
 Build the infrastructure:
