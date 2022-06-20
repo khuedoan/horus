@@ -1,4 +1,5 @@
 ---
+# TODO switch to Helm chart
 apiVersion: v1
 kind: Namespace
 metadata:
