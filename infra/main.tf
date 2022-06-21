@@ -34,3 +34,18 @@ module "instance" {
     }
   }
 }
+
+resource "local_file" "inventory" {
+  filename        = "${path.root}/../cluster/inventory.yml"
+  file_permission = "0644"
+  content = yamlencode({
+    k3s = {
+      hosts = {
+        "${module.instance.public_ip}" = {
+          ansible_user                 = "ubuntu"
+          ansible_ssh_private_key_file = abspath(local_file.ssh_private_key.filename)
+        }
+      }
+    }
+  })
+}
