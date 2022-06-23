@@ -3,6 +3,7 @@ FROM docker.io/alpine:3.16
 RUN apk add --no-cache \
     ansible \
     git \
+    k9s \
     make \
     neovim \
     openssh \
@@ -16,3 +17,5 @@ RUN apk add --no-cache --repository "http://dl-cdn.alpinelinux.org/alpine/edge/t
 
 RUN pip install \
     kubernetes
+
+ENV EDITOR=nvim
