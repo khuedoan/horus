@@ -1,0 +1,26 @@
+minio:
+  mode: standalone
+  rootUser: admin
+  ingress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - &host s3.minio.horus.khuedoan.com
+    tls:
+      - secretName: minio-tls-certificate
+        hosts:
+          - *host
+  consoleIngress:
+    enabled: true
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - &consoleHost minio.horus.khuedoan.com
+    tls:
+      - secretName: minio-console-tls-certificate
+        hosts:
+          - *consoleHost
+  persistence:
+    enabled: true
+    size: 32Gi
