@@ -21,21 +21,20 @@ spec:
             - name: static
               mountPath: /usr/share/nginx/html
         - name: build
-          image: alpine:latest
+          image: alpine:latest # TODO https://github.com/squidfunk/mkdocs-material/issues/2945
           workingDir: /usr/local/src
           command:
             - /bin/sh
             - -c
           args:
             - |
-              apk add git make cargo
-              apk add --repository "http://dl-cdn.alpinelinux.org/alpine/edge/testing" mdbook
-              cargo install --root /usr/local mdbook-mermaid
+              apk add git python3 py3-pip
+              pip install mkdocs-material
+
               git clone https://github.com/khuedoan/homelab .
-              cd docs
+
               while true; do
-                mdbook-mermaid install .
-                mdbook build . --dest-dir /usr/share/nginx/html
+                mkdocs build --site-dir /usr/share/nginx/html
                 sleep 120
                 git fetch origin
                 git reset --hard origin/master
