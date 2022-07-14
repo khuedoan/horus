@@ -5,6 +5,9 @@ metadata:
   namespace: homelab-docs
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/custom-http-errors: '404'
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      error_page 404 https://homelab.khuedoan.com/404.html;
 spec:
   rules:
     - host: &host homelab.khuedoan.com
