@@ -34,7 +34,8 @@ spec:
               git clone https://github.com/khuedoan/homelab .
 
               while true; do
-                mkdocs build --site-dir /usr/share/nginx/html
+                mkdocs build
+                cp -RT ./site /usr/share/nginx/html
                 sleep 120
                 git fetch origin
                 git reset --hard origin/master
