@@ -32,7 +32,7 @@ resource "oci_core_security_list" "base" {
   ingress_security_rules {
     description = "SSH"
     protocol    = local.protocols["tcp"]
-    source      = "${chomp(data.http.public_ipv4.body)}/32"
+    source      = "${chomp(data.http.public_ipv4.response_body)}/32"
 
     tcp_options {
       source_port_range {
@@ -48,7 +48,7 @@ resource "oci_core_security_list" "base" {
   ingress_security_rules {
     description = "Kubernetes API"
     protocol    = local.protocols["tcp"]
-    source      = "${chomp(data.http.public_ipv4.body)}/32"
+    source      = "${chomp(data.http.public_ipv4.response_body)}/32"
 
     tcp_options {
       source_port_range {
