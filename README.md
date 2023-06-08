@@ -74,8 +74,13 @@ Remember to backup the following credential files (you can put them in a passwor
 
 Install the following packages:
 
-- `make`
-- `docker`
+- [Nix](https://nixos.org/download.html)
+
+That's it! Run the following command to open the Nix shell:
+
+```sh
+nix-shell
+```
 
 ### Provision
 

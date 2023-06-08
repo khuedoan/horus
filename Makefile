@@ -3,9 +3,6 @@
 
 default: infra cluster
 
-tools:
-	make -C tools
-
 infra:
 	make -C infra
 
