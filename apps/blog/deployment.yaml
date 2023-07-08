@@ -15,36 +15,8 @@ spec:
         app: blog
     spec:
       containers:
-        - name: nginx
-          image: nginx:latest
+        - name: blog
+          image: khuedoan/blog:rust
           ports:
             - name: http
-              containerPort: 80
-          volumeMounts:
-            - mountPath: /usr/share/nginx/html
-              name: static
-        - name: build
-          image: alpine:latest
-          workingDir: /usr/local/src
-          command:
-            - /bin/sh
-            - -c
-          args:
-            - |
-              apk add git hugo
-              git clone --branch hugo --recursive https://github.com/khuedoan/blog .
-              while true; do
-                hugo --minify --destination /usr/share/nginx/html
-                sleep 120
-                git pull
-              done
-          volumeMounts:
-            - mountPath: /usr/local/src
-              name: source
-            - mountPath: /usr/share/nginx/html
-              name: static
-      volumes:
-        - name: source
-          emptyDir: {}
-        - name: static
-          emptyDir: {}
+              containerPort: 3000
