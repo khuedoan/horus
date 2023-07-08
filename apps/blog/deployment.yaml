@@ -17,6 +17,9 @@ spec:
       containers:
         - name: nginx
           image: nginx:latest
+          ports:
+            - name: http
+              containerPort: 80
           volumeMounts:
             - mountPath: /usr/share/nginx/html
               name: static
@@ -29,7 +32,7 @@ spec:
           args:
             - |
               apk add git hugo
-              git clone --recursive https://github.com/khuedoan/blog .
+              git clone --branch hugo --recursive https://github.com/khuedoan/blog .
               while true; do
                 hugo --minify --destination /usr/share/nginx/html
                 sleep 120
