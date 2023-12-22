@@ -21,24 +21,21 @@ spec:
             - name: static
               mountPath: /usr/share/nginx/html
         - name: build
-          image: alpine:latest # TODO https://github.com/squidfunk/mkdocs-material/issues/2945
+          image: nixos/nix:latest
           workingDir: /usr/local/src
           command:
             - /bin/sh
             - -c
           args:
             - |
-              apk add git python3 py3-pip
-              pip install mkdocs-material
-
-              git clone https://github.com/khuedoan/homelab .
+              nix-shell -p git --command 'git clone https://github.com/khuedoan/homelab .'
 
               while true; do
-                mkdocs build
+                nix-shell -p python311Packages.mkdocs-material --command 'mkdocs build'
                 cp -RT ./site /usr/share/nginx/html
                 sleep 120
-                git fetch origin
-                git reset --hard origin/master
+                nix-shell -p git --command 'git fetch origin'
+                nix-shell -p git --command 'git reset --hard origin/master'
               done
           readinessProbe:
             httpGet:
