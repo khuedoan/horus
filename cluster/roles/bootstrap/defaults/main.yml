@@ -1,5 +1,5 @@
 namespace: argocd
-argocd_version: 4.9.4
+argocd_version: 5.51.6
 argocd_host: argocd-horus.khuedoan.com
 gitops_repo: https://github.com/khuedoan/horus
 gitops_revision: master
