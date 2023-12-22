@@ -21,6 +21,9 @@ minio:
       - secretName: minio-console-tls-certificate
         hosts:
           - *consoleHost
+  resources:
+    requests:
+      memory: 256Mi
   persistence:
     enabled: true
     size: 32Gi
