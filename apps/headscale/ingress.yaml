@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: headscale
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  rules:
+    - host: &host headscale.khuedoan.com
+      http:
+        paths:
+          - pathType: ImplementationSpecific
+            backend:
+              service:
+                name: headscale
+                port:
+                  name: http
+  tls:
+    - hosts:
+        - *host
+      secretName: headscale-tls-certificate
