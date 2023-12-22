@@ -6,7 +6,7 @@ minio:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-      - &host s3.horus.khuedoan.com
+      - &host s3-horus.khuedoan.com
     tls:
       - secretName: minio-tls-certificate
         hosts:
@@ -16,7 +16,7 @@ minio:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-      - &consoleHost minio.horus.khuedoan.com
+      - &consoleHost minio-horus.khuedoan.com
     tls:
       - secretName: minio-console-tls-certificate
         hosts:
