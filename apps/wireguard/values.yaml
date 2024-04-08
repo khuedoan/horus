@@ -1,0 +1,18 @@
+app-template:
+  controllers:
+    wireguard:
+      containers:
+        app:
+          image:
+            repository: lscr.io/linuxserver/wireguard
+            tag: latest
+          env:
+            PEERS: "desktop,laptop,desktop"
+  service:
+    wireguard:
+      controller: wireguard
+      type: LoadBalancer
+      ports:
+        http:
+          port: 51820
+          protocol: UDP

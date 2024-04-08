@@ -94,6 +94,22 @@ resource "oci_core_security_list" "base" {
   }
 
   ingress_security_rules {
+    description = "Wireguard"
+    protocol    = local.protocols["udp"]
+    source      = "0.0.0.0/0"
+
+    udp_options {
+      source_port_range {
+        min = 1
+        max = 65535
+      }
+
+      min = 51820
+      max = 51820
+    }
+  }
+
+  ingress_security_rules {
     description = "SMTP"
     protocol    = local.protocols["tcp"]
     source      = "0.0.0.0/0"

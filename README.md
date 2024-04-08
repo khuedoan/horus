@@ -92,6 +92,15 @@ make
 
 ## Usage
 
+### Connect to Wireguard
+
+```sh
+# kubectl exec to the wireguard pod
+/app/show-peer phone
+```
+
+### Other
+
 TBD
 
 ## Acknowledgments and References
