@@ -9,19 +9,23 @@
     wait: True
     kubeconfig: "{{ kubeconfig }}"
     values:
+      global:
+        domain: "{{ argocd_host }}"
+      configs:
+        params:
+          server.insecure: true
+          controller.diff.server.side: true
+        cm:
+          resource.ignoreResourceUpdatesEnabled: true
+          resource.customizations.ignoreResourceUpdates.all: |
+            jsonPointers:
+              - /status
       server:
-        extraArgs:
-          - --insecure
         ingress:
           enabled: true
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt-prod
-          hosts:
-            - "{{ argocd_host }}"
-          tls:
-            - secretName: argocd-tls-certificate
-              hosts:
-                - "{{ argocd_host }}"
+          tls: true
       dex:
         enabled: false
 
@@ -59,3 +63,5 @@
                 selfHeal: true
               syncOptions:
                 - CreateNamespace=true
+                - ApplyOutOfSyncOnly=true
+                - ServerSideApply=true
