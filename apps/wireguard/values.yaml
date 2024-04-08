@@ -8,6 +8,10 @@ app-template:
             tag: latest
           env:
             PEERS: "desktop,laptop,desktop"
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
   service:
     wireguard:
       controller: wireguard
