@@ -10,8 +10,9 @@ gha-runner-scale-set-controller:
 # Step 2:
 #   Select kubectl context
 #   kubectl create secret generic gha-runner-khuedoan --namespace=github-actions --from-literal=github_token='ghp_your_pat'
-gha-runner-khuedoan:
-  githubConfigUrl: https://github.com/khuedoan
+gha-runner-khuedoan-playground:
+  runnerScaleSetName: gha-runner-khuedoan-playground
+  githubConfigUrl: https://github.com/khuedoan/playground
   githubConfigSecret: gha-runner-khuedoan
   controllerServiceAccount:
     namespace: github-actions

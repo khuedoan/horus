@@ -8,4 +8,4 @@ dependencies:
   - name: gha-runner-scale-set
     version: 0.9.0
     repository: oci://ghcr.io/actions/actions-runner-controller-charts
-    alias: gha-runner-khuedoan
+    alias: gha-runner-khuedoan-playground
