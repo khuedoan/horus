@@ -1,0 +1,12 @@
+gha-runner-khuedoan:
+  githubConfigUrl: https://github.com/khuedoan
+  # Step 1:
+  #   https://github.com/settings/tokens/new
+  #   Note: GitHub Actions Runner
+  #   Expiration: 90 days
+  #   Scopes: admin:org
+  # Step 2: Save the token to password manager
+  # Step 2:
+  #   Select kubectl context
+  #   kubectl create secret generic gha-runner-khuedoan --namespace=github-actions --from-literal=github_token='ghp_your_pat'
+  githubConfigSecret: gha-runner-khuedoan
