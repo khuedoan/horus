@@ -7,7 +7,7 @@ app-template:
             repository: lscr.io/linuxserver/wireguard
             tag: latest
           env:
-            PEERS: "desktop,laptop,desktop"
+            PEERS: "desktop,laptop,phone"
           securityContext:
             capabilities:
               add:
@@ -20,3 +20,9 @@ app-template:
         http:
           port: 51820
           protocol: UDP
+  persistence:
+    data:
+      accessMode: ReadWriteOnce
+      size: 10Mi
+      globalMounts:
+        - path: /config
