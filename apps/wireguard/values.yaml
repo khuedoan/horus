@@ -7,7 +7,11 @@ app-template:
             repository: lscr.io/linuxserver/wireguard
             tag: latest
           env:
-            PEERS: "desktop,laptop,phone"
+            # Convention: <Name><Device>
+            PEERS: |
+              KhueDesktop
+              KhueLaptop
+              KhuePhone
           securityContext:
             capabilities:
               add:
