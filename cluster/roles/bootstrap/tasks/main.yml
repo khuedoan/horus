@@ -9,8 +9,6 @@
     wait: True
     kubeconfig: "{{ kubeconfig }}"
     values:
-      global:
-        domain: "{{ argocd_host }}"
       configs:
         params:
           server.insecure: true
@@ -20,12 +18,6 @@
           resource.customizations.ignoreResourceUpdates.all: |
             jsonPointers:
               - /status
-      server:
-        ingress:
-          enabled: true
-          annotations:
-            cert-manager.io/cluster-issuer: letsencrypt-prod
-          tls: true
       dex:
         enabled: false
 
