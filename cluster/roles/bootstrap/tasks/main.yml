@@ -18,70 +18,6 @@
           resource.customizations.ignoreResourceUpdates.all: |
             jsonPointers:
               - /status
-        cmp:
-          create: true
-          plugins:
-            argocd-vault-plugin:
-              discover:
-                filename: Chart.yaml
-              init:
-                command:
-                  - sh
-                  - -c
-                  - helm dependency build
-              generate:
-                command:
-                  - sh
-                  - -c
-                  - helm template --include-crds $ARGOCD_APP_NAME -n $ARGOCD_APP_NAMESPACE ${ARGOCD_ENV_HELM_ARGS} . | AVP_TYPE=sops SOPS_AGE_KEY_FILE=/etc/sops/age.agekey argocd-vault-plugin generate -
-              allowConcurrency: true
-      repoServer:
-        initContainers:
-          - name: download-tools
-            image: registry.access.redhat.com/ubi8
-            env:
-              - name: AVP_VERSION
-                value: 1.16.1
-            command: [sh, -c]
-            args:
-              - >-
-                curl -L https://github.com/argoproj-labs/argocd-vault-plugin/releases/download/v$(AVP_VERSION)/argocd-vault-plugin_$(AVP_VERSION)_linux_arm64 -o argocd-vault-plugin
-                && chmod +x argocd-vault-plugin
-                && mv argocd-vault-plugin /custom-tools/
-            volumeMounts:
-              - mountPath: /custom-tools
-                name: custom-tools
-        extraContainers:
-          - name: argocd-vault-plugin
-            command:
-              - /var/run/argocd/argocd-cmp-server
-            image: quay.io/argoproj/argocd:v2.10.1
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 999
-            volumeMounts:
-              - mountPath: /var/run/argocd
-                name: var-files
-              - mountPath: /home/argocd/cmp-server/plugins
-                name: plugins
-              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-                subPath: argocd-vault-plugin.yaml
-                name: cmp-plugin
-              - name: custom-tools
-                subPath: argocd-vault-plugin
-                mountPath: /usr/local/bin/argocd-vault-plugin
-              - mountPath: /etc/sops
-                name: sops
-                readOnly: true
-        volumes:
-          - name: custom-tools
-            emptyDir: {}
-          - name: sops
-            secret:
-              secretName: sops
-          - name: cmp-plugin
-            configMap:
-              name: argocd-cmp-cm
       dex:
         enabled: false
 
@@ -113,7 +49,6 @@
               repoURL: "{{ gitops_repo }}"
               path: "{{ '{{path}}' }}"
               targetRevision: "{{ gitops_revision }}"
-              plugin: {}
             syncPolicy:
               automated:
                 prune: true
