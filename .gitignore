@@ -4,3 +4,4 @@
 Chart.lock
 kubeconfig.yaml
 private.pem
+.secrets/
