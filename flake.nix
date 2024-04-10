@@ -12,7 +12,6 @@
       {
         devShells.default = mkShell {
           packages = [
-            age
             ansible
             ansible-lint
             git
@@ -24,7 +23,6 @@
             openssh
             pre-commit
             shellcheck
-            sops
             terraform
             yamllint
 
