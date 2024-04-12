@@ -1,0 +1,23 @@
+app-template:
+  controllers:
+    ollama:
+      containers:
+        app:
+          image:
+            repository: docker.io/ollama/ollama
+            tag: 0.1.29
+  service:
+    ollama:
+      controller: ollama
+      ports:
+        http:
+          port: 11434
+          protocol: HTTP
+  persistence:
+    data:
+      accessMode: ReadWriteOnce
+      size: 10Gi
+      advancedMounts:
+        ollama:
+          app:
+            - path: /root/.ollama
