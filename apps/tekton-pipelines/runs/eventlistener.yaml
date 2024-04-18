@@ -1,0 +1,145 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: platform
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: platform
+subjects:
+  - kind: ServiceAccount
+    name: platform
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-roles
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: platform
+subjects:
+  - kind: ServiceAccount
+    name: platform
+    namespace: tekton-runs
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-clusterroles
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: platform-build
+spec:
+  serviceAccountName: platform
+  triggers:
+    # TODO automate hook
+    # wget \
+    #   --quiet \
+    #   --output-document /dev/null \
+    #   --header='Content-Type:application/json' \
+    #   --post-data "{\"project\": \"example-service\", \"repository\": \"https://github.com/khuedoan/example-service\", \"revision\": \"master\"}" \
+    #   http://el-platform-build.tekton-runs:8080
+    - bindings:
+        - name: project
+          value: $(body.project)
+        - name: repository
+          value: $(body.repository)
+        - name: revision
+          value: $(body.revision)
+      template:
+        spec:
+          params:
+            - name: project
+            - name: repository
+            - name: revision
+          resourcetemplates:
+            - apiVersion: tekton.dev/v1
+              kind: PipelineRun
+              metadata:
+                generateName: platform-build-
+                annotations:
+                  argocd.argoproj.io/sync-options: Prune=false
+              spec:
+                params:
+                  - name: BUILDER_IMAGE
+                    value: docker.io/heroku/builder:22
+                  - name: APP_IMAGE
+                    # TODO better name?
+                    # the upstream registry that the images appear to come from does not actually have to exist or be reachable
+                    value: docker.io/$(tt.params.project):$(tt.params.revision)
+                  - name: SOURCE_URL
+                    value: $(tt.params.repository)
+                  - name: SOURCE_REVISION
+                    value: $(tt.params.revision)
+                pipelineSpec:
+                  tasks:
+                    - name: fetch-from-git
+                      taskRef:
+                        name: git-clone
+                      params:
+                        - name: url
+                          value: $(params.SOURCE_URL)
+                        - name: revision
+                          value: $(params.SOURCE_REVISION)
+                      workspaces:
+                        - name: output
+                          workspace: source-ws
+                    # TODO Buildpacks doens't support AMR64 yet, so the pipeline doens't work :(
+                    # https://github.com/buildpacks/lifecycle/issues/435
+                    - name: build-image
+                      runAfter:
+                        - fetch-from-git
+                      taskRef:
+                        name: buildpacks
+                      workspaces:
+                        - name: source
+                          workspace: source-ws
+                        # TODO add cache volume
+                        - name: cache
+                          workspace: cache-ws
+                      params:
+                        - name: BUILDER_IMAGE
+                          value: "$(params.BUILDER_IMAGE)"
+                        - name: APP_IMAGE
+                          value: "$(params.APP_IMAGE)"
+                    # TODO import image to the cluster directly
+                    # also need https://docs.k3s.io/installation/registry-mirror
+                    # - name: import-image
+                    #
+                    # apiVersion: v1
+                    # kind: Pod
+                    # metadata:
+                    #   name: ctrdebug
+                    #   namespace: default
+                    # spec:
+                    #   containers:
+                    #     - name: debugger
+                    #       image: alpine
+                    #       command:
+                    #         - chroot
+                    #         - /host
+                    #         - sh
+                    #         - -c
+                    #         - "k3s ctr image list"
+                    #       volumeMounts:
+                    #         - mountPath: /host
+                    #           name: host-root
+                    #   # hostIPC: true
+                    #   # hostNetwork: true
+                    #   # hostPID: true
+                    #   volumes:
+                    #     - name: host-root
+                    #       hostPath:
+                    #         path: /
+                workspaces:
+                  - name: source-ws
+                    volumeClaimTemplate:
+                      spec:
+                        accessModes:
+                          - ReadWriteOnce
+                        resources:
+                          requests:
+                            storage: 128Mi
