@@ -1,0 +1,7 @@
+apiVersion: v2
+name: kargo
+version: 0.0.0
+dependencies:
+  - name: kargo
+    version: 0.5.1
+    repository: oci://ghcr.io/akuity/kargo-charts
