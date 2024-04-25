@@ -1,13 +1,11 @@
 # Horus
 
-```diff
-! ⚠️ WORK IN PROGRESS
-```
+> [!IMPORTANT]
+> This project is designed to manage my offsite setup, which is specific to my
+> use cases, so it might not be directly useful to you. For a ready-to-use
+> solution, please refer to my [homelab project](https://github.com/khuedoan/homelab).
 
 > The name is from [Horus the Child, or Harpocrates](https://en.wikipedia.org/wiki/Harpocrates)
-
-Horus is an opinionated framework for self-hosting on a free or low-cost VPS in order to reclaim control over your data.
-This repository is intended to be forked in order to be customized to your specific needs.
 
 ## Features
 
