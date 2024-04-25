@@ -1,0 +1,15 @@
+app-template:
+  controllers:
+    example:
+      containers:
+        app:
+          image:
+            repository: docker.io/library/nginx
+            tag: placeholder
+  service:
+    example:
+      controller: example
+      ports:
+        http:
+          port: 80
+          protocol: HTTP
