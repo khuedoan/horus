@@ -19,11 +19,10 @@
             k9s
             kubectl
             neovim
-            oci-cli
             openssh
             pre-commit
             shellcheck
-            terraform
+            opentofu
             yamllint
 
             (python3.withPackages (p: with p; [

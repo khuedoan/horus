@@ -5,11 +5,8 @@ default: apply
 ~/.terraform.d/credentials.tfrc.json:
 	terraform login
 
-~/.oci:
-	oci setup config
-
-.terraform.lock.hcl: ~/.terraform.d/credentials.tfrc.json ~/.oci versions.tf modules
-	terraform init
+.terraform.lock.hcl: ~/.terraform.d/credentials.tfrc.json versions.tf modules
+	tofu init
 	touch .terraform.lock.hcl
 
 terraform.tfvars:
@@ -17,7 +14,7 @@ terraform.tfvars:
 	nvim terraform.tfvars
 
 plan: terraform.tfvars .terraform.lock.hcl
-	terraform plan
+	tofu plan
 
 apply: terraform.tfvars .terraform.lock.hcl
-	terraform apply
+	tofu apply

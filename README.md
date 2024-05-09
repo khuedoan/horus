@@ -43,7 +43,6 @@ Configuration files:
 <summary>Terraform Cloud</summary>
 
 - Create a Terraform Cloud account at <https://app.terraform.io>
-- Run `terraform login` and follow the instruction
 
 </details>
 
@@ -67,8 +66,6 @@ If you see a warning like this, try to avoid those regions:
 Remember to backup the following credential files (you can put them in a password manager):
 
 - `~/.terraform.d/credentials.tfrc.json`
-- `~/.oci/config`
-- `~/.oci/private.pem`
 
 Install the following packages:
 

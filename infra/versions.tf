@@ -1,7 +1,8 @@
 terraform {
-  required_version = "~> 1.5.0"
+  required_version = "~> 1.5"
 
   backend "remote" {
+    hostname     = "app.terraform.io"
     organization = "khuedoan"
 
     workspaces {
@@ -12,7 +13,7 @@ terraform {
   required_providers {
     oci = {
       source  = "hashicorp/oci"
-      version = "~> 5.41.0"
+      version = "~> 5.0"
     }
   }
 }
