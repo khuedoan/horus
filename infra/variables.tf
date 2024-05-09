@@ -1,6 +1,12 @@
-variable "tenancy_id" {
-  description = "The ID of the tenancy (same with the root compartment ID)"
-  type        = string
+variable "oracle_cloud" {
+  description = "Oracle Cloud configuration"
+  type = object({
+    tenancy_ocid = string
+    user_ocid    = string
+    fingerprint  = string
+    private_key  = string
+    region       = string
+  })
 }
 
 variable "compartment_name" {

@@ -1,6 +1,6 @@
 module "base" {
   source                  = "./modules/base"
-  tenancy_id              = var.tenancy_id
+  tenancy_id              = var.oracle_cloud.tenancy_ocid
   compartment_name        = var.compartment_name
   compartment_description = var.compartment_description
 }
