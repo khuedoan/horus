@@ -8,3 +8,6 @@ infra:
 
 cluster:
 	make -C cluster
+
+system:
+	make -C system

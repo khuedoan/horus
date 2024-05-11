@@ -20,9 +20,10 @@
             kubectl
             neovim
             openssh
+            opentofu
             pre-commit
             shellcheck
-            opentofu
+            timoni
             yamllint
 
             (python3.withPackages (p: with p; [
