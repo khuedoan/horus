@@ -1,8 +1,6 @@
 {
-  description = "Horus";
-
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -20,9 +18,9 @@
             kubectl
             neovim
             openssh
+            opentofu
             pre-commit
             shellcheck
-            opentofu
             yamllint
 
             (python3.withPackages (p: with p; [
