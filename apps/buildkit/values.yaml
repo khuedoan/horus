@@ -1,0 +1,17 @@
+app-template:
+  controllers:
+    main:
+      containers:
+        main:
+          image:
+            repository: docker.io/moby/buildkit
+            tag: latest
+          args:
+            - --addr=tcp://000:1234
+  service:
+    main:
+      controller: main
+      ports:
+        http:
+          port: 1234
+          protocol: TCP
