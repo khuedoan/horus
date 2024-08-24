@@ -5,9 +5,13 @@ app-template:
         main:
           image:
             repository: docker.io/moby/buildkit
-            tag: latest
+            tag: rootless
           args:
             - --addr=tcp://0.0.0.0:1234
+            - --oci-worker-no-process-sandbox
+          securityContext:
+            appArmorProfile:
+              type: Unconfined
   service:
     main:
       controller: main
