@@ -7,7 +7,7 @@ app-template:
             repository: docker.io/moby/buildkit
             tag: latest
           args:
-            - --addr=tcp://000:1234
+            - --addr=tcp://0.0.0.0:1234
   service:
     main:
       controller: main
