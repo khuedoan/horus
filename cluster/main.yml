@@ -7,4 +7,3 @@
 - hosts: localhost
   roles:
     - role: bootstrap
-    - role: secrets
