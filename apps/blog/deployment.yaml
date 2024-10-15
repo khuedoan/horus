@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: blog
-          image: khuedoan/blog:c725e50
+          image: khuedoan/blog:004ba95
           ports:
             - name: http
               containerPort: 3000
