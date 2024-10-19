@@ -1,0 +1,33 @@
+app-template:
+  controllers:
+    micropaas:
+      containers:
+        app:
+          image:
+            repository: docker.io/khuedoan/micropaas
+            tag: latest
+          env:
+            # TODO gen key in SOPS?
+            SOFT_SERVE_INITIAL_ADMIN_KEYS: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN5ue4np7cF34f6dwqH1262fPjkowHQ8irfjVC156PCG"
+  service:
+    micropaas:
+      controller: micropaas
+      ports:
+        ssh:
+          port: 22
+          protocol: TCP
+  persistence:
+    repos:
+      accessMode: ReadWriteOnce
+      size: 10Gi
+      advancedMounts:
+        micropaas:
+          app:
+            - path: /var/lib/micropaas/repos
+    nix:
+      accessMode: ReadWriteOnce
+      size: 100Gi
+      advancedMounts:
+        micropaas:
+          app:
+            - path: /nix
