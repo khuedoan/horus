@@ -24,10 +24,11 @@ app-template:
         micropaas:
           app:
             - path: /var/lib/micropaas/repos
-    nix:
-      accessMode: ReadWriteOnce
-      size: 100Gi
-      advancedMounts:
-        micropaas:
-          app:
-            - path: /nix
+    # TODO enable nix cache volume
+    # nix:
+    #   accessMode: ReadWriteOnce
+    #   size: 100Gi
+    #   advancedMounts:
+    #     micropaas:
+    #       app:
+    #         - path: /nix
