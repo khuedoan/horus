@@ -9,6 +9,13 @@ app-template:
           env:
             # TODO gen key in SOPS?
             SOFT_SERVE_INITIAL_ADMIN_KEYS: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN5ue4np7cF34f6dwqH1262fPjkowHQ8irfjVC156PCG"
+        docker:
+          image:
+            repository: docker.io/library/docker
+            tag: 27-dind-rootless
+          command:
+            - dockerd
+            - --host=tcp://127.0.0.1:2375
   service:
     micropaas:
       controller: micropaas
