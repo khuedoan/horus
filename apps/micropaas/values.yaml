@@ -7,15 +7,18 @@ app-template:
             repository: docker.io/khuedoan/micropaas
             tag: latest
           env:
+            DOCKER_HOST: tcp://127.0.0.1:2375
             # TODO gen key in SOPS?
             SOFT_SERVE_INITIAL_ADMIN_KEYS: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN5ue4np7cF34f6dwqH1262fPjkowHQ8irfjVC156PCG"
         docker:
           image:
             repository: docker.io/library/docker
-            tag: 27-dind-rootless
+            tag: 27-dind
           command:
             - dockerd
             - --host=tcp://127.0.0.1:2375
+          securityContext:
+            privileged: true
   service:
     micropaas:
       controller: micropaas
