@@ -17,13 +17,16 @@ app-template:
           port: 22
           protocol: TCP
   persistence:
-    repos:
+    data:
       accessMode: ReadWriteOnce
       size: 10Gi
       advancedMounts:
         micropaas:
           app:
             - path: /var/lib/micropaas/repos
+              subPath: repos
+            - path: /var/lib/micropaas/ssh
+              subPath: ssh
     # TODO enable nix cache volume
     # nix:
     #   accessMode: ReadWriteOnce
