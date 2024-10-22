@@ -10,6 +10,7 @@ app-template:
             DOCKER_HOST: tcp://127.0.0.1:2375
             # TODO gen key in SOPS?
             SOFT_SERVE_INITIAL_ADMIN_KEYS: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN5ue4np7cF34f6dwqH1262fPjkowHQ8irfjVC156PCG"
+            REGISTRY_HOST: docker.io/khuedoan
         docker:
           image:
             repository: docker.io/library/docker
