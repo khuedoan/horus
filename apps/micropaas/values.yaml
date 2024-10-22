@@ -62,14 +62,11 @@ app-template:
               subPath: repos
             - path: /var/lib/micropaas/ssh
               subPath: ssh
-    web:
-      type: emptyDir
-      advancedMounts:
-        micropaas:
-          app:
             - path: /var/lib/micropaas/web
+              subPath: web
           nginx:
             - path: /usr/share/nginx/html
+              subPath: web
     # TODO enable nix cache volume
     # nix:
     #   accessMode: ReadWriteOnce
