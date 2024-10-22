@@ -19,13 +19,37 @@ app-template:
             - --host=tcp://127.0.0.1:2375
           securityContext:
             privileged: true
+        nginx:
+          image:
+            repository: docker.io/library/nginx
+            tag: latest
   service:
     micropaas:
       controller: micropaas
       ports:
         ssh:
-          port: 22
+          port: 2222
           protocol: TCP
+        web:
+          port: 80
+          protocol: HTTP
+  ingress:
+    main:
+      enabled: true
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+      hosts:
+        - host: &host code.khuedoan.com
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                name: micropaas
+                port: 80
+      tls:
+        - hosts:
+            - *host
+          secretName: micropaas-tls-certificate
   persistence:
     data:
       accessMode: ReadWriteOnce
@@ -37,6 +61,14 @@ app-template:
               subPath: repos
             - path: /var/lib/micropaas/ssh
               subPath: ssh
+    web:
+      type: emptyDir
+      advancedMounts:
+        micropaas:
+          app:
+            - path: /var/lib/micropaas/web
+          nginx:
+            - path: /usr/share/nginx/html
     # TODO enable nix cache volume
     # nix:
     #   accessMode: ReadWriteOnce
