@@ -1,8 +1,8 @@
 app-template:
   controllers:
-    micropaas:
+    main:
       containers:
-        app:
+        main:
           image:
             repository: docker.io/khuedoan/micropaas
             tag: latest
@@ -25,8 +25,8 @@ app-template:
             repository: docker.io/library/nginx
             tag: latest
   service:
-    micropaas:
-      controller: micropaas
+    main:
+      controller: main
       ports:
         ssh:
           port: 2222
@@ -45,7 +45,7 @@ app-template:
             - path: /
               pathType: Prefix
               service:
-                name: micropaas
+                identifier: main
                 port: 80
       tls:
         - hosts:
@@ -56,8 +56,8 @@ app-template:
       accessMode: ReadWriteOnce
       size: 10Gi
       advancedMounts:
-        micropaas:
-          app:
+        main:
+          main:
             - path: /var/lib/micropaas/repos
               subPath: repos
             - path: /var/lib/micropaas/ssh
@@ -67,11 +67,13 @@ app-template:
           nginx:
             - path: /usr/share/nginx/html
               subPath: web
-    # TODO enable nix cache volume
-    # nix:
-    #   accessMode: ReadWriteOnce
-    #   size: 100Gi
-    #   advancedMounts:
-    #     micropaas:
-    #       app:
-    #         - path: /nix
+    cache:
+      accessMode: ReadWriteOnce
+      size: 100Gi
+      advancedMounts:
+        main:
+          main:
+            - path: /var/cache/micropaas
+              subPath: micropaas
+            # # TODO enable nix cache volume
+            # - path: /nix
