@@ -11,6 +11,7 @@ app-template:
             # TODO gen key in SOPS?
             SOFT_SERVE_INITIAL_ADMIN_KEYS: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN5ue4np7cF34f6dwqH1262fPjkowHQ8irfjVC156PCG"
             REGISTRY_HOST: docker.io/khuedoan
+            GITOPS_REPO: horus
             GIT_USER_NAME: Khue's Bot
             GIT_USER_EMAIL: mail@khuedoan.com
         docker:
