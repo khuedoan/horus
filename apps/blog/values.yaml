@@ -2,6 +2,7 @@ app-template:
   controllers:
     main:
       replicas: 2
+      strategy: RollingUpdate
       containers:
         main:
           image:
