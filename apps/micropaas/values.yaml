@@ -64,6 +64,9 @@ app-template:
               subPath: ssh
             - path: /var/lib/micropaas/web
               subPath: web
+            # TODO avoid manual docker login?
+            - path: /root/.docker
+              subPath: docker-config
           nginx:
             - path: /usr/share/nginx/html
               subPath: web
