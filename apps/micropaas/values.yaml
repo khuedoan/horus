@@ -31,6 +31,9 @@ app-template:
         ssh:
           port: 2222
           protocol: TCP
+        http:
+          port: 8080
+          protocol: TCP
         web:
           port: 80
           protocol: HTTP
