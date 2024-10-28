@@ -94,10 +94,10 @@ Desktop:
 ```sh
 # kubectl exec to the wireguard pod
 cat /config/peer_desktop/peer_desktop.conf
-# Copy the content to wg0.conf
+# Copy the content to horus.conf
 # Then import the config file, for example on Linux using NetworkManager
-nmcli connection import type wireguard file wg0.conf
-nmcli connection up wg0
+nmcli connection import type wireguard file horus.conf
+nmcli connection up horus
 ```
 
 Mobile:
