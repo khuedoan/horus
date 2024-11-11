@@ -7,7 +7,7 @@ app-template:
         main:
           image:
             repository: docker.io/khuedoan/blog
-            tag: ed99a346005f1afa7f1613f692a28ce35371b662
+            tag: be342a910c60725bd910f73ac6a196587a340a83
   service:
     main:
       controller: main
