@@ -1,0 +1,28 @@
+- name: Apply namespace
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: global-secrets
+        annotations:
+          app.kubernetes.io/managed-by: ansible
+
+- name: Apply secrets
+  kubernetes.core.k8s:
+    kubeconfig: "{{ kubeconfig }}"
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: "{{ item.name }}"
+        namespace: global-secrets
+        annotations:
+          app.kubernetes.io/managed-by: ansible
+      type: Opaque
+      stringData: "{{ item.stringData }}"
+  loop:
+    - name: external
+      stringData:
+        wireguard-private-key: "{{ wireguard_private_key }}"
