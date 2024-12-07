@@ -20,14 +20,6 @@ Oracle Cloud was chosen due to their very generous free tier.
 | Oracle Cloud    | `VM.Standard.A1.Flex` (ARM) | 4 cores, 24GB mem | Free (yes, you read it right!) |
 | Oracle Cloud    | Block Storage               | 200GB             | Free                           |
 
-### Applications
-
-- [x] Hugo blog
-- [x] Mail server (receive only, [outbound SMTP is blocked by default](https://docs.oracle.com/en-us/iaas/releasenotes/changes/f7e95770-9844-43db-916c-6ccbaf2cfe24/), you must upgrade to a paid account to open a service limits request to request an exemption)
-- [ ] Web analytics
-- [ ] Wireguard VPN server
-- [ ] TBD
-
 ## Get started
 
 ### Prerequisites
@@ -63,10 +55,6 @@ If you see a warning like this, try to avoid those regions:
 
 </details>
 
-Remember to backup the following credential files (you can put them in a password manager):
-
-- `~/.terraform.d/credentials.tfrc.json`
-
 Install the following packages:
 
 - [Nix](https://nixos.org/download.html)
@@ -74,7 +62,7 @@ Install the following packages:
 That's it! Run the following command to open the Nix shell:
 
 ```sh
-nix-shell
+nix develop
 ```
 
 ### Provision
@@ -84,33 +72,6 @@ Build the infrastructure:
 ```sh
 make
 ```
-
-## Usage
-
-### Connect to Wireguard
-
-Desktop:
-
-```sh
-# kubectl exec to the wireguard pod
-cat /config/peer_desktop/peer_desktop.conf
-# Copy the content to horus.conf
-# Then import the config file, for example on Linux using NetworkManager
-nmcli connection import type wireguard file horus.conf
-nmcli connection up horus
-```
-
-Mobile:
-
-```sh
-# kubectl exec to the wireguard pod
-/app/show-peer phone
-# Then scan the QR code
-```
-
-### Other
-
-TBD
 
 ## Acknowledgments and References
 
