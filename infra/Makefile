@@ -3,7 +3,8 @@
 default: apply
 
 ~/.terraform.d/credentials.tfrc.json:
-	terraform login
+	# https://search.opentofu.org/provider/opentofu/tfe
+	tofu login app.terraform.io
 
 .terraform.lock.hcl: ~/.terraform.d/credentials.tfrc.json versions.tf modules
 	tofu init
