@@ -5,7 +5,7 @@ app-template:
         main:
           image:
             repository: docker.io/khuedoan/micropaas
-            tag: bf0a82e70aac654779e0565131397f71bbf7f474
+            tag: e123535e7c1b9443727bdb5b13d8b76218b43332
           env:
             DOCKER_HOST: tcp://127.0.0.1:2375
             # TODO gen key in SOPS?
