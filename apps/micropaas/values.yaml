@@ -66,6 +66,8 @@ app-template:
           main:
           - path: /var/lib/micropaas/repos
             subPath: repos
+          - path: /var/lib/micropaas/db
+            subPath: db
           - path: /var/lib/micropaas/ssh
             subPath: ssh
           - path: /var/lib/micropaas/web
