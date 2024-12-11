@@ -14,6 +14,7 @@ app-template:
             GITOPS_REPO: horus
             GIT_USER_NAME: Khue's Bot
             GIT_USER_EMAIL: mail@khuedoan.com
+            ARGOCD_WEBHOOK_ENDPOINT: http://argocd-server.argocd.svc.cluster.local/api/webhook
         docker:
           image:
             repository: docker.io/library/docker
