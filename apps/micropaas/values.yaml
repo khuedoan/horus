@@ -5,11 +5,10 @@ app-template:
         main:
           image:
             repository: docker.io/khuedoan/micropaas
-            tag: 0f0cc411e5eb1d4b638bb475e939b08bf5247dd0
+            tag: 557d32871e74299a0c59855ec4cd3f3b0df5cd9f
           env:
             DOCKER_HOST: tcp://127.0.0.1:2375
-            # TODO gen key in SOPS?
-            SOFT_SERVE_INITIAL_ADMIN_KEYS: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN5ue4np7cF34f6dwqH1262fPjkowHQ8irfjVC156PCG"
+            SOFT_SERVE_INITIAL_ADMIN_KEYS: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN5ue4np7cF34f6dwqH1262fPjkowHQ8irfjVC156PCG
             REGISTRY_HOST: docker.io/khuedoan
             GITOPS_REPO: horus
             GIT_USER_NAME: Khue's Bot
@@ -20,8 +19,8 @@ app-template:
             repository: docker.io/library/docker
             tag: 27-dind
           command:
-            - dockerd
-            - --host=tcp://127.0.0.1:2375
+          - dockerd
+          - --host=tcp://127.0.0.1:2375
           securityContext:
             privileged: true
         nginx:
@@ -47,17 +46,17 @@ app-template:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
       hosts:
-        - host: &host code.khuedoan.com
-          paths:
-            - path: /
-              pathType: Prefix
-              service:
-                identifier: main
-                port: 80
+      - host: code.khuedoan.com
+        paths:
+        - path: /
+          pathType: Prefix
+          service:
+            identifier: main
+            port: 80
       tls:
-        - hosts:
-            - *host
-          secretName: micropaas-tls-certificate
+      - hosts:
+        - code.khuedoan.com
+        secretName: micropaas-tls-certificate
   persistence:
     data:
       accessMode: ReadWriteOnce
@@ -65,25 +64,22 @@ app-template:
       advancedMounts:
         main:
           main:
-            - path: /var/lib/micropaas/repos
-              subPath: repos
-            - path: /var/lib/micropaas/ssh
-              subPath: ssh
-            - path: /var/lib/micropaas/web
-              subPath: web
-            # TODO avoid manual docker login?
-            - path: /root/.docker
-              subPath: docker-config
+          - path: /var/lib/micropaas/repos
+            subPath: repos
+          - path: /var/lib/micropaas/ssh
+            subPath: ssh
+          - path: /var/lib/micropaas/web
+            subPath: web
+          - path: /root/.docker
+            subPath: docker-config
           nginx:
-            - path: /usr/share/nginx/html
-              subPath: web
+          - path: /usr/share/nginx/html
+            subPath: web
     cache:
       accessMode: ReadWriteOnce
       size: 100Gi
       advancedMounts:
         main:
           main:
-            - path: /var/cache/micropaas
-              subPath: micropaas
-          # # TODO enable nix cache volume
-          # - path: /nix
+          - path: /var/cache/micropaas
+            subPath: micropaas
