@@ -5,7 +5,7 @@ app-template:
         main:
           image:
             repository: docker.io/khuedoan/micropaas
-            tag: b9e768175f776091bd6fd6f378968846c8ef9a6c
+            tag: 77ba496e672d8e34b3ab97b3a014ef10016a92b9
           env:
             DOCKER_HOST: tcp://127.0.0.1:2375
             SOFT_SERVE_INITIAL_ADMIN_KEYS: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN5ue4np7cF34f6dwqH1262fPjkowHQ8irfjVC156PCG
