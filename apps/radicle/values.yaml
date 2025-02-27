@@ -28,8 +28,15 @@ app-template:
             tag: latest
           env:
             RAD_HOME: /var/lib/radicle
-          command:
-            - radicle-httpd
+          command: [
+            "radicle-httpd",
+            "--alias", "blog", "rad:zGtLfDcgmBqBUya1qTpzRzpBpoHx",
+            "--alias", "dotfiles", "rad:z38YiLVx2e4JC5Xo2qMNDGoMPHE7U",
+            "--alias", "homelab", "rad:z3pkjF1uaT1cZBrB8tBcCDtXGnrLQ",
+            "--alias", "micropaas", "rad:zdhXFweZXNiVmb6YPV9SFeA5xeZC",
+            "--alias", "nixos-setup", "rad:z3KcHMAjkkxzys1QyXYgFa4Rfik4D",
+            "--alias", "webhook-transformer", "rad:z3Leck2yN7a8R2NpYtikkmAB8vA22",
+          ]
     explorer:
       containers:
         main:
