@@ -65,7 +65,7 @@ app-template:
           service:
             identifier: server
             port: 8080
-      - host: code.horus.khuedoan.com
+      - host: code.khuedoan.com
         paths:
         - path: /
           pathType: Prefix
@@ -75,7 +75,7 @@ app-template:
       tls:
       - hosts:
         - radicle.horus.khuedoan.com
-        - code.horus.khuedoan.com
+        - code.khuedoan.com
         secretName: radicle-tls-certificate
   persistence:
     data:

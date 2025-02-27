@@ -46,7 +46,7 @@ app-template:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
       hosts:
-      - host: code.khuedoan.com
+      - host: micropaas.khuedoan.com
         paths:
         - path: /
           pathType: Prefix
@@ -55,7 +55,7 @@ app-template:
             port: 80
       tls:
       - hosts:
-        - code.khuedoan.com
+        - micropaas.khuedoan.com
         secretName: micropaas-tls-certificate
   persistence:
     data:
