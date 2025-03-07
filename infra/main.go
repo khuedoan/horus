@@ -2,44 +2,24 @@ package main
 
 import (
 	"github.com/pulumi/pulumi-oci/sdk/go/oci/identity"
-	"github.com/pulumi/pulumi-oci/sdk/go/oci/objectstorage"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 )
 
 func main() {
 	pulumi.Run(func(ctx *pulumi.Context) error {
-
-		myCompartment, err := identity.NewCompartment(ctx, "my-compartment", &identity.CompartmentArgs{
-			Name:         pulumi.String("my-compartment"),
-			Description:  pulumi.String("My description text"),
-			EnableDelete: pulumi.Bool(true),
+		ociConfig := config.New(ctx, "oci")
+		tenancyOcid := ociConfig.Require("tenancyOcid")
+		compartment, err := identity.NewCompartment(ctx, "horus", &identity.CompartmentArgs{
+			CompartmentId: pulumi.String(tenancyOcid),
+			Name:          pulumi.String("horus"),
+			Description:   pulumi.String("Horus Project"),
 		})
 		if err != nil {
 			return err
 		}
 
-		myNamespace := pulumi.All(myCompartment.CompartmentId).ApplyT(
-			func(args []interface{}) (string, error) {
-				namespace, err := objectstorage.GetNamespace(ctx, &objectstorage.GetNamespaceArgs{
-					CompartmentId: pulumi.StringRef(args[0].(string)),
-				})
-				if err != nil {
-					return "", err
-				}
-				return namespace.Namespace, nil
-			},
-		).(pulumi.StringOutput)
-
-		myBucket, err := objectstorage.NewBucket(ctx, "my-bucket", &objectstorage.BucketArgs{
-			Name:          pulumi.String("my-bucket"),
-			Namespace:     myNamespace,
-			CompartmentId: myCompartment.ID(),
-		})
-		if err != nil {
-			return err
-		}
-
-		ctx.Export("name", myBucket.Name)
+		ctx.Export("compartment", compartment.Name)
 
 		return nil
 	})
