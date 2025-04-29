@@ -8,3 +8,6 @@ infra:
 
 cluster:
 	make -C cluster
+
+update:
+	nix flake update
