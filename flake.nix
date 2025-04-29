@@ -14,6 +14,7 @@
             ansible-lint
             git
             gnumake
+            go
             k9s
             kubectl
             neovim
