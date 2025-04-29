@@ -1,4 +1,6 @@
 zot:
+  image:
+    repository: ghcr.io/project-zot/zot
   persistence: true
   pvc:
     create: true
