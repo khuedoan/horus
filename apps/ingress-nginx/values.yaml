@@ -1,0 +1,4 @@
+ingress-nginx:
+  controller:
+    admissionWebhooks:
+      timeoutSeconds: 30
