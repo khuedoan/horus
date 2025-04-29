@@ -8,8 +8,8 @@ default: infra cluster
 	tofu login app.terraform.io
 
 infra/terraform.tfvars:
-       cp infra/terraform.tfvars.example infra/terraform.tfvars
-       nvim infra/terraform.tfvars
+	cp infra/terraform.tfvars.example infra/terraform.tfvars
+	nvim infra/terraform.tfvars
 
 infra: ~/.terraform.d/credentials.tfrc.json infra/terraform.tfvars
 	cd infra \
