@@ -1,0 +1,9 @@
+istiod:
+  profile: ambient
+cni:
+  profile: ambient
+  global:
+    platform: k3s
+ingress:
+  labels:
+    istio: ingressgateway
