@@ -4,3 +4,9 @@ cni:
   profile: ambient
   global:
     platform: k3s
+ingress:
+  name: ingress
+  service:
+    type: ClusterIP
+  labels:
+    istio: ingressgateway
