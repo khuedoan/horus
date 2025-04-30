@@ -1,4 +1,7 @@
 app-template:
+  defaultPodOptions:
+    labels:
+      "istio.io/dataplane-mode": "ambient"
   controllers:
     main:
       replicas: 2
