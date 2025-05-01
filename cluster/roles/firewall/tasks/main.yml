@@ -1,9 +1,0 @@
-- name: Iptables flush filter
-  ansible.builtin.iptables:
-    flush: yes
-
-- name: Disable netfilter service
-  systemd:
-    name: netfilter-persistent
-    enabled: false
-    state: stopped

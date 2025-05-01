@@ -1,7 +1,7 @@
 - hosts: all
   become: yes
   roles:
-    - role: firewall
+    - role: prerequisites
     - role: data
     - role: k3s
 - hosts: localhost
