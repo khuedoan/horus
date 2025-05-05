@@ -1,0 +1,65 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: dex
+spec:
+  destination:
+    name: in-cluster
+    namespace: dex
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+  source:
+    repoURL: https://charts.dexidp.io
+    chart: dex
+    targetRevision: 0.23.0
+    helm:
+      valuesObject:
+        config:
+          issuer: https://dex.horus.khuedoan.com
+          storage:
+            type: kubernetes
+            config:
+              inCluster: true
+          oauth2:
+            passwordConnector: local
+            skipApprovalScreen: true
+          enablePasswordDB: true
+          # TODO automate this
+          # staticPasswords:
+          #   - username: todo
+          #     email: todo@example.com
+          #     userID:   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          #     # TODO echo todo | htpasswd -BinC 10 admin | cut -d: -f2
+          #     hash: "$xx$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          staticClients:
+            - id: kiali
+              name: Kiali
+              redirectURIs:
+                - 'https://kiali.horus.khuedoan.com'
+              secretEnv: KIALI_CLIENT_SECRET
+        envFrom:
+          - secretRef:
+              name: dex-secrets
+        ingress:
+          enabled: true
+          className: nginx
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-prod
+          hosts:
+            - host: dex.horus.khuedoan.com
+              paths:
+                - path: /
+                  pathType: ImplementationSpecific
+          tls:
+            - secretName: dex-tls-certificate
+              hosts:
+                - dex.horus.khuedoan.com

@@ -24,7 +24,11 @@ spec:
     helm:
       valuesObject:
         auth:
-          strategy: anonymous
+          strategy: openid
+          openid:
+            client_id: kiali
+            issuer_uri: https://dex.horus.khuedoan.com
+            disable_rbac: true
         external_services:
           prometheus:
             url: http://monitoring-system-kube-pro-prometheus.monitoring-system:9090

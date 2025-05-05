@@ -1,13 +1,17 @@
-- name: Apply namespace
+- name: Apply namespaces
   kubernetes.core.k8s:
     kubeconfig: "{{ kubeconfig }}"
     definition:
       apiVersion: v1
       kind: Namespace
       metadata:
-        name: global-secrets
+        name: "{{ item }}"
         annotations:
           app.kubernetes.io/managed-by: ansible
+  loop:
+    - global-secrets
+    - istio-system
+    - dex
 
 - name: Apply secrets
   kubernetes.core.k8s:
@@ -17,12 +21,21 @@
       kind: Secret
       metadata:
         name: "{{ item.name }}"
-        namespace: global-secrets
+        namespace: "{{ item.namespace }}"
         annotations:
           app.kubernetes.io/managed-by: ansible
       type: Opaque
       stringData: "{{ item.stringData }}"
   loop:
     - name: external
+      namespace: global-secrets
       stringData:
         wireguard-private-key: "{{ wireguard_private_key }}"
+    - name: dex-secrets
+      namespace: dex
+      stringData:
+        KIALI_CLIENT_SECRET: "{{ dex_kiali_client_secret }}"
+    - name: kiali
+      namespace: istio-system
+      stringData:
+        oidc-secret: "{{ dex_kiali_client_secret }}"
