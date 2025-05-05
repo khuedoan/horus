@@ -1,5 +1,5 @@
 .POSIX:
-.PHONY: default infra cluster edit-vault test update
+.PHONY: default infra cluster system platform edit-vault test update
 
 default: infra cluster
 
@@ -22,11 +22,20 @@ cluster:
 		--ask-vault-pass \
 		main.yml
 
+system:
+	kubectl apply --namespace argocd --filename system/
+
+platform:
+	kubectl apply --namespace argocd --filename platform/
+
 edit-vault:
 	ansible-vault edit ./cluster/roles/global-secrets/vars/main.yml
 
 test:
 	cd test/e2e && go test
+
+fmt:
+	cd test/e2e && go fmt ./...
 
 update:
 	nix flake update

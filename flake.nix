@@ -12,6 +12,7 @@
           packages = [
             ansible
             ansible-lint
+            cue
             git
             gnumake
             go
@@ -22,6 +23,7 @@
             opentofu
             pre-commit
             shellcheck
+            timoni
             wireguard-tools
             yamllint
 
