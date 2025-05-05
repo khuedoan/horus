@@ -1,5 +1,5 @@
 namespace: argocd
-argocd_version: 7.6.12
+argocd_version: 7.9.0
 # For bootstrap
 # gitops_repo: https://github.com/khuedoan/horus
 gitops_repo: http://micropaas.micropaas.svc.cluster.local:8080/horus

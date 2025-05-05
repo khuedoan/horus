@@ -14,6 +14,7 @@
           server.insecure: true
           controller.diff.server.side: true
         cm:
+          timeout.reconciliation.jitter: 60s # TODO will be default on ArgoCD 3.0
           resource.ignoreResourceUpdatesEnabled: true
           resource.customizations.ignoreResourceUpdates.all: |
             jsonPointers:

@@ -1,7 +1,10 @@
 .POSIX:
 .PHONY: default infra cluster system platform edit-vault test update
 
-default: infra cluster
+# TODO multiple clusters
+export KUBECONFIG = $(shell pwd)/cluster/kubeconfig.yaml
+
+default: infra cluster system platform
 
 ~/.terraform.d/credentials.tfrc.json:
 	# https://search.opentofu.org/provider/opentofu/tfe
