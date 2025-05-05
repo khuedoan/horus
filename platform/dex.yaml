@@ -46,6 +46,11 @@ spec:
               redirectURIs:
                 - 'https://kiali.horus.khuedoan.com'
               secretEnv: KIALI_CLIENT_SECRET
+            - id: temporal
+              name: Temporal
+              redirectURIs:
+                - 'https://temporal.horus.khuedoan.com/auth/sso/callback'
+              secretEnv: TEMPORAL_CLIENT_SECRET
         envFrom:
           - secretRef:
               name: dex-secrets

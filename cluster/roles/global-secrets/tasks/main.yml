@@ -12,6 +12,7 @@
     - global-secrets
     - istio-system
     - dex
+    - temporal
 
 - name: Apply secrets
   kubernetes.core.k8s:
@@ -35,7 +36,12 @@
       namespace: dex
       stringData:
         KIALI_CLIENT_SECRET: "{{ dex_kiali_client_secret }}"
+        TEMPORAL_CLIENT_SECRET: "{{ dex_temporal_client_secret }}"
     - name: kiali
       namespace: istio-system
       stringData:
         oidc-secret: "{{ dex_kiali_client_secret }}"
+    - name: temporal-web
+      namespace: temporal
+      stringData:
+        TEMPORAL_AUTH_CLIENT_SECRET: "{{ dex_temporal_client_secret }}"
