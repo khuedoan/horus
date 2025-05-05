@@ -1,6 +1,15 @@
 zot:
   image:
     repository: ghcr.io/project-zot/zot
+  podLabels:
+    istio.io/dataplane-mode: ambient
+  service:
+    type: NodePort
+    port: 80
+    # HACK Use node port for k3s registry mirror.
+    # See also ../../cluster/roles/k3s/templates/registries.yaml.j2
+    # The range of valid ports is 30000-32767
+    nodePort: 30000
   persistence: true
   pvc:
     create: true

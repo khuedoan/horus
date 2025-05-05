@@ -23,6 +23,8 @@
   loop:
     - src: config.yaml.j2
       dest: "{{ k3s_config_file }}"
+    - src: registries.yaml.j2
+      dest: "{{ k3s_registries_file }}"
     - src: k3s.service.j2
       dest: "{{ k3s_service_file }}"
 
