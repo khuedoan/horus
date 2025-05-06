@@ -35,7 +35,7 @@ apps:
 	kubectl apply --namespace argocd --filename apps/
 
 edit-vault:
-	ansible-vault edit ./cluster/roles/global-secrets/vars/main.yml
+	ansible-vault edit ./cluster/roles/secrets/vars/main.yml
 
 test:
 	cd test/e2e && go test
