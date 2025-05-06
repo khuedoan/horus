@@ -33,13 +33,12 @@ spec:
             passwordConnector: local
             skipApprovalScreen: true
           enablePasswordDB: true
-          # TODO automate this
-          # staticPasswords:
-          #   - username: todo
-          #     email: todo@example.com
-          #     userID:   "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-          #     # TODO echo todo | htpasswd -BinC 10 admin | cut -d: -f2
-          #     hash: "$xx$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+          staticPasswords:
+            - username: horus
+              email: horus@khuedoan.com
+              userID: "b34bd9d2-70ed-4ee1-8d22-6e4fc84f8d17"
+              # All UIs are readonly and the hash is not reversible so ¯\_(ツ)_/¯
+              hash: "$2y$10$ufQk19V9fR7XWJKFJmHEGueQmIP/PXwCRDVAb2HMaiVpUycq9SQWC"
           staticClients:
             - id: argocd
               name: ArgoCD
