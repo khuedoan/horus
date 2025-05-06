@@ -1,10 +1,10 @@
 .POSIX:
-.PHONY: default infra cluster system platform edit-vault test update
+.PHONY: default infra cluster system platform apps edit-vault test update
 
 # TODO multiple clusters
 export KUBECONFIG = $(shell pwd)/cluster/kubeconfig.yaml
 
-default: infra cluster system platform
+default: infra cluster system platform apps
 
 ~/.terraform.d/credentials.tfrc.json:
 	# https://search.opentofu.org/provider/opentofu/tfe
@@ -30,6 +30,9 @@ system:
 
 platform:
 	kubectl apply --namespace argocd --filename platform/
+
+apps:
+	kubectl apply --namespace argocd --filename apps/
 
 edit-vault:
 	ansible-vault edit ./cluster/roles/global-secrets/vars/main.yml
