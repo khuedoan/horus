@@ -13,6 +13,7 @@
     - istio-system
     - dex
     - temporal
+    - wireguard
 
 - name: Apply secrets
   kubernetes.core.k8s:
@@ -28,10 +29,10 @@
       type: Opaque
       stringData: "{{ item.stringData }}"
   loop:
-    - name: external
-      namespace: global-secrets
+    - name: wireguard-secret
+      namespace: wireguard
       stringData:
-        wireguard-private-key: "{{ wireguard_private_key }}"
+        wg0.conf: "{{ wireguard_config }}"
     - name: dex-secrets
       namespace: dex
       stringData:
