@@ -41,6 +41,11 @@ spec:
           #     # TODO echo todo | htpasswd -BinC 10 admin | cut -d: -f2
           #     hash: "$xx$xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
           staticClients:
+            - id: argocd
+              name: ArgoCD
+              redirectURIs:
+                - 'https://argocd.horus.khuedoan.com/auth/callback'
+              secretEnv: ARGOCD_CLIENT_SECRET
             - id: kiali
               name: Kiali
               redirectURIs:

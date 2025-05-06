@@ -6,5 +6,5 @@
     - role: k3s
 - hosts: localhost
   roles:
-    - role: bootstrap
     - role: secrets
+    - role: bootstrap

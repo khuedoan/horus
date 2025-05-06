@@ -9,6 +9,8 @@
     wait: True
     kubeconfig: "{{ kubeconfig }}"
     values:
+      global:
+        domain: argocd.horus.khuedoan.com
       configs:
         params:
           server.insecure: true
@@ -19,6 +21,21 @@
           resource.customizations.ignoreResourceUpdates.all: |
             jsonPointers:
               - /status
+          oidc.config: |
+            name: SSO
+            issuer: https://dex.horus.khuedoan.com
+            clientID: argocd
+            clientSecret: $oidc.dex.clientSecret
+          admin.enabled: false
+        rbac:
+          policy.default: "role:readonly"
+      server:
+        ingress:
+          enabled: true
+          ingressClassName: nginx
+          annotations:
+            cert-manager.io/cluster-issuer: letsencrypt-prod
+          tls: true
       dex:
         enabled: false
 
