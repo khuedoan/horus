@@ -26,13 +26,13 @@ cluster:
 		main.yml
 
 system:
-	kubectl apply --namespace argocd --filename system/
+	kubectl apply --server-side=true --namespace argocd --filename system/
 
 platform:
-	kubectl apply --namespace argocd --filename platform/
+	kubectl apply --server-side=true --namespace argocd --filename platform/
 
 apps:
-	kubectl apply --namespace argocd --filename apps/
+	kubectl apply --server-side=true --namespace argocd --filename apps/
 
 edit-vault:
 	ansible-vault edit ./cluster/roles/secrets/vars/main.yml
