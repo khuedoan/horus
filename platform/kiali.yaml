@@ -31,7 +31,7 @@ spec:
             disable_rbac: true
         external_services:
           prometheus:
-            url: http://monitoring-system-kube-pro-prometheus.monitoring-system:9090
+            url: http://prometheus-kube-prometheus-prometheus.monitoring:9090
           grafana:
             enabled: false
         deployment:

@@ -45,6 +45,11 @@ spec:
               redirectURIs:
                 - 'https://argocd.horus.khuedoan.com/auth/callback'
               secretEnv: ARGOCD_CLIENT_SECRET
+            - id: grafana
+              name: Grafana
+              redirectURIs:
+                - 'https://grafana.horus.khuedoan.com/login/generic_oauth'
+              secretEnv: GRAFANA_CLIENT_SECRET
             - id: kiali
               name: Kiali
               redirectURIs:

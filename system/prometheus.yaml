@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: prometheus
+spec:
+  destination:
+    name: in-cluster
+    namespace: monitoring
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+  source:
+    repoURL: https://prometheus-community.github.io/helm-charts
+    chart: kube-prometheus-stack
+    targetRevision: 72.0.1
+    helm:
+      valuesObject:
+        grafana:
+          enabled: false
+          forceDeployDatasources: true
+          forceDeployDashboards: true
+          additionalDataSources:
+            - name: Loki
+              type: loki
+              url: http://loki:3100
+        prometheus:
+          prometheusSpec:
+            ruleSelectorNilUsesHelmValues: false
+            serviceMonitorSelectorNilUsesHelmValues: false
+            podMonitorSelectorNilUsesHelmValues: false
+            probeSelectorNilUsesHelmValues: false
