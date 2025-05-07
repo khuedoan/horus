@@ -1,6 +1,0 @@
-ingress-nginx:
-  controller:
-    podLabels:
-      "istio.io/dataplane-mode": "ambient"
-    admissionWebhooks:
-      timeoutSeconds: 30

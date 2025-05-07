@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: ingress-nginx
+spec:
+  destination:
+    name: in-cluster
+    namespace: ingress-nginx
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+  source:
+    repoURL: https://kubernetes.github.io/ingress-nginx
+    chart: ingress-nginx
+    targetRevision: 4.11.2
+    helm:
+      valuesObject:
+        controller:
+          podLabels:
+            "istio.io/dataplane-mode": "ambient"
+          admissionWebhooks:
+            timeoutSeconds: 30

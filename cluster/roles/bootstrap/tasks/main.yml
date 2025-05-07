@@ -55,6 +55,8 @@
               revision: "{{ gitops_revision }}"
               directories:
                 - path: apps/*
+        syncPolicy:
+          preserveResourcesOnDeletion: true
         template:
           metadata:
             name: "{{ '{{path.basename}}' }}"
@@ -75,3 +77,4 @@
                 - CreateNamespace=true
                 - ApplyOutOfSyncOnly=true
                 - ServerSideApply=true
+              preserveResourcesOnDeletion: true
