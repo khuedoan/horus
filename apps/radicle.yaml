@@ -27,7 +27,7 @@ spec:
           server:
             type: statefulset
             initContainers:
-              auth:
+              setup:
                 image:
                   repository: docker.io/khuedoan/radicle-server
                   tag: latest
@@ -35,9 +35,17 @@ spec:
                   RAD_HOME: /var/lib/radicle
                   RAD_PASSPHRASE: ""
                 command:
-                  - rad
-                  - auth
-                  - --alias=radicle.horus.khuedoan.com
+                  - sh
+                  - -c
+                  - |
+                    rad auth --alias=radicle.horus.khuedoan.com
+                    rad seed rad:zGtLfDcgmBqBUya1qTpzRzpBpoHx
+                    rad seed rad:z38YiLVx2e4JC5Xo2qMNDGoMPHE7U
+                    rad seed rad:z3pkjF1uaT1cZBrB8tBcCDtXGnrLQ
+                    rad seed rad:zdhXFweZXNiVmb6YPV9SFeA5xeZC
+                    rad seed rad:z3KcHMAjkkxzys1QyXYgFa4Rfik4D
+                    rad seed rad:z3Leck2yN7a8R2NpYtikkmAB8vA22
+                    rad seed rad:zLcEuZQwY8hRDUiaSNz8eNRgEpkc
             containers:
               node:
                 image:
@@ -61,6 +69,7 @@ spec:
                   "--alias", "micropaas", "rad:zdhXFweZXNiVmb6YPV9SFeA5xeZC",
                   "--alias", "nixos-setup", "rad:z3KcHMAjkkxzys1QyXYgFa4Rfik4D",
                   "--alias", "webhook-transformer", "rad:z3Leck2yN7a8R2NpYtikkmAB8vA22",
+                  "--alias", "horus", "rad:zLcEuZQwY8hRDUiaSNz8eNRgEpkc",
                 ]
           explorer:
             containers:
