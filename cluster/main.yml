@@ -7,4 +7,5 @@
 - hosts: localhost
   roles:
     - role: secrets
+      tags: secrets
     - role: bootstrap

@@ -1,5 +1,5 @@
 .POSIX:
-.PHONY: default infra cluster system platform apps edit-vault test update
+.PHONY: default infra cluster system platform apps secrets edit-secrets test update
 
 # TODO multiple clusters
 export KUBECONFIG = $(shell pwd)/cluster/kubeconfig.yaml
@@ -34,7 +34,14 @@ platform:
 apps:
 	kubectl apply --server-side=true --namespace argocd --filename apps/
 
-edit-vault:
+secrets:
+	cd cluster && ansible-playbook \
+		--inventory inventory.yml \
+		--ask-vault-pass \
+		--tags secrets \
+		main.yml
+
+edit-secrets:
 	ansible-vault edit ./cluster/roles/secrets/vars/main.yml
 
 test:
