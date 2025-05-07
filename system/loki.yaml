@@ -23,5 +23,7 @@ spec:
     targetRevision: 2.10.2
     helm:
       valuesObject:
+        loki:
+          isDefault: false
         serviceMonitor:
           enabled: true
