@@ -37,8 +37,7 @@ spec:
             - username: horus
               email: horus@khuedoan.com
               userID: "b34bd9d2-70ed-4ee1-8d22-6e4fc84f8d17"
-              # All UIs are readonly and the hash is not reversible so ¯\_(ツ)_/¯
-              hash: "$2y$10$ufQk19V9fR7XWJKFJmHEGueQmIP/PXwCRDVAb2HMaiVpUycq9SQWC"
+              hashFromEnv: HORUS_PASSWORD_HASH
           staticClients:
             - id: argocd
               name: ArgoCD
