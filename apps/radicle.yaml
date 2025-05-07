@@ -25,6 +25,7 @@ spec:
       valuesObject:
         controllers:
           server:
+            type: statefulset
             initContainers:
               auth:
                 image:
