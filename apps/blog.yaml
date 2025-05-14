@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  - resources-finalizer.argocd.argoproj.io
   name: blog
 spec:
   destination:
@@ -14,9 +14,9 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
-      - ServerSideApply=true
+    - CreateNamespace=true
+    - ApplyOutOfSyncOnly=true
+    - ServerSideApply=true
   source:
     repoURL: https://bjw-s-labs.github.io/helm-charts
     chart: app-template
@@ -25,7 +25,7 @@ spec:
       valuesObject:
         defaultPodOptions:
           labels:
-            "istio.io/dataplane-mode": "ambient"
+            istio.io/dataplane-mode: ambient
         controllers:
           main:
             replicas: 2
@@ -34,7 +34,7 @@ spec:
               main:
                 image:
                   repository: docker.io/khuedoan/blog
-                  tag: 6fbd90b77a81e0bcb330fddaa230feff744a7010
+                  tag: 1.2.3
         service:
           main:
             controller: main
