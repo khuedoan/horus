@@ -21,7 +21,7 @@ app-template:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
       hosts:
-        - host: &host budget.horus.khuedoan.com
+        - host: &host budget.cloudlab.khuedoan.com
           paths:
             - path: /
               pathType: Prefix

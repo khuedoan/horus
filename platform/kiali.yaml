@@ -27,7 +27,7 @@ spec:
           strategy: openid
           openid:
             client_id: kiali
-            issuer_uri: https://dex.horus.khuedoan.com
+            issuer_uri: https://dex.cloudlab.khuedoan.com
             disable_rbac: true
         external_services:
           prometheus:
@@ -45,7 +45,7 @@ spec:
               spec:
                 ingressClassName: nginx
                 rules:
-                  - host: kiali.horus.khuedoan.com
+                  - host: kiali.cloudlab.khuedoan.com
                     http:
                       paths:
                       - backend:
@@ -57,8 +57,8 @@ spec:
                         pathType: Prefix
                 tls:
                   - hosts:
-                      - kiali.horus.khuedoan.com
+                      - kiali.cloudlab.khuedoan.com
                     secretName: kiali-tls-certificate
         server:
-          web_fqdn: kiali.horus.khuedoan.com
+          web_fqdn: kiali.cloudlab.khuedoan.com
           web_root: /

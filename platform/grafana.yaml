@@ -29,11 +29,11 @@ spec:
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt-prod
           hosts:
-            - grafana.horus.khuedoan.com
+            - grafana.cloudlab.khuedoan.com
           tls:
             - secretName: grafana-general-tls
               hosts:
-                - grafana.horus.khuedoan.com
+                - grafana.cloudlab.khuedoan.com
         sidecar:
           dashboards:
             enabled: true
@@ -42,7 +42,7 @@ spec:
         envFromSecret: grafana-secrets
         grafana.ini:
           server:
-            root_url: https://grafana.horus.khuedoan.com
+            root_url: https://grafana.cloudlab.khuedoan.com
           auth.generic_oauth:
             enabled: true
             allow_sign_up: true
@@ -50,6 +50,6 @@ spec:
             client_id: grafana
             client_secret: $__env{SSO_CLIENT_SECRET}
             scopes: openid profile email groups
-            auth_url: https://dex.horus.khuedoan.com/auth
-            token_url: https://dex.horus.khuedoan.com/token
-          api_url: https://dex.horus.khuedoan.com/userinfo
+            auth_url: https://dex.cloudlab.khuedoan.com/auth
+            token_url: https://dex.cloudlab.khuedoan.com/token
+          api_url: https://dex.cloudlab.khuedoan.com/userinfo

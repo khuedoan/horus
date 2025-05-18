@@ -49,13 +49,13 @@ spec:
             - name: TEMPORAL_AUTH_ENABLED
               value: "true"
             - name: TEMPORAL_AUTH_PROVIDER_URL
-              value: "https://dex.horus.khuedoan.com"
+              value: "https://dex.cloudlab.khuedoan.com"
             - name: TEMPORAL_AUTH_ISSUER_URL
-              value: "https://dex.horus.khuedoan.com"
+              value: "https://dex.cloudlab.khuedoan.com"
             - name: TEMPORAL_AUTH_CLIENT_ID
               value: "temporal"
             - name: TEMPORAL_AUTH_CALLBACK_URL
-              value: "https://temporal.horus.khuedoan.com/auth/sso/callback"
+              value: "https://temporal.cloudlab.khuedoan.com/auth/sso/callback"
             - name: TEMPORAL_AUTH_SCOPES
               value: "openid,profile,email"
           additionalEnvSecretName: temporal-web
@@ -65,8 +65,8 @@ spec:
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
             hosts:
-              - temporal.horus.khuedoan.com
+              - temporal.cloudlab.khuedoan.com
             tls:
               - secretName: temporal-tls-certificate
                 hosts:
-                  - temporal.horus.khuedoan.com
+                  - temporal.cloudlab.khuedoan.com

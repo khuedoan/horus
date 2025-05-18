@@ -12,11 +12,11 @@ variable "oracle_cloud" {
 variable "compartment_name" {
   description = "Name of the compartment where to create all resources"
   type        = string
-  default     = "horus"
+  default     = "cloudlab"
 }
 
 variable "compartment_description" {
   description = "Description of the compartment where to create all resources"
   type        = string
-  default     = "Horus Project"
+  default     = "Cloudlab Project"
 }

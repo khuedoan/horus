@@ -10,7 +10,7 @@
     kubeconfig: "{{ kubeconfig }}"
     values:
       global:
-        domain: argocd.horus.khuedoan.com
+        domain: argocd.cloudlab.khuedoan.com
       configs:
         params:
           server.insecure: true
@@ -23,7 +23,7 @@
               - /status
           oidc.config: |
             name: SSO
-            issuer: https://dex.horus.khuedoan.com
+            issuer: https://dex.cloudlab.khuedoan.com
             clientID: argocd
             clientSecret: $oidc.dex.clientSecret
           admin.enabled: false

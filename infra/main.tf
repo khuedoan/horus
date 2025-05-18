@@ -23,7 +23,7 @@ resource "local_file" "ssh_private_key" {
 module "instance" {
   source         = "./modules/instance"
   compartment_id = module.base.compartment_id
-  display_name   = "horus"
+  display_name   = "cloudlab"
   subnet_id      = module.network.subnet_id
   ssh_public_key = tls_private_key.ssh.public_key_openssh
   shape = {

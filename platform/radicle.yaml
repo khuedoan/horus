@@ -38,7 +38,7 @@ spec:
                   - sh
                   - -c
                   - |
-                    rad auth --alias=radicle.horus.khuedoan.com
+                    rad auth --alias=radicle.cloudlab.khuedoan.com
                     rad seed rad:zGtLfDcgmBqBUya1qTpzRzpBpoHx
                     rad seed rad:z38YiLVx2e4JC5Xo2qMNDGoMPHE7U
                     rad seed rad:z3pkjF1uaT1cZBrB8tBcCDtXGnrLQ
@@ -69,7 +69,7 @@ spec:
                   "--alias", "micropaas", "rad:zdhXFweZXNiVmb6YPV9SFeA5xeZC",
                   "--alias", "nixos-setup", "rad:z3KcHMAjkkxzys1QyXYgFa4Rfik4D",
                   "--alias", "webhook-transformer", "rad:z3Leck2yN7a8R2NpYtikkmAB8vA22",
-                  "--alias", "horus", "rad:zLcEuZQwY8hRDUiaSNz8eNRgEpkc",
+                  "--alias", "cloudlab", "rad:zLcEuZQwY8hRDUiaSNz8eNRgEpkc",
                 ]
           explorer:
             containers:
@@ -99,7 +99,7 @@ spec:
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
             hosts:
-            - host: radicle.horus.khuedoan.com
+            - host: radicle.cloudlab.khuedoan.com
               paths:
               - path: /
                 pathType: Prefix
@@ -115,7 +115,7 @@ spec:
                   port: 80
             tls:
             - hosts:
-              - radicle.horus.khuedoan.com
+              - radicle.cloudlab.khuedoan.com
               - code.khuedoan.com
               secretName: radicle-tls-certificate
         persistence:

@@ -50,7 +50,7 @@ spec:
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
             hosts:
-              - host: notes.horus.khuedoan.com
+              - host: notes.cloudlab.khuedoan.com
                 paths:
                   - path: /
                     pathType: Prefix
@@ -59,7 +59,7 @@ spec:
                       port: 3000
             tls:
               - hosts:
-                  - notes.horus.khuedoan.com
+                  - notes.cloudlab.khuedoan.com
                 secretName: notes-tls-certificate
         persistence:
           data:
