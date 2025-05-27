@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -12,19 +12,17 @@
           packages = [
             ansible
             ansible-lint
-            cue
-            git
             gnumake
             go
-            k9s
+            k3d
             kubectl
-            neovim
             openssh
             opentofu
             pre-commit
             shellcheck
-            timoni
+            terragrunt
             wireguard-tools
+            yamlfmt
             yamllint
 
             (python3.withPackages (p: with p; [

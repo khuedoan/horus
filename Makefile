@@ -48,6 +48,9 @@ test:
 	cd test/e2e && go test
 
 fmt:
+	yamlfmt .
+	terragrunt hcl format
+	tofu fmt -recursive
 	cd test/e2e && go fmt ./...
 
 update:
