@@ -19,8 +19,8 @@ app-template:
             repository: docker.io/library/docker
             tag: 27-dind
           command:
-          - dockerd
-          - --host=tcp://127.0.0.1:2375
+            - dockerd
+            - --host=tcp://127.0.0.1:2375
           securityContext:
             privileged: true
         nginx:
@@ -46,17 +46,17 @@ app-template:
       annotations:
         cert-manager.io/cluster-issuer: letsencrypt-prod
       hosts:
-      - host: micropaas.khuedoan.com
-        paths:
-        - path: /
-          pathType: Prefix
-          service:
-            identifier: main
-            port: 80
+        - host: micropaas.khuedoan.com
+          paths:
+            - path: /
+              pathType: Prefix
+              service:
+                identifier: main
+                port: 80
       tls:
-      - hosts:
-        - micropaas.khuedoan.com
-        secretName: micropaas-tls-certificate
+        - hosts:
+            - micropaas.khuedoan.com
+          secretName: micropaas-tls-certificate
   persistence:
     data:
       accessMode: ReadWriteOnce
@@ -64,24 +64,24 @@ app-template:
       advancedMounts:
         main:
           main:
-          - path: /var/lib/micropaas/repos
-            subPath: repos
-          - path: /var/lib/micropaas/db
-            subPath: db
-          - path: /var/lib/micropaas/ssh
-            subPath: ssh
-          - path: /var/lib/micropaas/web
-            subPath: web
-          - path: /root/.docker
-            subPath: docker-config
+            - path: /var/lib/micropaas/repos
+              subPath: repos
+            - path: /var/lib/micropaas/db
+              subPath: db
+            - path: /var/lib/micropaas/ssh
+              subPath: ssh
+            - path: /var/lib/micropaas/web
+              subPath: web
+            - path: /root/.docker
+              subPath: docker-config
           nginx:
-          - path: /usr/share/nginx/html
-            subPath: web
+            - path: /usr/share/nginx/html
+              subPath: web
     cache:
       accessMode: ReadWriteOnce
       size: 100Gi
       advancedMounts:
         main:
           main:
-          - path: /var/cache/micropaas
-            subPath: micropaas
+            - path: /var/cache/micropaas
+              subPath: micropaas

@@ -48,13 +48,13 @@ spec:
                   - host: kiali.cloudlab.khuedoan.com
                     http:
                       paths:
-                      - backend:
-                          service:
-                            name: kiali
-                            port:
-                              name: http
-                        path: /
-                        pathType: Prefix
+                        - backend:
+                            service:
+                              name: kiali
+                              port:
+                                name: http
+                          path: /
+                          pathType: Prefix
                 tls:
                   - hosts:
                       - kiali.cloudlab.khuedoan.com

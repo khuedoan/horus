@@ -48,7 +48,7 @@ test:
 	cd test/e2e && go test
 
 fmt:
-	yamlfmt .
+	yamlfmt --exclude cluster/roles/secrets/vars/main.yml .
 	terragrunt hcl format
 	tofu fmt -recursive
 	cd test/e2e && go fmt ./...

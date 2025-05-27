@@ -1,13 +1,11 @@
 - name: Iptables flush filter
   ansible.builtin.iptables:
     flush: yes
-
 - name: Disable netfilter service
   systemd:
     name: netfilter-persistent
     enabled: false
     state: stopped
-
 - name: Adjust kernel parameters
   ansible.posix.sysctl:
     name: "{{ item.name }}"

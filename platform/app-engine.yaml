@@ -58,4 +58,3 @@ spec:
             globalMounts:
               - path: /var/run
                 subPath: docker.sock
-
