@@ -1,6 +1,6 @@
 *.tgz
 *.tfvars
-.terraform*
+.terragrunt*
 Chart.lock
 kubeconfig.yaml
 private.pem
