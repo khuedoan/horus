@@ -14,4 +14,5 @@ inputs = {
     client_key             = dependency.cluster.outputs.credentials.client_key
     cluster_ca_certificate = dependency.cluster.outputs.credentials.cluster_ca_certificate
   }
+  platform = "k3d"
 }

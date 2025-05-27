@@ -21,7 +21,7 @@ resource "helm_release" "argocd" {
           "timeout.reconciliation.jitter"         = "60s"
           "resource.ignoreResourceUpdatesEnabled" = true
           "resource.customizations.ignoreResourceUpdates.all" = yamlencode({
-            jsonPointers : [
+            jsonPointers = [
               "/status"
             ]
           })
