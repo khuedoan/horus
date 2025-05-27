@@ -6,7 +6,6 @@
     owner: root
     group: root
     mode: 0755
-
 - name: Ensure config directories exist
   file:
     path: "{{ item }}"
@@ -14,7 +13,6 @@
     mode: 0755
   loop:
     - /etc/rancher/k3s
-
 - name: Copy k3s config files
   template:
     src: "{{ item.src }}"
@@ -27,7 +25,6 @@
       dest: "{{ k3s_registries_file }}"
     - src: k3s.service.j2
       dest: "{{ k3s_service_file }}"
-
 - name: Enable k3s service
   systemd:
     name: k3s
@@ -36,13 +33,11 @@
   register: k3s_service
   until: k3s_service is succeeded
   retries: 5
-
 - name: Get Kubernetes config file
   run_once: true
   slurp:
     src: /etc/rancher/k3s/k3s.yaml
   register: kubeconfig_base64
-
 - name: Write Kubernetes config file with the correct cluster address
   become: false
   copy:

@@ -61,16 +61,29 @@ spec:
                   tag: latest
                 env:
                   RAD_HOME: /var/lib/radicle
-                command: [
-                  "radicle-httpd",
-                  "--alias", "blog", "rad:zGtLfDcgmBqBUya1qTpzRzpBpoHx",
-                  "--alias", "dotfiles", "rad:z38YiLVx2e4JC5Xo2qMNDGoMPHE7U",
-                  "--alias", "homelab", "rad:z3pkjF1uaT1cZBrB8tBcCDtXGnrLQ",
-                  "--alias", "micropaas", "rad:zdhXFweZXNiVmb6YPV9SFeA5xeZC",
-                  "--alias", "nixos-setup", "rad:z3KcHMAjkkxzys1QyXYgFa4Rfik4D",
-                  "--alias", "webhook-transformer", "rad:z3Leck2yN7a8R2NpYtikkmAB8vA22",
-                  "--alias", "cloudlab", "rad:zLcEuZQwY8hRDUiaSNz8eNRgEpkc",
-                ]
+                command:
+                  - radicle-httpd
+                  - --alias
+                  - blog
+                  - rad:zGtLfDcgmBqBUya1qTpzRzpBpoHx
+                  - --alias
+                  - dotfiles
+                  - rad:z38YiLVx2e4JC5Xo2qMNDGoMPHE7U
+                  - --alias
+                  - homelab
+                  - rad:z3pkjF1uaT1cZBrB8tBcCDtXGnrLQ
+                  - --alias
+                  - micropaas
+                  - rad:zdhXFweZXNiVmb6YPV9SFeA5xeZC
+                  - --alias
+                  - nixos-setup
+                  - rad:z3KcHMAjkkxzys1QyXYgFa4Rfik4D
+                  - --alias
+                  - webhook-transformer
+                  - rad:z3Leck2yN7a8R2NpYtikkmAB8vA22
+                  - --alias
+                  - cloudlab
+                  - rad:zLcEuZQwY8hRDUiaSNz8eNRgEpkc
           explorer:
             containers:
               main:
@@ -99,25 +112,25 @@ spec:
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
             hosts:
-            - host: radicle.cloudlab.khuedoan.com
-              paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  identifier: server
-                  port: 8080
-            - host: code.khuedoan.com
-              paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  identifier: explorer
-                  port: 80
+              - host: radicle.cloudlab.khuedoan.com
+                paths:
+                  - path: /
+                    pathType: Prefix
+                    service:
+                      identifier: server
+                      port: 8080
+              - host: code.khuedoan.com
+                paths:
+                  - path: /
+                    pathType: Prefix
+                    service:
+                      identifier: explorer
+                      port: 80
             tls:
-            - hosts:
-              - radicle.cloudlab.khuedoan.com
-              - code.khuedoan.com
-              secretName: radicle-tls-certificate
+              - hosts:
+                  - radicle.cloudlab.khuedoan.com
+                  - code.khuedoan.com
+                secretName: radicle-tls-certificate
         persistence:
           data:
             accessMode: ReadWriteOnce

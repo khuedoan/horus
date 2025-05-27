@@ -5,12 +5,10 @@
     flags:
       - lvm
     state: present
-
 - name: Format data partition
   filesystem:
     fstype: ext4
     dev: /dev/sdb1
-
 - name: Mount data partition
   mount:
     src: /dev/sdb1
