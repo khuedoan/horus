@@ -21,15 +21,14 @@ resource "kubectl_manifest" "ingress_nginx" {
         targetRevision = "4.11.2"
         helm = {
           valuesObject = {
-            controller : {
-              podLabels : {
-                "istio.io/dataplane-mode" : "ambient"
+            controller = {
+              podLabels = {
+                "istio.io/dataplane-mode" = "ambient"
               }
-              admissionWebhooks : {
-                timeoutSeconds : 30
+              admissionWebhooks = {
+                timeoutSeconds = 30
               }
             }
-
           }
         }
       }

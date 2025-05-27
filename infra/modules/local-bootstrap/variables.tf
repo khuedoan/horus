@@ -15,3 +15,7 @@ variable "cluster_domain" {
   type    = string
   default = "127-0-0-1.nip.io"
 }
+
+variable "platform" {
+  type = string
+}
