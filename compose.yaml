@@ -1,0 +1,13 @@
+services:
+  temporal:
+    image: docker.io/temporalio/server:1.27
+    entrypoint:
+      - temporal
+      - server
+      - start-dev
+      - --ip=0.0.0.0
+    ports:
+      - 7233:7233
+      - 8233:8233
+  worker:
+    build: ./hack/workflows
