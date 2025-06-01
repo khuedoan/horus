@@ -21,3 +21,16 @@ func TerragruntGraph(ctx context.Context, path string) (string, error) {
 
 	return string(output), nil
 }
+
+func TerragruntGraphShaking(ctx context.Context, dotGraph string, changedFiles []string) (string, error) {
+	logger := activity.GetLogger(ctx)
+
+	logger.Info("Parsing Terragrunt DAG graph")
+
+	pruned, err := pruneGraph(dotGraph, changedFiles)
+	if err != nil {
+		return "", fmt.Errorf("failed to prune dependency graph: %w", err)
+	}
+
+	return pruned, nil
+}

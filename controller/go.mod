@@ -3,6 +3,7 @@ module cloudlab/controller
 go 1.24.3
 
 require (
+	github.com/awalterschulze/gographviz v2.0.3+incompatible
 	github.com/go-git/go-git/v5 v5.16.0
 	go.temporal.io/sdk v1.34.0
 )

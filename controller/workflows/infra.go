@@ -34,8 +34,15 @@ func Infra(ctx workflow.Context, input InfraInputs) (string, error) {
 		return "", err
 	}
 
+	var dotGraph string
+	err = workflow.ExecuteActivity(ctx, activities.TerragruntGraph, path+"/infra/"+input.Stack).Get(ctx, &dotGraph)
+	if err != nil {
+		logger.Error("Activity failed.", "Error", err)
+		return "", err
+	}
+
 	var result string
-	err = workflow.ExecuteActivity(ctx, activities.TerragruntGraph, path+"/infra/"+input.Stack).Get(ctx, &result)
+	err = workflow.ExecuteActivity(ctx, activities.TerragruntTreeShaking, dotGraph, []string{"cluster"}).Get(ctx, &result)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return "", err
