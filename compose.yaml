@@ -9,5 +9,13 @@ services:
     ports:
       - 7233:7233
       - 8233:8233
+    healthcheck:
+      test: tctl workflow list
+      start_period: 5s
   worker:
-    build: ./hack/workflows
+    build: ./controller
+    environment:
+      TEMPORAL_HOST: temporal:7233
+    depends_on:
+      temporal:
+        condition: service_healthy

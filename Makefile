@@ -1,10 +1,13 @@
 .POSIX:
-.PHONY: default infra cluster system platform apps secrets edit-secrets test update
+.PHONY: default docker-compose infra cluster system platform apps secrets edit-secrets test update
 
 # TODO multiple clusters
 export KUBECONFIG = $(shell pwd)/cluster/kubeconfig.yaml
 
 default: infra cluster system platform apps
+
+docker-compose:
+	docker compose up --build --detach
 
 ~/.terraform.d/credentials.tfrc.json:
 	# https://search.opentofu.org/provider/opentofu/tfe
@@ -51,6 +54,7 @@ fmt:
 	yamlfmt --exclude cluster/roles/secrets/vars/main.yml .
 	terragrunt hcl format
 	tofu fmt -recursive
+	cd controller && go fmt ./...
 	cd test/e2e && go fmt ./...
 
 update:
