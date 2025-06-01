@@ -24,8 +24,9 @@ func main() {
 
 	w.RegisterWorkflow(workflows.Infra)
 	w.RegisterActivity(activities.Clone)
+	w.RegisterActivity(activities.ChangedFiles)
 	w.RegisterActivity(activities.TerragruntGraph)
-	w.RegisterActivity(activities.TerragruntTreeShaking)
+	w.RegisterActivity(activities.TerragruntGraphShaking)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

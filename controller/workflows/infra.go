@@ -8,9 +8,10 @@ import (
 )
 
 type InfraInputs struct {
-	Url      string
-	Revision string
-	Stack    string
+	Url         string
+	Revision    string
+	OldRevision string
+	Stack       string
 }
 
 // TODO create trigger
@@ -34,15 +35,28 @@ func Infra(ctx workflow.Context, input InfraInputs) (string, error) {
 		return "", err
 	}
 
-	var dotGraph string
-	err = workflow.ExecuteActivity(ctx, activities.TerragruntGraph, path+"/infra/"+input.Stack).Get(ctx, &dotGraph)
+	var (
+		dotGraph     string
+		changedFiles []string
+	)
+
+	graphFuture := workflow.ExecuteActivity(ctx, activities.TerragruntGraph, path+"/infra/"+input.Stack)
+	changedFilesFuture := workflow.ExecuteActivity(ctx, activities.ChangedFiles, path, input.OldRevision)
+
+	err = graphFuture.Get(ctx, &dotGraph)
 	if err != nil {
-		logger.Error("Activity failed.", "Error", err)
+		logger.Error("TerragruntGraph failed", "Error", err)
+		return "", err
+	}
+
+	err = changedFilesFuture.Get(ctx, &changedFiles)
+	if err != nil {
+		logger.Error("ChangedFiles failed", "Error", err)
 		return "", err
 	}
 
 	var result string
-	err = workflow.ExecuteActivity(ctx, activities.TerragruntTreeShaking, dotGraph, []string{"cluster"}).Get(ctx, &result)
+	err = workflow.ExecuteActivity(ctx, activities.TerragruntGraphShaking, dotGraph, changedFiles).Get(ctx, &result)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return "", err
