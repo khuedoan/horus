@@ -8,7 +8,7 @@ app-template:
         main:
           image:
             repository: docker.io/actualbudget/actual-server
-            tag: 25.2.1-alpine
+            tag: 25.6.1-alpine
   service:
     main:
       ports:
