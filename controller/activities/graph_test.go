@@ -330,3 +330,121 @@ func TestPruneGraphRealWorld(t *testing.T) {
 		t.Errorf("Expected edges %v, but got %v", expectedEdges, prunedEdges)
 	}
 }
+
+func TestTopologicalSort(t *testing.T) {
+	testCases := []struct {
+		name           string
+		nodes          []string
+		edges          []Edge
+		expectedLevels [][]string
+	}{
+		{
+			name:  "Simple linear dependency",
+			nodes: []string{"A", "B", "C"},
+			edges: []Edge{
+				{Src: "B", Dest: "A"},
+				{Src: "C", Dest: "B"},
+			},
+			expectedLevels: [][]string{
+				{"A"},
+				{"B"},
+				{"C"},
+			},
+		},
+		{
+			name:  "Parallel dependencies",
+			nodes: []string{"A", "B", "C", "D"},
+			edges: []Edge{
+				{Src: "C", Dest: "A"},
+				{Src: "C", Dest: "B"},
+				{Src: "D", Dest: "C"},
+			},
+			expectedLevels: [][]string{
+				{"A", "B"},
+				{"C"},
+				{"D"},
+			},
+		},
+		{
+			name:  "Complex dependency graph",
+			nodes: []string{"A", "B", "C", "D", "E", "F"},
+			edges: []Edge{
+				{Src: "C", Dest: "A"},
+				{Src: "C", Dest: "B"},
+				{Src: "D", Dest: "C"},
+				{Src: "E", Dest: "C"},
+				{Src: "F", Dest: "D"},
+				{Src: "F", Dest: "E"},
+			},
+			expectedLevels: [][]string{
+				{"A", "B"},
+				{"C"},
+				{"D", "E"},
+				{"F"},
+			},
+		},
+		{
+			name:           "No dependencies",
+			nodes:          []string{"A", "B", "C"},
+			edges:          []Edge{},
+			expectedLevels: [][]string{{"A", "B", "C"}},
+		},
+		{
+			name:           "Single node",
+			nodes:          []string{"A"},
+			edges:          []Edge{},
+			expectedLevels: [][]string{{"A"}},
+		},
+		{
+			name:  "Real world example: bootstrap depends on cluster",
+			nodes: []string{"bootstrap", "cluster"},
+			edges: []Edge{
+				{Src: "bootstrap", Dest: "cluster"},
+			},
+			expectedLevels: [][]string{
+				{"cluster"},
+				{"bootstrap"},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// Create graph
+			graph := &Graph{
+				Nodes: make([]*Node, len(tc.nodes)),
+				Edges: make([]*Edge, len(tc.edges)),
+			}
+
+			for i, nodeName := range tc.nodes {
+				graph.Nodes[i] = &Node{Name: nodeName}
+			}
+
+			for i, edge := range tc.edges {
+				graph.Edges[i] = &Edge{Src: edge.Src, Dest: edge.Dest}
+			}
+
+			// Get topological sort
+			levels := graph.TopologicalSort()
+
+			// Verify number of levels
+			if len(levels) != len(tc.expectedLevels) {
+				t.Errorf("Expected %d levels, but got %d", len(tc.expectedLevels), len(levels))
+				return
+			}
+
+			// Verify each level
+			for levelIndex, expectedLevel := range tc.expectedLevels {
+				actualLevel := levels[levelIndex]
+
+				// Sort both slices for comparison
+				sort.Strings(expectedLevel)
+				sort.Strings(actualLevel)
+
+				if !reflect.DeepEqual(actualLevel, expectedLevel) {
+					t.Errorf("Level %d: expected %v, but got %v", levelIndex, expectedLevel, actualLevel)
+				}
+			}
+		})
+	}
+}

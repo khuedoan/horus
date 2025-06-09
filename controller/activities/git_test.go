@@ -1,7 +1,6 @@
 package activities
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -133,7 +132,7 @@ func TestChangedModules(t *testing.T) {
 // Helper function to simulate ChangedModules logic without Git
 func getChangedModulesFromFiles(repoPath string, changedFiles []string) []string {
 	seen := make(map[string]struct{})
-	var modules []string
+	modules := make([]string, 0) // Initialize as empty slice instead of nil
 
 	for _, file := range changedFiles {
 		// Get the directory of the changed file

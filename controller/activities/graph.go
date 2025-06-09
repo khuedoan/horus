@@ -137,3 +137,73 @@ func (g *Graph) ToDot() string {
 	b.WriteString("}")
 	return b.String()
 }
+
+// TopologicalSort returns modules grouped by dependency levels.
+// Modules in the same level can be executed in parallel.
+// Each level must complete before the next level can start.
+// An edge from A to B means A depends on B, so B must run before A.
+func (g *Graph) TopologicalSort() [][]string {
+	// Build adjacency list and in-degree count
+	adjList := make(map[string][]string)
+	inDegree := make(map[string]int)
+
+	// Initialize all nodes with in-degree 0
+	for _, node := range g.Nodes {
+		inDegree[node.Name] = 0
+		adjList[node.Name] = []string{}
+	}
+
+	// Build the graph and calculate in-degrees
+	// Edge from Src to Dest means Src depends on Dest
+	// So Dest should run before Src
+	for _, edge := range g.Edges {
+		adjList[edge.Dest] = append(adjList[edge.Dest], edge.Src)
+		inDegree[edge.Src]++
+	}
+
+	var levels [][]string
+	remaining := make(map[string]bool)
+	for _, node := range g.Nodes {
+		remaining[node.Name] = true
+	}
+
+	// Process nodes level by level
+	for len(remaining) > 0 {
+		var currentLevel []string
+
+		// Find all nodes with in-degree 0 (no dependencies)
+		for nodeName := range remaining {
+			if inDegree[nodeName] == 0 {
+				currentLevel = append(currentLevel, nodeName)
+			}
+		}
+
+		// If no nodes found with in-degree 0, there's a cycle
+		if len(currentLevel) == 0 {
+			// Return remaining nodes as the final level to handle cycles gracefully
+			var cycleNodes []string
+			for nodeName := range remaining {
+				cycleNodes = append(cycleNodes, nodeName)
+			}
+			if len(cycleNodes) > 0 {
+				levels = append(levels, cycleNodes)
+			}
+			break
+		}
+
+		// Add current level
+		levels = append(levels, currentLevel)
+
+		// Remove processed nodes and update in-degrees
+		for _, nodeName := range currentLevel {
+			delete(remaining, nodeName)
+			for _, dependent := range adjList[nodeName] {
+				if remaining[dependent] {
+					inDegree[dependent]--
+				}
+			}
+		}
+	}
+
+	return levels
+}

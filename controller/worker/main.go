@@ -27,6 +27,7 @@ func main() {
 	w.RegisterActivity(activities.ChangedModules)
 	w.RegisterActivity(activities.TerragruntGraph)
 	w.RegisterActivity(activities.TerragruntGraphShaking)
+	w.RegisterActivity(activities.TerragruntApply)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

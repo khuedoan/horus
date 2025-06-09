@@ -1,6 +1,8 @@
 package workflows
 
 import (
+	"fmt"
+	"strings"
 	"time"
 
 	"cloudlab/controller/activities"
@@ -69,7 +71,45 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 		return nil, err
 	}
 
-	logger.Info("Infra workflow completed.", "nodes", len(prunedGraph.Nodes), "edges", len(prunedGraph.Edges))
+	logger.Info("Infra workflow completed graph pruning.", "nodes", len(prunedGraph.Nodes), "edges", len(prunedGraph.Edges))
+
+	// Get dependency levels for parallel execution
+	dependencyLevels := prunedGraph.TopologicalSort()
+
+	// Execute terragrunt apply for each level in dependency order
+	for levelIndex, level := range dependencyLevels {
+		logger.Info("Starting terragrunt apply for dependency level", "level", levelIndex, "modules", level)
+
+		// Create futures for parallel execution within this level
+		var futures []workflow.Future
+		for _, moduleName := range level {
+			// Create activity options with custom activity ID that includes module name
+			// Replace slashes with hyphens for ActivityID compatibility
+			safeModuleName := strings.ReplaceAll(moduleName, "/", "-")
+			moduleActivityOptions := workflow.ActivityOptions{
+				StartToCloseTimeout: 10 * time.Minute,
+				ActivityID:          fmt.Sprintf("TerragruntApply-%s", safeModuleName),
+			}
+			moduleCtx := workflow.WithActivityOptions(ctx, moduleActivityOptions)
+
+			future := workflow.ExecuteActivity(moduleCtx, activities.TerragruntApply, path, moduleName, input.Stack)
+			futures = append(futures, future)
+		}
+
+		// Wait for all modules in this level to complete
+		for i, future := range futures {
+			err := future.Get(ctx, nil)
+			if err != nil {
+				logger.Error("TerragruntApply failed", "module", level[i], "level", levelIndex, "Error", err)
+				return nil, err
+			}
+			logger.Info("Module apply completed", "module", level[i], "level", levelIndex)
+		}
+
+		logger.Info("Completed terragrunt apply for dependency level", "level", levelIndex, "modules", level)
+	}
+
+	logger.Info("Infra workflow completed successfully.", "totalLevels", len(dependencyLevels), "appliedModules", len(prunedGraph.Nodes))
 
 	return prunedGraph, nil
 }

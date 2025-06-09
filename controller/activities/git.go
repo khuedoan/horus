@@ -107,7 +107,7 @@ func ChangedModules(ctx context.Context, repoPath string, oldRevision string) ([
 	}
 
 	seen := make(map[string]struct{})
-	var modules []string
+	modules := make([]string, 0)
 
 	for _, file := range changedFiles {
 		// Get the directory of the changed file

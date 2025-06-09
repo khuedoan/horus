@@ -14,6 +14,8 @@ services:
       start_period: 5s
   worker:
     build: ./controller
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       TEMPORAL_HOST: temporal:7233
     depends_on:
