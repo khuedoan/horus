@@ -8,7 +8,7 @@ import (
 	"go.temporal.io/sdk/activity"
 )
 
-func TerragruntGraph(ctx context.Context, path string) (string, error) {
+func TerragruntGraph(ctx context.Context, path string) (*Graph, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Generating Terragrunt DAG graph", "path", path)
 
@@ -16,26 +16,26 @@ func TerragruntGraph(ctx context.Context, path string) (string, error) {
 	cmd.Dir = path
 	output, err := cmd.Output()
 	if err != nil {
-		return "", fmt.Errorf("failed to run terragrunt dag graph: %w", err)
+		return nil, fmt.Errorf("failed to run terragrunt dag graph: %w", err)
 	}
 
-	return string(output), nil
+	graph, err := NewGraphFromDot(string(output))
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse terragrunt graph output: %w", err)
+	}
+
+	return graph, nil
 }
 
-func TerragruntGraphShaking(ctx context.Context, dotGraph string, changedFiles []string) (string, error) {
+func TerragruntGraphShaking(ctx context.Context, graph *Graph, changedModules []string) (*Graph, error) {
 	logger := activity.GetLogger(ctx)
 
-	logger.Info("Parsing Terragrunt DAG graph")
+	logger.Info("Pruning Terragrunt DAG graph")
 
-	graph, err := NewGraphFromDot(dotGraph)
+	prunedGraph, err := PruneGraph(ctx, graph, changedModules)
 	if err != nil {
-		return "", fmt.Errorf("failed to parse dot graph: %w", err)
+		return nil, fmt.Errorf("failed to prune dependency graph: %w", err)
 	}
 
-	prunedGraph, err := PruneGraph(ctx, graph, changedFiles)
-	if err != nil {
-		return "", fmt.Errorf("failed to prune dependency graph: %w", err)
-	}
-
-	return prunedGraph.ToDot(), nil
+	return prunedGraph, nil
 }

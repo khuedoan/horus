@@ -3,6 +3,8 @@ package activities
 import (
 	"context"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -29,7 +31,7 @@ func Clone(ctx context.Context, url string, revision string) (string, error) {
 	return path, nil
 }
 
-func ChangedFiles(ctx context.Context, path string, oldRevision string) ([]string, error) {
+func changedFiles(ctx context.Context, path string, oldRevision string) ([]string, error) {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Getting changed files", "path", path, "oldRevision", oldRevision)
 
@@ -92,4 +94,64 @@ func ChangedFiles(ctx context.Context, path string, oldRevision string) ([]strin
 	}
 
 	return files, nil
+}
+
+func ChangedModules(ctx context.Context, repoPath string, oldRevision string) ([]string, error) {
+	logger := activity.GetLogger(ctx)
+	logger.Info("Getting changed modules", "path", repoPath, "oldRevision", oldRevision)
+
+	// Get all changed files
+	changedFiles, err := changedFiles(ctx, repoPath, oldRevision)
+	if err != nil {
+		return nil, err
+	}
+
+	seen := make(map[string]struct{})
+	var modules []string
+
+	for _, file := range changedFiles {
+		// Get the directory of the changed file
+		dir := filepath.Dir(file)
+
+		// Walk up the directory tree to find the closest directory containing terragrunt.hcl
+		currentDir := dir
+		for {
+			terragruntPath := filepath.Join(repoPath, currentDir, "terragrunt.hcl")
+			if _, err := os.Stat(terragruntPath); err == nil {
+				// Found terragrunt.hcl, this is a module directory
+				modulePath := currentDir
+
+				// Remove infra/<env>/ prefix if present
+				if strings.HasPrefix(modulePath, "infra/") {
+					parts := strings.Split(filepath.ToSlash(modulePath), "/")
+					if len(parts) >= 3 && parts[0] == "infra" {
+						// Remove "infra" and environment (e.g., "dev", "prod")
+						modulePath = strings.Join(parts[2:], "/")
+					}
+				}
+
+				// Skip empty paths
+				if modulePath != "" && modulePath != "." {
+					// Normalize path separators to forward slashes
+					modulePath = filepath.ToSlash(modulePath)
+
+					if _, exists := seen[modulePath]; !exists {
+						modules = append(modules, modulePath)
+						seen[modulePath] = struct{}{}
+					}
+				}
+				break
+			}
+
+			// Move up one directory level
+			parent := filepath.Dir(currentDir)
+			if parent == currentDir || parent == "." {
+				// Reached the root, no terragrunt.hcl found
+				break
+			}
+			currentDir = parent
+		}
+	}
+
+	return modules, nil
 }

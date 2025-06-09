@@ -18,8 +18,15 @@ type InfraInputs struct {
 // For now do that manually on the UI
 // Task queue: cloudlab
 // Workflow: Infra
-// Input json/plain: {"url": "https://github.com/khuedoan/cloudlab", "revision": "infra-rewrite", "stack": "local"}
-func Infra(ctx workflow.Context, input InfraInputs) (string, error) {
+// Input json/plain:
+//
+//	{
+//	  "url": "https://github.com/khuedoan/cloudlab",
+//	  "revision": "infra-rewrite",
+//	  "oldRevision": "7796870a3c17105d7a13c5b6c990fa895de64952",
+//	  "stack": "local"
+//	}
+func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,
 	}
@@ -32,37 +39,37 @@ func Infra(ctx workflow.Context, input InfraInputs) (string, error) {
 	err := workflow.ExecuteActivity(ctx, activities.Clone, input.Url, input.Revision).Get(ctx, &path)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
-		return "", err
+		return nil, err
 	}
 
 	var (
-		dotGraph     string
-		changedFiles []string
+		graph          *activities.Graph
+		changedModules []string
 	)
 
 	graphFuture := workflow.ExecuteActivity(ctx, activities.TerragruntGraph, path+"/infra/"+input.Stack)
-	changedFilesFuture := workflow.ExecuteActivity(ctx, activities.ChangedFiles, path, input.OldRevision)
+	changedModulesFuture := workflow.ExecuteActivity(ctx, activities.ChangedModules, path, input.OldRevision)
 
-	err = graphFuture.Get(ctx, &dotGraph)
+	err = graphFuture.Get(ctx, &graph)
 	if err != nil {
 		logger.Error("TerragruntGraph failed", "Error", err)
-		return "", err
+		return nil, err
 	}
 
-	err = changedFilesFuture.Get(ctx, &changedFiles)
+	err = changedModulesFuture.Get(ctx, &changedModules)
 	if err != nil {
-		logger.Error("ChangedFiles failed", "Error", err)
-		return "", err
+		logger.Error("ChangedModules failed", "Error", err)
+		return nil, err
 	}
 
-	var result string
-	err = workflow.ExecuteActivity(ctx, activities.TerragruntGraphShaking, dotGraph, changedFiles).Get(ctx, &result)
+	var prunedGraph *activities.Graph
+	err = workflow.ExecuteActivity(ctx, activities.TerragruntGraphShaking, graph, changedModules).Get(ctx, &prunedGraph)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
-		return "", err
+		return nil, err
 	}
 
-	logger.Info("Infra workflow completed.", "result", result)
+	logger.Info("Infra workflow completed.", "nodes", len(prunedGraph.Nodes), "edges", len(prunedGraph.Edges))
 
-	return result, nil
+	return prunedGraph, nil
 }

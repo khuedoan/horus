@@ -24,7 +24,7 @@ func main() {
 
 	w.RegisterWorkflow(workflows.Infra)
 	w.RegisterActivity(activities.Clone)
-	w.RegisterActivity(activities.ChangedFiles)
+	w.RegisterActivity(activities.ChangedModules)
 	w.RegisterActivity(activities.TerragruntGraph)
 	w.RegisterActivity(activities.TerragruntGraphShaking)
 
