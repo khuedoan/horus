@@ -27,10 +27,15 @@ func TerragruntGraphShaking(ctx context.Context, dotGraph string, changedFiles [
 
 	logger.Info("Parsing Terragrunt DAG graph")
 
-	pruned, err := pruneGraph(dotGraph, changedFiles)
+	graph, err := NewGraphFromDot(dotGraph)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse dot graph: %w", err)
+	}
+
+	prunedGraph, err := PruneGraph(ctx, graph, changedFiles)
 	if err != nil {
 		return "", fmt.Errorf("failed to prune dependency graph: %w", err)
 	}
 
-	return pruned, nil
+	return prunedGraph.ToDot(), nil
 }
