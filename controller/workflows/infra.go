@@ -2,7 +2,6 @@ package workflows
 
 import (
 	"fmt"
-	"strings"
 	"time"
 
 	"cloudlab/controller/activities"
@@ -71,12 +70,9 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 		// Create futures for parallel execution within this level
 		var futures []workflow.Future
 		for _, moduleName := range level {
-			// Create activity options with custom activity ID that includes module name
-			// Replace slashes with hyphens for ActivityID compatibility
-			safeModuleName := strings.ReplaceAll(moduleName, "/", "-")
 			moduleActivityOptions := workflow.ActivityOptions{
 				StartToCloseTimeout: 10 * time.Minute,
-				ActivityID:          fmt.Sprintf("TerragruntApply-%s", safeModuleName),
+				Summary:             fmt.Sprintf("%s/%s", input.Stack, moduleName),
 			}
 			moduleCtx := workflow.WithActivityOptions(ctx, moduleActivityOptions)
 
