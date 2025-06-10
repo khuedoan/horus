@@ -1,22 +1,21 @@
 .POSIX:
-.PHONY: default docker-compose infra cluster system platform apps secrets edit-secrets test update
+.PHONY: default compose infra cluster system platform apps secrets edit-secrets test update
 
 env ?= local
 # TODO multiple clusters
 export KUBECONFIG = $(shell pwd)/cluster/kubeconfig.yaml
 
-default: infra cluster system platform apps
+default: infra
 
-docker-compose:
+compose:
 	docker compose up --build --detach
 
-~/.terraform.d/credentials.tfrc.json:
-	# https://search.opentofu.org/provider/opentofu/tfe
-	tofu login app.terraform.io
-
-infra:
-	cd infra/${env} \
-		&& AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin terragrunt apply --all
+infra: compose
+	# TODO multiple env
+	temporal workflow start \
+		--task-queue cloudlab \
+		--type Infra \
+		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "infra-rewrite", "oldRevision": "790763a8166e306f34559870c60e818505117e6b", "stack": "local" }'
 
 cluster:
 	cd cluster && ansible-playbook \
@@ -44,6 +43,7 @@ edit-secrets:
 	ansible-vault edit ./cluster/roles/secrets/vars/main.yml
 
 test:
+	cd controller && go test ./...
 	cd test/e2e && go test
 
 fmt:

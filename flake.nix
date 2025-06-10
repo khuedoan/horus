@@ -20,6 +20,7 @@
             opentofu
             pre-commit
             shellcheck
+            temporal-cli
             terragrunt
             wireguard-tools
             yamlfmt

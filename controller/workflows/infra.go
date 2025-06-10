@@ -16,18 +16,6 @@ type InfraInputs struct {
 	Stack       string
 }
 
-// TODO create trigger
-// For now do that manually on the UI
-// Task queue: cloudlab
-// Workflow: Infra
-// Input json/plain:
-//
-//	{
-//	  "url": "https://github.com/khuedoan/cloudlab",
-//	  "revision": "infra-rewrite",
-//	  "oldRevision": "790763a8166e306f34559870c60e818505117e6b",
-//	  "stack": "local"
-//	}
 func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 	ao := workflow.ActivityOptions{
 		StartToCloseTimeout: 10 * time.Second,

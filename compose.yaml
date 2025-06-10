@@ -11,6 +11,8 @@ services:
     ports:
       - 9000:9000
       - 9001:9001
+    volumes:
+      - tfstate:/data
   temporal:
     image: docker.io/temporalio/server:1.27
     entrypoint:
@@ -37,3 +39,5 @@ services:
     depends_on:
       temporal:
         condition: service_healthy
+volumes:
+  tfstate: {}
