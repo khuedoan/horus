@@ -2,7 +2,7 @@ remote_state {
   backend = "s3"
   config = {
     endpoints = {
-      s3 = "http://tfstate:9000"
+      s3 = "http://localhost:9000"
     }
     bucket                             = "tfstate"
     key                                = "${path_relative_to_include()}/terraform.tfstate"

@@ -29,10 +29,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      TEMPORAL_HOST: temporal:7233
+      TEMPORAL_HOST: localhost:7233
       TG_NON_INTERACTIVE: true
       AWS_ACCESS_KEY_ID: minioadmin
       AWS_SECRET_ACCESS_KEY: minioadmin
+    network_mode: host
     depends_on:
       temporal:
         condition: service_healthy
