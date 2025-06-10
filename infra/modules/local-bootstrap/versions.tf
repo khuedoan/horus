@@ -27,4 +27,5 @@ provider "kubectl" {
   client_certificate     = var.credentials.client_certificate
   client_key             = var.credentials.client_key
   cluster_ca_certificate = var.credentials.cluster_ca_certificate
+  load_config_file       = false
 }
