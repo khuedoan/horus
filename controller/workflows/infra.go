@@ -25,7 +25,7 @@ type InfraInputs struct {
 //	{
 //	  "url": "https://github.com/khuedoan/cloudlab",
 //	  "revision": "infra-rewrite",
-//	  "oldRevision": "7796870a3c17105d7a13c5b6c990fa895de64952",
+//	  "oldRevision": "790763a8166e306f34559870c60e818505117e6b",
 //	  "stack": "local"
 //	}
 func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {

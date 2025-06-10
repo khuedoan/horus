@@ -21,3 +21,12 @@ services:
     depends_on:
       temporal:
         condition: service_healthy
+  tfstate:
+    image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
+    command:
+      - server
+      - /data
+      - --console-address=:9001
+    ports:
+      - 9000:9000
+      - 9001:9001

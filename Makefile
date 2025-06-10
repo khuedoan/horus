@@ -1,6 +1,7 @@
 .POSIX:
 .PHONY: default docker-compose infra cluster system platform apps secrets edit-secrets test update
 
+env ?= local
 # TODO multiple clusters
 export KUBECONFIG = $(shell pwd)/cluster/kubeconfig.yaml
 
@@ -13,14 +14,9 @@ docker-compose:
 	# https://search.opentofu.org/provider/opentofu/tfe
 	tofu login app.terraform.io
 
-infra/terraform.tfvars:
-	cp infra/terraform.tfvars.example infra/terraform.tfvars
-	nvim infra/terraform.tfvars
-
-infra: ~/.terraform.d/credentials.tfrc.json infra/terraform.tfvars
-	cd infra \
-		&& tofu init \
-		&& tofu apply
+infra:
+	cd infra/${env} \
+		&& AWS_ACCESS_KEY_ID=minioadmin AWS_SECRET_ACCESS_KEY=minioadmin terragrunt apply --all
 
 cluster:
 	cd cluster && ansible-playbook \
