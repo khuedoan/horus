@@ -48,7 +48,7 @@ func TerragruntApply(ctx context.Context, repoPath string, modulePath string, st
 	// Construct the full path to the module
 	fullPath := filepath.Join(repoPath, "infra", stack, modulePath)
 
-	cmd := exec.CommandContext(ctx, "terragrunt", "apply", "--auto-approve")
+	cmd := exec.CommandContext(ctx, "terragrunt", "apply", "--backend-bootstrap", "--auto-approve")
 	cmd.Dir = fullPath
 
 	output, err := cmd.CombinedOutput()

@@ -1,11 +1,13 @@
 remote_state {
   backend = "s3"
   config = {
-    encrypt                            = false
-    endpoint                           = "http://localhost:9000"
+    endpoints = {
+      s3 = "http://tfstate:9000"
+    }
     bucket                             = "tfstate"
     key                                = "${path_relative_to_include()}/terraform.tfstate"
     region                             = "eu-west-1"
+    encrypt                            = false
     disable_aws_client_checksums       = true
     skip_bucket_ssencryption           = true
     skip_bucket_public_access_blocking = true

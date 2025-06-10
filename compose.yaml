@@ -1,4 +1,16 @@
 services:
+  tfstate:
+    image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
+    command:
+      - server
+      - /data
+      - --console-address=:9001
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - 9000:9000
+      - 9001:9001
   temporal:
     image: docker.io/temporalio/server:1.27
     entrypoint:
@@ -18,15 +30,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       TEMPORAL_HOST: temporal:7233
+      TG_NON_INTERACTIVE: true
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
     depends_on:
       temporal:
         condition: service_healthy
-  tfstate:
-    image: quay.io/minio/minio:RELEASE.2025-05-24T17-08-30Z
-    command:
-      - server
-      - /data
-      - --console-address=:9001
-    ports:
-      - 9000:9000
-      - 9001:9001
