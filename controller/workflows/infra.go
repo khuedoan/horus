@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"cloudlab/controller/activities"
+
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -58,7 +59,7 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 		return nil, err
 	}
 
-	logger.Info("Infra workflow completed graph pruning.", "nodes", len(prunedGraph.Nodes), "edges", len(prunedGraph.Edges))
+	logger.Info("Infra workflow completed graph pruning.", "nodes", prunedGraph.NodeCount(), "edges", prunedGraph.EdgeCount())
 
 	// Get dependency levels for parallel execution
 	dependencyLevels := prunedGraph.TopologicalSort()
@@ -93,7 +94,7 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 		logger.Info("Completed terragrunt apply for dependency level", "level", levelIndex, "modules", level)
 	}
 
-	logger.Info("Infra workflow completed successfully.", "totalLevels", len(dependencyLevels), "appliedModules", len(prunedGraph.Nodes))
+	logger.Info("Infra workflow completed successfully.", "totalLevels", len(dependencyLevels), "appliedModules", prunedGraph.NodeCount())
 
 	return prunedGraph, nil
 }

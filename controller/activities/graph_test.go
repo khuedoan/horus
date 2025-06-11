@@ -27,56 +27,56 @@ digraph {
 		name          string
 		changed       []string
 		expectedNodes []string
-		expectedEdges []Edge
+		expectedEdges map[string][]string
 	}{
 		{
 			name:          "Prune to C and its dependencies",
 			changed:       []string{"C"},
 			expectedNodes: []string{"A", "B", "C", "D"},
-			expectedEdges: []Edge{
-				{Src: "A", Dest: "B"},
-				{Src: "B", Dest: "C"},
-				{Src: "D", Dest: "B"},
+			expectedEdges: map[string][]string{
+				"A": {"B"},
+				"B": {"C"},
+				"D": {"B"},
 			},
 		},
 		{
 			name:          "Prune to F and its dependencies",
 			changed:       []string{"F"},
 			expectedNodes: []string{"E", "F"},
-			expectedEdges: []Edge{
-				{Src: "E", Dest: "F"},
+			expectedEdges: map[string][]string{
+				"E": {"F"},
 			},
 		},
 		{
 			name:          "Prune to B and its dependencies",
 			changed:       []string{"B"},
 			expectedNodes: []string{"A", "B", "D"},
-			expectedEdges: []Edge{
-				{Src: "A", Dest: "B"},
-				{Src: "D", Dest: "B"},
+			expectedEdges: map[string][]string{
+				"A": {"B"},
+				"D": {"B"},
 			},
 		},
 		{
 			name:          "No nodes changed",
 			changed:       []string{},
 			expectedNodes: []string{},
-			expectedEdges: []Edge{},
+			expectedEdges: map[string][]string{},
 		},
 		{
 			name:          "Changed node not in graph",
 			changed:       []string{"Z"},
 			expectedNodes: []string{},
-			expectedEdges: []Edge{},
+			expectedEdges: map[string][]string{},
 		},
 		{
 			name:          "Multiple changed nodes",
 			changed:       []string{"C", "F"},
 			expectedNodes: []string{"A", "B", "C", "D", "E", "F"},
-			expectedEdges: []Edge{
-				{Src: "A", Dest: "B"},
-				{Src: "B", Dest: "C"},
-				{Src: "D", Dest: "B"},
-				{Src: "E", Dest: "F"},
+			expectedEdges: map[string][]string{
+				"A": {"B"},
+				"B": {"C"},
+				"D": {"B"},
+				"E": {"F"},
 			},
 		},
 	}
@@ -88,10 +88,7 @@ digraph {
 				t.Fatalf("PruneGraph failed: %v", err)
 			}
 
-			prunedNodes := make([]string, 0, len(prunedGraph.Nodes))
-			for _, n := range prunedGraph.Nodes {
-				prunedNodes = append(prunedNodes, n.Name)
-			}
+			prunedNodes := prunedGraph.GetNodes()
 			sort.Strings(prunedNodes)
 			sort.Strings(tc.expectedNodes)
 
@@ -99,27 +96,9 @@ digraph {
 				t.Errorf("Expected nodes %v, but got %v", tc.expectedNodes, prunedNodes)
 			}
 
-			prunedEdges := make([]Edge, len(prunedGraph.Edges))
-			for i, e := range prunedGraph.Edges {
-				prunedEdges[i] = *e
-			}
-
-			// Sort edges for consistent comparison
-			sort.Slice(prunedEdges, func(i, j int) bool {
-				if prunedEdges[i].Src != prunedEdges[j].Src {
-					return prunedEdges[i].Src < prunedEdges[j].Src
-				}
-				return prunedEdges[i].Dest < prunedEdges[j].Dest
-			})
-			sort.Slice(tc.expectedEdges, func(i, j int) bool {
-				if tc.expectedEdges[i].Src != tc.expectedEdges[j].Src {
-					return tc.expectedEdges[i].Src < tc.expectedEdges[j].Src
-				}
-				return tc.expectedEdges[i].Dest < tc.expectedEdges[j].Dest
-			})
-
-			if !reflect.DeepEqual(prunedEdges, tc.expectedEdges) {
-				t.Errorf("Expected edges %v, but got %v", tc.expectedEdges, prunedEdges)
+			// Compare edges
+			if !reflect.DeepEqual(prunedGraph.Edges, tc.expectedEdges) {
+				t.Errorf("Expected edges %v, but got %v", tc.expectedEdges, prunedGraph.Edges)
 			}
 		})
 	}
@@ -271,8 +250,8 @@ func TestPruneGraphRealWorld(t *testing.T) {
 	"xshare/azuresql" -> "core";
 	"xshare/azuresqlusers" ;
 	"xshare/azuresqlusers" -> "xshare/azuresql";
-}`
-
+}
+`
 	graph, err := NewGraphFromDot(realWorldDot)
 	if err != nil {
 		t.Fatalf("Failed to create graph from real-world DOT: %v", err)
@@ -284,22 +263,20 @@ func TestPruneGraphRealWorld(t *testing.T) {
 		t.Fatalf("PruneGraph failed: %v", err)
 	}
 
+	// Expected result:
 	// digraph {
 	//   "bootstrap-va" -> "cluster-va";
 	//   "dems-cluster-identity" -> "cluster-va";
 	//   "pes/keyvault" -> "dems-cluster-identity";
 	// }
 	expectedNodes := []string{"bootstrap-va", "cluster-va", "dems-cluster-identity", "pes/keyvault"}
-	expectedEdges := []Edge{
-		{Src: "bootstrap-va", Dest: "cluster-va"},
-		{Src: "dems-cluster-identity", Dest: "cluster-va"},
-		{Src: "pes/keyvault", Dest: "dems-cluster-identity"},
+	expectedEdges := map[string][]string{
+		"bootstrap-va":          {"cluster-va"},
+		"dems-cluster-identity": {"cluster-va"},
+		"pes/keyvault":          {"dems-cluster-identity"},
 	}
 
-	prunedNodes := make([]string, 0, len(prunedGraph.Nodes))
-	for _, n := range prunedGraph.Nodes {
-		prunedNodes = append(prunedNodes, n.Name)
-	}
+	prunedNodes := prunedGraph.GetNodes()
 	sort.Strings(prunedNodes)
 	sort.Strings(expectedNodes)
 
@@ -307,27 +284,8 @@ func TestPruneGraphRealWorld(t *testing.T) {
 		t.Errorf("Expected nodes %v, but got %v", expectedNodes, prunedNodes)
 	}
 
-	prunedEdges := make([]Edge, len(prunedGraph.Edges))
-	for i, e := range prunedGraph.Edges {
-		prunedEdges[i] = *e
-	}
-
-	// Sort edges for consistent comparison
-	sort.Slice(prunedEdges, func(i, j int) bool {
-		if prunedEdges[i].Src != prunedEdges[j].Src {
-			return prunedEdges[i].Src < prunedEdges[j].Src
-		}
-		return prunedEdges[i].Dest < prunedEdges[j].Dest
-	})
-	sort.Slice(expectedEdges, func(i, j int) bool {
-		if expectedEdges[i].Src != expectedEdges[j].Src {
-			return expectedEdges[i].Src < expectedEdges[j].Src
-		}
-		return expectedEdges[i].Dest < expectedEdges[j].Dest
-	})
-
-	if !reflect.DeepEqual(prunedEdges, expectedEdges) {
-		t.Errorf("Expected edges %v, but got %v", expectedEdges, prunedEdges)
+	if !reflect.DeepEqual(prunedGraph.Edges, expectedEdges) {
+		t.Errorf("Expected edges %v, but got %v", expectedEdges, prunedGraph.Edges)
 	}
 }
 
@@ -335,15 +293,15 @@ func TestTopologicalSort(t *testing.T) {
 	testCases := []struct {
 		name           string
 		nodes          []string
-		edges          []Edge
+		edges          map[string][]string
 		expectedLevels [][]string
 	}{
 		{
 			name:  "Simple linear dependency",
 			nodes: []string{"A", "B", "C"},
-			edges: []Edge{
-				{Src: "B", Dest: "A"},
-				{Src: "C", Dest: "B"},
+			edges: map[string][]string{
+				"B": {"A"},
+				"C": {"B"},
 			},
 			expectedLevels: [][]string{
 				{"A"},
@@ -354,10 +312,9 @@ func TestTopologicalSort(t *testing.T) {
 		{
 			name:  "Parallel dependencies",
 			nodes: []string{"A", "B", "C", "D"},
-			edges: []Edge{
-				{Src: "C", Dest: "A"},
-				{Src: "C", Dest: "B"},
-				{Src: "D", Dest: "C"},
+			edges: map[string][]string{
+				"C": {"A", "B"},
+				"D": {"C"},
 			},
 			expectedLevels: [][]string{
 				{"A", "B"},
@@ -368,13 +325,11 @@ func TestTopologicalSort(t *testing.T) {
 		{
 			name:  "Complex dependency graph",
 			nodes: []string{"A", "B", "C", "D", "E", "F"},
-			edges: []Edge{
-				{Src: "C", Dest: "A"},
-				{Src: "C", Dest: "B"},
-				{Src: "D", Dest: "C"},
-				{Src: "E", Dest: "C"},
-				{Src: "F", Dest: "D"},
-				{Src: "F", Dest: "E"},
+			edges: map[string][]string{
+				"C": {"A", "B"},
+				"D": {"C"},
+				"E": {"C"},
+				"F": {"D", "E"},
 			},
 			expectedLevels: [][]string{
 				{"A", "B"},
@@ -386,20 +341,20 @@ func TestTopologicalSort(t *testing.T) {
 		{
 			name:           "No dependencies",
 			nodes:          []string{"A", "B", "C"},
-			edges:          []Edge{},
+			edges:          map[string][]string{},
 			expectedLevels: [][]string{{"A", "B", "C"}},
 		},
 		{
 			name:           "Single node",
 			nodes:          []string{"A"},
-			edges:          []Edge{},
+			edges:          map[string][]string{},
 			expectedLevels: [][]string{{"A"}},
 		},
 		{
 			name:  "Real world example: bootstrap depends on cluster",
 			nodes: []string{"bootstrap", "cluster"},
-			edges: []Edge{
-				{Src: "bootstrap", Dest: "cluster"},
+			edges: map[string][]string{
+				"bootstrap": {"cluster"},
 			},
 			expectedLevels: [][]string{
 				{"cluster"},
@@ -411,17 +366,16 @@ func TestTopologicalSort(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			// Create graph
-			graph := &Graph{
-				Nodes: make([]*Node, len(tc.nodes)),
-				Edges: make([]*Edge, len(tc.edges)),
+			graph := NewGraph()
+
+			for _, nodeName := range tc.nodes {
+				graph.AddNode(nodeName)
 			}
 
-			for i, nodeName := range tc.nodes {
-				graph.Nodes[i] = &Node{Name: nodeName}
-			}
-
-			for i, edge := range tc.edges {
-				graph.Edges[i] = &Edge{Src: edge.Src, Dest: edge.Dest}
+			for src, dests := range tc.edges {
+				for _, dest := range dests {
+					graph.AddEdge(src, dest)
+				}
 			}
 
 			// Get topological sort

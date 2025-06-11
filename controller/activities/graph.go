@@ -3,29 +3,56 @@ package activities
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"strings"
-
-	"github.com/awalterschulze/gographviz"
 )
 
-// Node represents a node in the graph.
-type Node struct {
-	Name string
-	// Attributes can be added here if needed
-}
-
-// Edge represents a directed edge in the graph.
-type Edge struct {
-	Src  string
-	Dest string
-	// Attributes can be added here if needed
-}
-
-// Graph represents a serializable graph.
+// Graph represents a simple directed graph with efficient operations.
 type Graph struct {
-	Nodes []*Node
-	Edges []*Edge
+	Nodes map[string]bool     `json:"nodes"`
+	Edges map[string][]string `json:"edges"` // source -> []destinations
+}
+
+// NewGraph creates a new empty graph.
+func NewGraph() *Graph {
+	return &Graph{
+		Nodes: make(map[string]bool),
+		Edges: make(map[string][]string),
+	}
+}
+
+// AddNode adds a node to the graph.
+func (g *Graph) AddNode(name string) {
+	g.Nodes[name] = true
+}
+
+// AddEdge adds a directed edge from src to dest.
+func (g *Graph) AddEdge(src, dest string) {
+	g.AddNode(src)
+	g.AddNode(dest)
+	g.Edges[src] = append(g.Edges[src], dest)
+}
+
+// GetNodes returns all node names.
+func (g *Graph) GetNodes() []string {
+	nodes := make([]string, 0, len(g.Nodes))
+	for name := range g.Nodes {
+		nodes = append(nodes, name)
+	}
+	return nodes
+}
+
+// NodeCount returns the number of nodes in the graph.
+func (g *Graph) NodeCount() int {
+	return len(g.Nodes)
+}
+
+// EdgeCount returns the number of edges in the graph.
+func (g *Graph) EdgeCount() int {
+	count := 0
+	for _, dests := range g.Edges {
+		count += len(dests)
+	}
+	return count
 }
 
 // PruneGraph takes a graph and a list of changed nodes, and returns a new graph
@@ -33,8 +60,10 @@ type Graph struct {
 func PruneGraph(ctx context.Context, graph *Graph, changed []string) (*Graph, error) {
 	// Build reverse dependency map: target -> dependents
 	dependents := make(map[string][]string)
-	for _, edge := range graph.Edges {
-		dependents[edge.Dest] = append(dependents[edge.Dest], edge.Src)
+	for src, dests := range graph.Edges {
+		for _, dest := range dests {
+			dependents[dest] = append(dependents[dest], src)
+		}
 	}
 
 	// Collect all nodes to keep (changed + all that depend on them)
@@ -49,91 +78,115 @@ func PruneGraph(ctx context.Context, graph *Graph, changed []string) (*Graph, er
 			visit(dep)
 		}
 	}
+
+	// Only visit nodes that actually exist in the graph
 	for _, nodeName := range changed {
-		// Make sure we have the node in the graph before visiting
-		var found bool
-		for _, n := range graph.Nodes {
-			if n.Name == nodeName {
-				found = true
-				break
-			}
-		}
-		if found {
+		if graph.Nodes[nodeName] {
 			visit(nodeName)
 		}
 	}
 
-	// Reconstruct pruned graph
-	prunedGraph := &Graph{Nodes: []*Node{}, Edges: []*Edge{}}
-	for _, node := range graph.Nodes {
-		if keep[node.Name] {
-			prunedGraph.Nodes = append(prunedGraph.Nodes, node)
-		}
+	// Create pruned graph
+	prunedGraph := NewGraph()
+	for node := range keep {
+		prunedGraph.AddNode(node)
 	}
-	for _, edge := range graph.Edges {
-		if keep[edge.Src] && keep[edge.Dest] {
-			prunedGraph.Edges = append(prunedGraph.Edges, edge)
+	for src, dests := range graph.Edges {
+		if keep[src] {
+			for _, dest := range dests {
+				if keep[dest] {
+					prunedGraph.AddEdge(src, dest)
+				}
+			}
 		}
 	}
 
 	return prunedGraph, nil
 }
 
-// NewGraphFromDot creates a Graph from a DOT string.
+// NewGraphFromDot creates a Graph from a DOT string using a simple parser.
 func NewGraphFromDot(dot string) (*Graph, error) {
-	ast, err := gographviz.ParseString(dot)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse DOT string: %w", err)
-	}
+	graph := NewGraph()
 
-	g := gographviz.NewGraph()
-	if err := gographviz.Analyse(ast, g); err != nil {
-		return nil, fmt.Errorf("failed to analyse graph: %w", err)
-	}
+	lines := strings.Split(dot, "\n")
+	for _, line := range lines {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "//") || line == "digraph {" || line == "}" {
+			continue
+		}
 
-	graph := &Graph{Nodes: []*Node{}, Edges: []*Edge{}}
-	nodeSet := make(map[string]bool)
+		// Remove trailing semicolon if present
+		line = strings.TrimSuffix(line, ";")
+		line = strings.TrimSpace(line)
 
-	addNode := func(name string) {
-		if !nodeSet[name] {
-			graph.Nodes = append(graph.Nodes, &Node{Name: name})
-			nodeSet[name] = true
+		// Parse edges: "A" -> "B"
+		if strings.Contains(line, "->") {
+			parts := strings.Split(line, "->")
+			if len(parts) == 2 {
+				src := extractQuotedString(strings.TrimSpace(parts[0]))
+				dest := extractQuotedString(strings.TrimSpace(parts[1]))
+				if src != "" && dest != "" {
+					graph.AddEdge(src, dest)
+				}
+			}
+		} else {
+			// Parse standalone nodes: "C"
+			nodeName := extractQuotedString(line)
+			if nodeName != "" {
+				graph.AddNode(nodeName)
+			}
 		}
 	}
 
-	unquote := func(s string) string {
-		res, err := strconv.Unquote(s)
-		if err != nil {
-			return s
-		}
-		return res
-	}
-
-	for _, edge := range g.Edges.Edges {
-		src := unquote(edge.Src)
-		dest := unquote(edge.Dst)
-		addNode(src)
-		addNode(dest)
-		graph.Edges = append(graph.Edges, &Edge{Src: src, Dest: dest})
-	}
-
-	for _, node := range g.Nodes.Nodes {
-		name := unquote(node.Name)
-		addNode(name)
-	}
 	return graph, nil
+}
+
+// extractQuotedString extracts the content between quotes from a string like "hello"
+func extractQuotedString(s string) string {
+	s = strings.TrimSpace(s)
+	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
+		return s[1 : len(s)-1]
+	}
+	return ""
 }
 
 // ToDot converts a Graph to a DOT string.
 func (g *Graph) ToDot() string {
 	var b strings.Builder
 	b.WriteString("digraph {\n")
-	for _, edge := range g.Edges {
-		b.WriteString(fmt.Sprintf("  %q -> %q;\n", edge.Src, edge.Dest))
+
+	// Write edges first (they implicitly declare nodes)
+	for src, dests := range g.Edges {
+		for _, dest := range dests {
+			b.WriteString(fmt.Sprintf("  %q -> %q;\n", src, dest))
+		}
 	}
-	for _, node := range g.Nodes {
-		b.WriteString(fmt.Sprintf("  %q;\n", node.Name))
+
+	// Write standalone nodes (nodes without edges)
+	for node := range g.Nodes {
+		hasEdge := false
+		// Check if node appears in any edge
+		if _, exists := g.Edges[node]; exists {
+			hasEdge = true
+		}
+		if !hasEdge {
+			for _, dests := range g.Edges {
+				for _, dest := range dests {
+					if dest == node {
+						hasEdge = true
+						break
+					}
+				}
+				if hasEdge {
+					break
+				}
+			}
+		}
+		if !hasEdge {
+			b.WriteString(fmt.Sprintf("  %q;\n", node))
+		}
 	}
+
 	b.WriteString("}")
 	return b.String()
 }
@@ -148,23 +201,25 @@ func (g *Graph) TopologicalSort() [][]string {
 	inDegree := make(map[string]int)
 
 	// Initialize all nodes with in-degree 0
-	for _, node := range g.Nodes {
-		inDegree[node.Name] = 0
-		adjList[node.Name] = []string{}
+	for node := range g.Nodes {
+		inDegree[node] = 0
+		adjList[node] = []string{}
 	}
 
 	// Build the graph and calculate in-degrees
 	// Edge from Src to Dest means Src depends on Dest
 	// So Dest should run before Src
-	for _, edge := range g.Edges {
-		adjList[edge.Dest] = append(adjList[edge.Dest], edge.Src)
-		inDegree[edge.Src]++
+	for src, dests := range g.Edges {
+		for _, dest := range dests {
+			adjList[dest] = append(adjList[dest], src)
+			inDegree[src]++
+		}
 	}
 
 	var levels [][]string
 	remaining := make(map[string]bool)
-	for _, node := range g.Nodes {
-		remaining[node.Name] = true
+	for node := range g.Nodes {
+		remaining[node] = true
 	}
 
 	// Process nodes level by level
