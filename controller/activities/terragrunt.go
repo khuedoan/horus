@@ -28,24 +28,14 @@ func TerragruntGraph(ctx context.Context, path string) (*Graph, error) {
 	return graph, nil
 }
 
-func TerragruntGraphShaking(ctx context.Context, graph *Graph, changedFiles []string) (*Graph, error) {
-	logger := activity.GetLogger(ctx)
-
-	logger.Info("Pruning Terragrunt DAG graph")
-
-	prunedGraph, err := PruneGraph(ctx, graph, changedFiles)
-	if err != nil {
-		return nil, fmt.Errorf("failed to prune dependency graph: %w", err)
-	}
-
-	return prunedGraph, nil
+func TerragruntPrune(ctx context.Context, graph *Graph, changedFiles []string) (*Graph, error) {
+	return PruneGraph(ctx, graph, changedFiles)
 }
 
 func TerragruntApply(ctx context.Context, repoPath string, modulePath string, stack string) error {
 	logger := activity.GetLogger(ctx)
 	logger.Info("Running terragrunt apply", "module", modulePath, "stack", stack)
 
-	// Construct the full path to the module
 	fullPath := filepath.Join(repoPath, "infra", stack, modulePath)
 
 	cmd := exec.CommandContext(ctx, "terragrunt", "apply", "--backend-bootstrap", "--auto-approve")

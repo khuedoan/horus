@@ -53,7 +53,7 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 	}
 
 	var prunedGraph *activities.Graph
-	err = workflow.ExecuteActivity(ctx, activities.TerragruntGraphShaking, graph, changedModules).Get(ctx, &prunedGraph)
+	err = workflow.ExecuteActivity(ctx, activities.TerragruntPrune, graph, changedModules).Get(ctx, &prunedGraph)
 	if err != nil {
 		logger.Error("Activity failed.", "Error", err)
 		return nil, err
@@ -61,14 +61,11 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 
 	logger.Info("Infra workflow completed graph pruning.", "nodes", prunedGraph.NodeCount(), "edges", prunedGraph.EdgeCount())
 
-	// Get dependency levels for parallel execution
 	dependencyLevels := prunedGraph.TopologicalSort()
 
-	// Execute terragrunt apply for each level in dependency order
 	for levelIndex, level := range dependencyLevels {
 		logger.Info("Starting terragrunt apply for dependency level", "level", levelIndex, "modules", level)
 
-		// Create futures for parallel execution within this level
 		var futures []workflow.Future
 		for _, moduleName := range level {
 			moduleActivityOptions := workflow.ActivityOptions{
@@ -81,7 +78,6 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 			futures = append(futures, future)
 		}
 
-		// Wait for all modules in this level to complete
 		for i, future := range futures {
 			err := future.Get(ctx, nil)
 			if err != nil {

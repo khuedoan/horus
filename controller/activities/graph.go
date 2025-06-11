@@ -155,34 +155,23 @@ func (g *Graph) ToDot() string {
 	var b strings.Builder
 	b.WriteString("digraph {\n")
 
-	// Write edges first (they implicitly declare nodes)
 	for src, dests := range g.Edges {
 		for _, dest := range dests {
 			b.WriteString(fmt.Sprintf("  %q -> %q;\n", src, dest))
 		}
 	}
 
-	// Write standalone nodes (nodes without edges)
+	// Write standalone nodes (those not in any edge)
+	edgeNodes := make(map[string]bool)
+	for src, dests := range g.Edges {
+		edgeNodes[src] = true
+		for _, dest := range dests {
+			edgeNodes[dest] = true
+		}
+	}
+
 	for node := range g.Nodes {
-		hasEdge := false
-		// Check if node appears in any edge
-		if _, exists := g.Edges[node]; exists {
-			hasEdge = true
-		}
-		if !hasEdge {
-			for _, dests := range g.Edges {
-				for _, dest := range dests {
-					if dest == node {
-						hasEdge = true
-						break
-					}
-				}
-				if hasEdge {
-					break
-				}
-			}
-		}
-		if !hasEdge {
+		if !edgeNodes[node] {
 			b.WriteString(fmt.Sprintf("  %q;\n", node))
 		}
 	}
@@ -191,10 +180,8 @@ func (g *Graph) ToDot() string {
 	return b.String()
 }
 
-// TopologicalSort returns modules grouped by dependency levels.
-// Modules in the same level can be executed in parallel.
-// Each level must complete before the next level can start.
-// An edge from A to B means A depends on B, so B must run before A.
+// TopologicalSort returns modules grouped by dependency levels for parallel execution.
+// Edge from A to B means A depends on B, so B must run before A.
 func (g *Graph) TopologicalSort() [][]string {
 	// Build adjacency list and in-degree count
 	adjList := make(map[string][]string)
