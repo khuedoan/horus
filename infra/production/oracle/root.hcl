@@ -2,6 +2,7 @@ locals {
   secrets = yamldecode(sops_decrypt_file(find_in_parent_folders("secrets.yaml")))
 }
 
+# TODO split into multiple modules, and use a more flexible state backend
 generate "backend" {
   path      = "backend.tf"
   if_exists = "overwrite_terragrunt"

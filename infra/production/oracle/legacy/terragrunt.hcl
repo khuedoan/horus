@@ -1,5 +1,5 @@
 include "root" {
-  path = find_in_parent_folders("root.hcl")
+  path   = find_in_parent_folders("root.hcl")
   expose = true
 }
 
@@ -8,5 +8,6 @@ terraform {
 }
 
 inputs = {
-  tenancy_ocid = include.root.locals.secrets.oracle_tenancy_ocid
+  tenancy_ocid   = include.root.locals.secrets.oracle_tenancy_ocid
+  vault_password = include.root.locals.secrets.vault_password
 }

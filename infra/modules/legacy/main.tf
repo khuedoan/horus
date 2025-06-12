@@ -14,12 +14,6 @@ resource "tls_private_key" "ssh" {
   algorithm = "ED25519"
 }
 
-resource "local_file" "ssh_private_key" {
-  content         = tls_private_key.ssh.private_key_openssh
-  filename        = "${path.root}/private.pem"
-  file_permission = "0600"
-}
-
 module "instance" {
   source         = "../instance"
   compartment_id = module.base.compartment_id
@@ -35,17 +29,10 @@ module "instance" {
   }
 }
 
-resource "local_file" "inventory" {
-  filename        = "${path.root}/inventory.yml"
-  file_permission = "0644"
-  content = yamlencode({
-    k3s = {
-      hosts = {
-        "${module.instance.public_ip}" = {
-          ansible_user                 = "ubuntu"
-          ansible_ssh_private_key_file = abspath(local_file.ssh_private_key.filename)
-        }
-      }
-    }
-  })
+module "cluster" {
+  source = "../cluster"
+
+  vault_password     = var.vault_password
+  instance_public_ip = module.instance.public_ip
+  ssh_private_key    = tls_private_key.ssh.private_key_openssh
 }
