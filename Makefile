@@ -21,6 +21,10 @@ apps:
 	# TODO auto bootstrap
 	kubectl apply --server-side=true --namespace argocd --filename apps/
 
+platform:
+	# TODO auto bootstrap
+	kubectl apply --server-side=true --namespace argocd --filename platform/
+
 test:
 	cd controller && go test ./...
 	cd test/e2e && go test
