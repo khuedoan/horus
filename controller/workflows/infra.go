@@ -74,7 +74,7 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 			}
 			moduleCtx := workflow.WithActivityOptions(ctx, moduleActivityOptions)
 
-			future := workflow.ExecuteActivity(moduleCtx, activities.TerragruntApply, path, moduleName, input.Stack)
+			future := workflow.ExecuteActivity(moduleCtx, activities.TerragruntApply, input.Url, input.Revision, moduleName, input.Stack)
 			futures = append(futures, future)
 		}
 

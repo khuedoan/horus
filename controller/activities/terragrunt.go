@@ -32,9 +32,15 @@ func TerragruntPrune(ctx context.Context, graph *Graph, changedFiles []string) (
 	return PruneGraph(ctx, graph, changedFiles)
 }
 
-func TerragruntApply(ctx context.Context, repoPath string, modulePath string, stack string) error {
+func TerragruntApply(ctx context.Context, repoUrl string, revision string, modulePath string, stack string) error {
 	logger := activity.GetLogger(ctx)
-	logger.Info("Running terragrunt apply", "module", modulePath, "stack", stack)
+	logger.Info("Running terragrunt apply", "module", modulePath, "stack", stack, "repo", repoUrl, "revision", revision)
+
+	// Ensure repository is available (clone if necessary)
+	repoPath, err := Clone(ctx, repoUrl, revision)
+	if err != nil {
+		return fmt.Errorf("failed to ensure repository is available: %w", err)
+	}
 
 	fullPath := filepath.Join(repoPath, "infra", stack, modulePath)
 
