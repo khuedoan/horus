@@ -6,13 +6,11 @@ import (
 	"strings"
 )
 
-// Graph represents a simple directed graph with efficient operations.
 type Graph struct {
 	Nodes map[string]bool     `json:"nodes"`
-	Edges map[string][]string `json:"edges"` // source -> []destinations
+	Edges map[string][]string `json:"edges"`
 }
 
-// NewGraph creates a new empty graph.
 func NewGraph() *Graph {
 	return &Graph{
 		Nodes: make(map[string]bool),
@@ -20,19 +18,16 @@ func NewGraph() *Graph {
 	}
 }
 
-// AddNode adds a node to the graph.
 func (g *Graph) AddNode(name string) {
 	g.Nodes[name] = true
 }
 
-// AddEdge adds a directed edge from src to dest.
 func (g *Graph) AddEdge(src, dest string) {
 	g.AddNode(src)
 	g.AddNode(dest)
 	g.Edges[src] = append(g.Edges[src], dest)
 }
 
-// GetNodes returns all node names.
 func (g *Graph) GetNodes() []string {
 	nodes := make([]string, 0, len(g.Nodes))
 	for name := range g.Nodes {
@@ -41,24 +36,9 @@ func (g *Graph) GetNodes() []string {
 	return nodes
 }
 
-// NodeCount returns the number of nodes in the graph.
-func (g *Graph) NodeCount() int {
-	return len(g.Nodes)
-}
-
-// EdgeCount returns the number of edges in the graph.
-func (g *Graph) EdgeCount() int {
-	count := 0
-	for _, dests := range g.Edges {
-		count += len(dests)
-	}
-	return count
-}
-
-// PruneGraph takes a graph and a list of changed nodes, and returns a new graph
-// containing only the changed nodes and their dependents.
 func PruneGraph(ctx context.Context, graph *Graph, changed []string) (*Graph, error) {
-	// Build reverse dependency map: target -> dependents
+	safeHeartbeat(ctx, fmt.Sprintf("Pruning graph with %d nodes, %d changed modules", len(graph.Nodes), len(changed)))
+
 	dependents := make(map[string][]string)
 	for src, dests := range graph.Edges {
 		for _, dest := range dests {
@@ -66,7 +46,8 @@ func PruneGraph(ctx context.Context, graph *Graph, changed []string) (*Graph, er
 		}
 	}
 
-	// Collect all nodes to keep (changed + all that depend on them)
+	safeHeartbeat(ctx, "Built reverse dependency map")
+
 	keep := make(map[string]bool)
 	var visit func(string)
 	visit = func(node string) {
@@ -79,14 +60,14 @@ func PruneGraph(ctx context.Context, graph *Graph, changed []string) (*Graph, er
 		}
 	}
 
-	// Only visit nodes that actually exist in the graph
 	for _, nodeName := range changed {
 		if graph.Nodes[nodeName] {
 			visit(nodeName)
 		}
 	}
 
-	// Create pruned graph
+	safeHeartbeat(ctx, fmt.Sprintf("Identified %d nodes to keep", len(keep)))
+
 	prunedGraph := NewGraph()
 	for node := range keep {
 		prunedGraph.AddNode(node)
@@ -101,10 +82,10 @@ func PruneGraph(ctx context.Context, graph *Graph, changed []string) (*Graph, er
 		}
 	}
 
+	safeHeartbeat(ctx, fmt.Sprintf("Created pruned graph with %d nodes", len(prunedGraph.Nodes)))
 	return prunedGraph, nil
 }
 
-// NewGraphFromDot creates a Graph from a DOT string using a simple parser.
 func NewGraphFromDot(dot string) (*Graph, error) {
 	graph := NewGraph()
 
@@ -115,11 +96,9 @@ func NewGraphFromDot(dot string) (*Graph, error) {
 			continue
 		}
 
-		// Remove trailing semicolon if present
 		line = strings.TrimSuffix(line, ";")
 		line = strings.TrimSpace(line)
 
-		// Parse edges: "A" -> "B"
 		if strings.Contains(line, "->") {
 			parts := strings.Split(line, "->")
 			if len(parts) == 2 {

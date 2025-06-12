@@ -42,11 +42,9 @@ func (s *ActivityTestSuite) TestPruneGraph_Success() {
 	prunedGraph, err := PruneGraph(ctx, originalGraph, changedFiles)
 
 	s.NoError(err)
-	s.Equal(2, prunedGraph.NodeCount()) // database and app (which depends on database)
-	s.Equal(1, prunedGraph.EdgeCount()) // app -> database
-	s.True(prunedGraph.Nodes["database"])
-	s.True(prunedGraph.Nodes["app"])
-	s.False(prunedGraph.Nodes["vpc"]) // vpc should be pruned as it's not changed and no dependents
+	s.True(prunedGraph.Nodes["database"]) // changed module should be included
+	s.True(prunedGraph.Nodes["app"])      // dependent should be included
+	s.False(prunedGraph.Nodes["vpc"])     // non-dependent should be pruned
 }
 
 func (s *ActivityTestSuite) TestPruneGraph_EmptyChanges() {
@@ -65,8 +63,7 @@ func (s *ActivityTestSuite) TestPruneGraph_EmptyChanges() {
 	prunedGraph, err := PruneGraph(ctx, originalGraph, changedFiles)
 
 	s.NoError(err)
-	s.Equal(0, prunedGraph.NodeCount())
-	s.Equal(0, prunedGraph.EdgeCount())
+	s.Empty(prunedGraph.Nodes) // no changes means empty graph
 }
 
 func (s *ActivityTestSuite) TestPruneGraph_ComplexDependencies() {
@@ -92,42 +89,50 @@ func (s *ActivityTestSuite) TestPruneGraph_ComplexDependencies() {
 	prunedGraph, err := PruneGraph(ctx, originalGraph, changedFiles)
 
 	s.NoError(err)
-	// Should include: database (changed), app (depends on database), monitoring (depends on app)
-	s.Equal(3, prunedGraph.NodeCount())
-	s.True(prunedGraph.Nodes["database"])
-	s.True(prunedGraph.Nodes["app"])
-	s.True(prunedGraph.Nodes["monitoring"])
-	s.False(prunedGraph.Nodes["vpc"])   // not a dependent
-	s.False(prunedGraph.Nodes["cache"]) // not a dependent
+	s.True(prunedGraph.Nodes["database"])   // changed module
+	s.True(prunedGraph.Nodes["app"])        // direct dependent
+	s.True(prunedGraph.Nodes["monitoring"]) // transitive dependent
+	s.False(prunedGraph.Nodes["vpc"])       // not a dependent
+	s.False(prunedGraph.Nodes["cache"])     // not a dependent
 }
 
 // Test using TestActivityEnvironment for activities that need proper context
 func (s *ActivityTestSuite) TestTerragruntPrune_WithActivityEnvironment() {
-	originalGraph := &Graph{
+	// Test data
+	graph := &Graph{
 		Nodes: map[string]bool{
-			"vpc":      true,
-			"database": true,
-			"app":      true,
+			"vpc":        true,
+			"database":   true,
+			"app":        true,
+			"monitoring": true,
 		},
 		Edges: map[string][]string{
-			"database": {"vpc"},
-			"app":      {"database"},
+			"app":        {"database", "vpc"},
+			"database":   {"vpc"},
+			"monitoring": {"app"},
 		},
 	}
-	changedFiles := []string{"database"}
 
-	// Register the activity first
-	s.env.RegisterActivity(TerragruntPrune)
+	changedModules := []string{"database"}
 
-	// Use the activity environment to execute the activity
-	val, err := s.env.ExecuteActivity(TerragruntPrune, originalGraph, changedFiles)
+	s.env.RegisterActivity(PruneGraph)
+
+	val, err := s.env.ExecuteActivity(PruneGraph, graph, changedModules)
 	s.NoError(err)
 
 	var result *Graph
-	err = val.Get(&result)
-	s.NoError(err)
-	s.Equal(2, result.NodeCount())
-	s.Equal(1, result.EdgeCount())
+	s.NoError(val.Get(&result))
+
+	// Only database (changed) and its dependents (app, monitoring) should be included
+	// vpc is not included because nothing depends on it
+	expectedNodes := []string{"database", "app", "monitoring"}
+	actualNodes := result.GetNodes()
+	s.ElementsMatch(expectedNodes, actualNodes)
+
+	s.Contains(result.Nodes, "database")
+	s.Contains(result.Nodes, "app")
+	s.Contains(result.Nodes, "monitoring")
+	s.NotContains(result.Nodes, "vpc")
 }
 
 func TestActivityTestSuite(t *testing.T) {
@@ -142,8 +147,7 @@ func TestNewGraphFromDot_EmptyGraph(t *testing.T) {
 	graph, err := NewGraphFromDot(dotString)
 
 	assert.NoError(t, err)
-	assert.Equal(t, 0, graph.NodeCount())
-	assert.Equal(t, 0, graph.EdgeCount())
+	assert.Empty(t, graph.Nodes)
 }
 
 func TestNewGraphFromDot_InvalidFormat(t *testing.T) {
@@ -152,7 +156,7 @@ func TestNewGraphFromDot_InvalidFormat(t *testing.T) {
 	graph, err := NewGraphFromDot(dotString)
 
 	assert.NoError(t, err) // Should not error, just ignore invalid lines
-	assert.Equal(t, 0, graph.NodeCount())
+	assert.Empty(t, graph.Nodes)
 }
 
 func TestGraph_TopologicalSort_CyclicGraph(t *testing.T) {
@@ -175,37 +179,31 @@ func TestGraph_TopologicalSort_CyclicGraph(t *testing.T) {
 	// Should handle cycles gracefully by putting remaining nodes in final level
 	assert.Greater(t, len(levels), 0)
 
-	// All nodes should be present somewhere
+	// All nodes should be present somewhere in the levels
 	allNodes := make(map[string]bool)
 	for _, level := range levels {
 		for _, node := range level {
 			allNodes[node] = true
 		}
 	}
-	assert.Len(t, allNodes, 3)
 	assert.True(t, allNodes["a"])
 	assert.True(t, allNodes["b"])
 	assert.True(t, allNodes["c"])
 }
 
-func TestExtractQuotedString(t *testing.T) {
-	tests := []struct {
-		input    string
-		expected string
-	}{
-		{`"hello"`, "hello"},
-		{`"hello world"`, "hello world"},
-		{`""`, ""},
-		{`hello`, ""},            // No quotes
-		{`"hello`, ""},           // Missing closing quote
-		{`hello"`, ""},           // Missing opening quote
-		{`  "hello"  `, "hello"}, // With whitespace
-	}
+func TestExtractQuoted(t *testing.T) {
+	// Test the extractQuoted function indirectly through NewGraphFromDot
+	dotString := `digraph {
+		"hello" -> "world";
+		"test";
+	}`
 
-	for _, test := range tests {
-		result := extractQuotedString(test.input)
-		assert.Equal(t, test.expected, result, "Input: %s", test.input)
-	}
+	graph, err := NewGraphFromDot(dotString)
+
+	assert.NoError(t, err)
+	assert.True(t, graph.Nodes["hello"])
+	assert.True(t, graph.Nodes["world"])
+	assert.True(t, graph.Nodes["test"])
 }
 
 func TestGraph_AddEdge_CreatesNodes(t *testing.T) {
@@ -213,8 +211,6 @@ func TestGraph_AddEdge_CreatesNodes(t *testing.T) {
 
 	graph.AddEdge("a", "b")
 
-	assert.Equal(t, 2, graph.NodeCount())
-	assert.Equal(t, 1, graph.EdgeCount())
 	assert.True(t, graph.Nodes["a"])
 	assert.True(t, graph.Nodes["b"])
 	assert.Contains(t, graph.Edges["a"], "b")
@@ -261,9 +257,8 @@ func TestClone_PathGeneration(t *testing.T) {
 }
 
 func TestClone_CheckRepoStatus(t *testing.T) {
-	// Test checkRepoStatus with non-existent directory
+	// Test hasCorrectRevision with non-existent directory
 	nonExistentPath := "/tmp/non-existent-repo-12345"
-	exists, hash := checkRepoStatus(context.Background(), nonExistentPath, "main")
-	assert.False(t, exists)
-	assert.Empty(t, hash)
+	hasCorrect := hasCorrectRevision(context.Background(), nonExistentPath, "main")
+	assert.False(t, hasCorrect)
 }

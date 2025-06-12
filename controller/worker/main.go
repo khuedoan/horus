@@ -27,7 +27,7 @@ func main() {
 	w.RegisterActivity(activities.Clone)
 	w.RegisterActivity(activities.ChangedModules)
 	w.RegisterActivity(activities.TerragruntGraph)
-	w.RegisterActivity(activities.TerragruntPrune)
+	w.RegisterActivity(activities.PruneGraph)
 	w.RegisterActivity(activities.TerragruntApply)
 
 	err = w.Run(worker.InterruptCh())

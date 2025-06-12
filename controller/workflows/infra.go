@@ -6,6 +6,7 @@ import (
 
 	"cloudlab/controller/activities"
 
+	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -17,80 +18,93 @@ type InfraInputs struct {
 }
 
 func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
-	ao := workflow.ActivityOptions{
-		StartToCloseTimeout: 10 * time.Second,
-	}
-	ctx = workflow.WithActivityOptions(ctx, ao)
-
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Infra workflow started", "infra", input)
 
+	// Clone activity: 30s timeout, quick retry on worker failure
+	cloneCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+		StartToCloseTimeout:    30 * time.Second,
+		HeartbeatTimeout:       10 * time.Second,
+		ScheduleToCloseTimeout: 2 * time.Minute, // Allow for retries
+		RetryPolicy: &temporal.RetryPolicy{
+			InitialInterval:    10 * time.Second, // Wait 10s before retry (worker restart time)
+			BackoffCoefficient: 1.5,
+			MaximumInterval:    30 * time.Second,
+			MaximumAttempts:    3,
+		},
+	})
+
 	var path string
-	err := workflow.ExecuteActivity(ctx, activities.Clone, input.Url, input.Revision).Get(ctx, &path)
-	if err != nil {
-		logger.Error("Activity failed.", "Error", err)
+	if err := workflow.ExecuteActivity(cloneCtx, activities.Clone, input.Url, input.Revision).Get(ctx, &path); err != nil {
 		return nil, err
 	}
 
-	var (
-		graph          *activities.Graph
-		changedModules []string
-	)
+	// Graph and analysis activities: moderate timeout
+	analysisCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+		StartToCloseTimeout:    2 * time.Minute,
+		HeartbeatTimeout:       30 * time.Second,
+		ScheduleToCloseTimeout: 5 * time.Minute,
+		RetryPolicy: &temporal.RetryPolicy{
+			InitialInterval:    10 * time.Second,
+			BackoffCoefficient: 1.5,
+			MaximumInterval:    1 * time.Minute,
+			MaximumAttempts:    3,
+		},
+	})
 
-	graphFuture := workflow.ExecuteActivity(ctx, activities.TerragruntGraph, path+"/infra/"+input.Stack)
-	changedModulesFuture := workflow.ExecuteActivity(ctx, activities.ChangedModules, path, input.OldRevision)
+	var graph *activities.Graph
+	var changedModules []string
 
-	err = graphFuture.Get(ctx, &graph)
-	if err != nil {
-		logger.Error("TerragruntGraph failed", "Error", err)
+	graphFuture := workflow.ExecuteActivity(analysisCtx, activities.TerragruntGraph, path+"/infra/"+input.Stack)
+	changedFuture := workflow.ExecuteActivity(analysisCtx, activities.ChangedModules, path, input.OldRevision)
+
+	if err := graphFuture.Get(ctx, &graph); err != nil {
 		return nil, err
 	}
-
-	err = changedModulesFuture.Get(ctx, &changedModules)
-	if err != nil {
-		logger.Error("ChangedModules failed", "Error", err)
+	if err := changedFuture.Get(ctx, &changedModules); err != nil {
 		return nil, err
 	}
 
 	var prunedGraph *activities.Graph
-	err = workflow.ExecuteActivity(ctx, activities.TerragruntPrune, graph, changedModules).Get(ctx, &prunedGraph)
-	if err != nil {
-		logger.Error("Activity failed.", "Error", err)
+	if err := workflow.ExecuteActivity(analysisCtx, activities.PruneGraph, graph, changedModules).Get(ctx, &prunedGraph); err != nil {
 		return nil, err
 	}
 
-	logger.Info("Infra workflow completed graph pruning.", "nodes", prunedGraph.NodeCount(), "edges", prunedGraph.EdgeCount())
+	logger.Info("Graph pruning completed", "nodes", len(prunedGraph.Nodes))
 
-	dependencyLevels := prunedGraph.TopologicalSort()
-
-	for levelIndex, level := range dependencyLevels {
-		logger.Info("Starting terragrunt apply for dependency level", "level", levelIndex, "modules", level)
+	for levelIndex, level := range prunedGraph.TopologicalSort() {
+		logger.Info("Starting terragrunt apply", "level", levelIndex, "modules", level)
 
 		var futures []workflow.Future
-		for _, moduleName := range level {
-			moduleActivityOptions := workflow.ActivityOptions{
-				StartToCloseTimeout: 10 * time.Minute,
-				Summary:             fmt.Sprintf("%s/%s", input.Stack, moduleName),
-			}
-			moduleCtx := workflow.WithActivityOptions(ctx, moduleActivityOptions)
-
-			future := workflow.ExecuteActivity(moduleCtx, activities.TerragruntApply, input.Url, input.Revision, moduleName, input.Stack)
-			futures = append(futures, future)
+		for _, module := range level {
+			moduleCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+				StartToCloseTimeout:    30 * time.Minute,
+				HeartbeatTimeout:       30 * time.Second,
+				ScheduleToCloseTimeout: 35 * time.Minute,
+				Summary:                fmt.Sprintf("%s/%s", input.Stack, module),
+				RetryPolicy: &temporal.RetryPolicy{
+					InitialInterval:    10 * time.Second,
+					BackoffCoefficient: 1.2,
+					MaximumInterval:    2 * time.Minute,
+					MaximumAttempts:    3,
+					NonRetryableErrorTypes: []string{
+						"TerraformValidationError",
+						"TerraformPlanError",
+					},
+				},
+			})
+			futures = append(futures, workflow.ExecuteActivity(moduleCtx, activities.TerragruntApply, input.Url, input.Revision, module, input.Stack))
 		}
 
 		for i, future := range futures {
-			err := future.Get(ctx, nil)
-			if err != nil {
-				logger.Error("TerragruntApply failed", "module", level[i], "level", levelIndex, "Error", err)
+			if err := future.Get(ctx, nil); err != nil {
+				logger.Error("TerragruntApply failed", "module", level[i], "level", levelIndex, "error", err)
 				return nil, err
 			}
 			logger.Info("Module apply completed", "module", level[i], "level", levelIndex)
 		}
-
-		logger.Info("Completed terragrunt apply for dependency level", "level", levelIndex, "modules", level)
 	}
 
-	logger.Info("Infra workflow completed successfully.", "totalLevels", len(dependencyLevels), "appliedModules", prunedGraph.NodeCount())
-
+	logger.Info("Infra workflow completed", "levels", len(prunedGraph.TopologicalSort()), "modules", len(prunedGraph.Nodes))
 	return prunedGraph, nil
 }
