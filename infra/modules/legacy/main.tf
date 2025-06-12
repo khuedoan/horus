@@ -1,12 +1,12 @@
 module "base" {
-  source                  = "./modules/base"
-  tenancy_id              = var.oracle_cloud.tenancy_ocid
+  source                  = "../base"
+  tenancy_id              = var.tenancy_ocid
   compartment_name        = var.compartment_name
   compartment_description = var.compartment_description
 }
 
 module "network" {
-  source         = "./modules/network"
+  source         = "../network"
   compartment_id = module.base.compartment_id
 }
 
@@ -21,7 +21,7 @@ resource "local_file" "ssh_private_key" {
 }
 
 module "instance" {
-  source         = "./modules/instance"
+  source         = "../instance"
   compartment_id = module.base.compartment_id
   display_name   = "cloudlab"
   subnet_id      = module.network.subnet_id
@@ -36,7 +36,7 @@ module "instance" {
 }
 
 resource "local_file" "inventory" {
-  filename        = "${path.root}/../cluster/inventory.yml"
+  filename        = "${path.root}/inventory.yml"
   file_permission = "0644"
   content = yamlencode({
     k3s = {
