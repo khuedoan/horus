@@ -1,0 +1,69 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  name: notes
+spec:
+  destination:
+    name: in-cluster
+    namespace: notes
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 3.7.3
+    helm:
+      valuesObject:
+        defaultPodOptions:
+          labels:
+            istio.io/dataplane-mode: ambient
+        controllers:
+          main:
+            type: statefulset
+            containers:
+              main:
+                image:
+                  repository: ghcr.io/silverbulletmd/silverbullet
+                  tag: v2
+                envFrom:
+                  - secret: silverbullet
+        service:
+          main:
+            controller: main
+            ports:
+              http:
+                port: 3000
+                protocol: HTTP
+        ingress:
+          main:
+            enabled: true
+            className: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+            hosts:
+              - host: notes.127-0-0-1.nip.io
+                paths:
+                  - path: /
+                    pathType: Prefix
+                    service:
+                      identifier: main
+                      port: 3000
+            tls:
+              - hosts:
+                  - notes.127-0-0-1.nip.io
+                secretName: notes-tls-certificate
+        persistence:
+          data:
+            accessMode: ReadWriteOnce
+            size: 1Gi
+            globalMounts:
+              - path: /space
