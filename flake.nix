@@ -10,6 +10,7 @@
       {
         devShells.default = mkShell {
           packages = [
+            age
             ansible
             ansible-lint
             gnumake
@@ -20,6 +21,7 @@
             opentofu
             pre-commit
             shellcheck
+            sops
             temporal-cli
             terragrunt
             wireguard-tools
