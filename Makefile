@@ -19,11 +19,11 @@ infra: compose
 
 apps:
 	# TODO auto bootstrap
-	kubectl apply --server-side=true --namespace argocd --filename apps/
+	kubectl apply --server-side=true --namespace argocd --filename apps/${env}
 
 platform:
 	# TODO auto bootstrap
-	kubectl apply --server-side=true --namespace argocd --filename platform/
+	kubectl apply --server-side=true --namespace argocd --filename platform/${env}
 
 test:
 	cd controller && go test ./...
@@ -41,3 +41,7 @@ fmt:
 
 update:
 	nix flake update
+
+clean:
+	docker compose down --remove-orphans --volumes
+	k3d cluster delete cloudlab
