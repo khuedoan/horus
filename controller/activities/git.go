@@ -31,14 +31,10 @@ func Clone(ctx context.Context, url string, revision string) (string, error) {
 	logger := activity.GetLogger(ctx)
 	path := generateRepoPath(url, revision)
 
-	safeHeartbeat(ctx, "Checking existing repository")
-
 	if hasCorrectRevision(ctx, path, revision) {
 		logger.Info("Repository already available", "path", path)
 		return path, nil
 	}
-
-	safeHeartbeat(ctx, "Preparing to clone repository")
 
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		return "", fmt.Errorf("failed to create parent directory: %w", err)
@@ -46,7 +42,6 @@ func Clone(ctx context.Context, url string, revision string) (string, error) {
 	os.RemoveAll(path)
 
 	logger.Info("Cloning repository", "url", url, "revision", revision)
-	safeHeartbeat(ctx, fmt.Sprintf("Starting git clone: %s@%s", url, revision))
 
 	cmd := exec.CommandContext(ctx, "git", "clone", "--branch", revision, url, path)
 	if err := cmd.Run(); err != nil {
@@ -54,21 +49,16 @@ func Clone(ctx context.Context, url string, revision string) (string, error) {
 		return "", fmt.Errorf("failed to clone repository: %w", err)
 	}
 
-	safeHeartbeat(ctx, "Clone completed successfully")
 	return path, nil
 }
 
 func ChangedModules(ctx context.Context, repoPath string, oldRevision string) ([]string, error) {
-	safeHeartbeat(ctx, "Analyzing changed files")
-
 	cmd := exec.CommandContext(ctx, "git", "diff", "--name-only", oldRevision, "HEAD")
 	cmd.Dir = repoPath
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, err
 	}
-
-	safeHeartbeat(ctx, "Processing changed files to identify modules")
 
 	seen := make(map[string]struct{})
 	var modules []string
@@ -94,6 +84,5 @@ func ChangedModules(ctx context.Context, repoPath string, oldRevision string) ([
 		}
 	}
 
-	safeHeartbeat(ctx, fmt.Sprintf("Found %d changed modules", len(modules)))
 	return modules, nil
 }

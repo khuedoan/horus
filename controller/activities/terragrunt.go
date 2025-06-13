@@ -13,8 +13,6 @@ import (
 )
 
 func TerragruntGraph(ctx context.Context, path string) (*Graph, error) {
-	safeHeartbeat(ctx, "Generating terragrunt dependency graph")
-
 	cmd := exec.CommandContext(ctx, "terragrunt", "dag", "graph")
 	cmd.Dir = path
 	output, err := cmd.Output()
@@ -22,7 +20,6 @@ func TerragruntGraph(ctx context.Context, path string) (*Graph, error) {
 		return nil, fmt.Errorf("failed to run terragrunt dag graph: %w", err)
 	}
 
-	safeHeartbeat(ctx, "Parsing dependency graph")
 	return NewGraphFromDot(string(output))
 }
 
@@ -34,15 +31,12 @@ func TerragruntApply(ctx context.Context, repoUrl string, revision string, modul
 	logger := activity.GetLogger(ctx)
 	logger.Info("Running terragrunt apply", "module", modulePath, "stack", stack)
 
-	safeHeartbeat(ctx, fmt.Sprintf("Ensuring repository availability for %s", modulePath))
-
 	repoPath, err := Clone(ctx, repoUrl, revision)
 	if err != nil {
 		return fmt.Errorf("failed to ensure repository is available: %w", err)
 	}
 
 	fullPath := filepath.Join(repoPath, "infra", stack, modulePath)
-	safeHeartbeat(ctx, fmt.Sprintf("Starting terragrunt apply for %s", modulePath))
 
 	cmd := exec.CommandContext(ctx, "terragrunt", "apply", "--backend-bootstrap", "--auto-approve")
 	cmd.Dir = fullPath

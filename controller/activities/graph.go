@@ -37,16 +37,12 @@ func (g *Graph) GetNodes() []string {
 }
 
 func PruneGraph(ctx context.Context, graph *Graph, changed []string) (*Graph, error) {
-	safeHeartbeat(ctx, fmt.Sprintf("Pruning graph with %d nodes, %d changed modules", len(graph.Nodes), len(changed)))
-
 	dependents := make(map[string][]string)
 	for src, dests := range graph.Edges {
 		for _, dest := range dests {
 			dependents[dest] = append(dependents[dest], src)
 		}
 	}
-
-	safeHeartbeat(ctx, "Built reverse dependency map")
 
 	keep := make(map[string]bool)
 	var visit func(string)
@@ -66,8 +62,6 @@ func PruneGraph(ctx context.Context, graph *Graph, changed []string) (*Graph, er
 		}
 	}
 
-	safeHeartbeat(ctx, fmt.Sprintf("Identified %d nodes to keep", len(keep)))
-
 	prunedGraph := NewGraph()
 	for node := range keep {
 		prunedGraph.AddNode(node)
@@ -82,7 +76,6 @@ func PruneGraph(ctx context.Context, graph *Graph, changed []string) (*Graph, er
 		}
 	}
 
-	safeHeartbeat(ctx, fmt.Sprintf("Created pruned graph with %d nodes", len(prunedGraph.Nodes)))
 	return prunedGraph, nil
 }
 
