@@ -23,14 +23,9 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 
 	// Clone activity: 30s timeout, quick retry on worker failure
 	cloneCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-		StartToCloseTimeout:    30 * time.Second,
-		HeartbeatTimeout:       10 * time.Second,
-		ScheduleToCloseTimeout: 2 * time.Minute, // Allow for retries
+		StartToCloseTimeout: 1 * time.Minute,
 		RetryPolicy: &temporal.RetryPolicy{
-			InitialInterval:    10 * time.Second, // Wait 10s before retry (worker restart time)
-			BackoffCoefficient: 1.5,
-			MaximumInterval:    30 * time.Second,
-			MaximumAttempts:    3,
+			MaximumAttempts: 3,
 		},
 	})
 
@@ -41,14 +36,9 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 
 	// Graph and analysis activities: moderate timeout
 	analysisCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-		StartToCloseTimeout:    2 * time.Minute,
-		HeartbeatTimeout:       30 * time.Second,
-		ScheduleToCloseTimeout: 5 * time.Minute,
+		StartToCloseTimeout: 5 * time.Second,
 		RetryPolicy: &temporal.RetryPolicy{
-			InitialInterval:    10 * time.Second,
-			BackoffCoefficient: 1.5,
-			MaximumInterval:    1 * time.Minute,
-			MaximumAttempts:    3,
+			MaximumAttempts: 1,
 		},
 	})
 
@@ -78,15 +68,11 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 		var futures []workflow.Future
 		for _, module := range level {
 			moduleCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-				StartToCloseTimeout:    30 * time.Minute,
-				HeartbeatTimeout:       30 * time.Second,
-				ScheduleToCloseTimeout: 35 * time.Minute,
-				Summary:                fmt.Sprintf("%s/%s", input.Stack, module),
+				StartToCloseTimeout: 30 * time.Minute,
+				HeartbeatTimeout:    2 * time.Minute,
+				Summary:             fmt.Sprintf("%s/%s", input.Stack, module),
 				RetryPolicy: &temporal.RetryPolicy{
-					InitialInterval:    10 * time.Second,
-					BackoffCoefficient: 1.2,
-					MaximumInterval:    2 * time.Minute,
-					MaximumAttempts:    3,
+					MaximumAttempts: 2,
 					NonRetryableErrorTypes: []string{
 						"TerraformValidationError",
 						"TerraformPlanError",
