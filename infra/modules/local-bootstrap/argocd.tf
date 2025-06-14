@@ -15,7 +15,7 @@ resource "helm_release" "argocd" {
         # Remove once ArgoCD 3.1.0 stable is released
         image = {
           repository = "ghcr.io/argoproj/argo-cd/argocd"
-          tag = "3.1.0-dc1d148a"
+          tag        = "3.1.0-dc1d148a"
         }
       }
       configs = {

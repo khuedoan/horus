@@ -35,6 +35,24 @@ resource "kubectl_manifest" "registry" {
               # The range of valid ports is 30000-32767
               nodePort = 30000
             }
+            ingress = {
+              enabled   = true
+              className = "nginx"
+              annotations = {
+                "nginx.ingress.kubernetes.io/proxy-body-size" = "0"
+              }
+              pathtype = "Prefix"
+              hosts = [
+                {
+                  host = "registry.127-0-0-1.nip.io"
+                  paths = [
+                    {
+                      path = "/"
+                    }
+                  ]
+                }
+              ]
+            }
             persistence = true
             pvc = {
               create  = true
