@@ -81,8 +81,8 @@ func PruneGraph(ctx context.Context, graph *Graph, changed []string) (*Graph, er
 func NewGraphFromDot(dot string) (*Graph, error) {
 	graph := NewGraph()
 
-	lines := strings.Split(dot, "\n")
-	for _, line := range lines {
+	lines := strings.SplitSeq(dot, "\n")
+	for line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "//") || line == "digraph {" || line == "}" {
 			continue
