@@ -19,6 +19,7 @@
             kubectl
             openssh
             opentofu
+            oras
             pre-commit
             shellcheck
             sops
