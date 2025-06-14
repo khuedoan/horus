@@ -2,7 +2,6 @@ package activities
 
 import (
 	"context"
-	"fmt"
 	"strings"
 )
 
@@ -120,36 +119,6 @@ func extractQuotedString(s string) string {
 		return s[1 : len(s)-1]
 	}
 	return ""
-}
-
-// ToDot converts a Graph to a DOT string.
-func (g *Graph) ToDot() string {
-	var b strings.Builder
-	b.WriteString("digraph {\n")
-
-	for src, dests := range g.Edges {
-		for _, dest := range dests {
-			b.WriteString(fmt.Sprintf("  %q -> %q;\n", src, dest))
-		}
-	}
-
-	// Write standalone nodes (those not in any edge)
-	edgeNodes := make(map[string]bool)
-	for src, dests := range g.Edges {
-		edgeNodes[src] = true
-		for _, dest := range dests {
-			edgeNodes[dest] = true
-		}
-	}
-
-	for node := range g.Nodes {
-		if !edgeNodes[node] {
-			b.WriteString(fmt.Sprintf("  %q;\n", node))
-		}
-	}
-
-	b.WriteString("}")
-	return b.String()
 }
 
 // TopologicalSort returns modules grouped by dependency levels for parallel execution.
