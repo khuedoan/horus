@@ -46,6 +46,7 @@ resource "helm_release" "argocd" {
       }
       repoServer = {
         hostNetwork = true
+        dnsPolicy   = "ClusterFirstWithHostNet"
       }
       dex = {
         enabled = false
