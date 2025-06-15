@@ -1,39 +1,43 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      with nixpkgs.legacyPackages.${system};
-      {
-        devShells.default = mkShell {
-          packages = [
-            age
-            ansible
-            ansible-lint
-            gnumake
-            go
-            k3d
-            kubectl
-            openssh
-            opentofu
-            oras
-            pre-commit
-            shellcheck
-            sops
-            temporal-cli
-            terragrunt
-            wireguard-tools
-            yamlfmt
-            yamllint
+  outputs = { self, nixpkgs }:
+  let
+    supportedSystems = nixpkgs.lib.genAttrs [
+      "x86_64-linux"
+      "aarch64-linux"
+    ];
+  in
+  {
+    devShells = supportedSystems (system: {
+      default = with nixpkgs.legacyPackages.${system}; mkShell {
+        packages = [
+          age
+          ansible
+          ansible-lint
+          gnumake
+          go
+          k3d
+          kubectl
+          openssh
+          opentofu
+          oras
+          pre-commit
+          shellcheck
+          sops
+          temporal-cli
+          terragrunt
+          wireguard-tools
+          yamlfmt
+          yamllint
 
-            (python3.withPackages (p: with p; [
-              kubernetes
-            ]))
-          ];
-        };
-      }
-    );
+          (python3.withPackages (p: with p; [
+            kubernetes
+          ]))
+        ];
+      };
+    });
+  };
 }
