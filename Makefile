@@ -30,6 +30,7 @@ test:
 	cd test/e2e && go test
 
 fmt:
+	nixfmt flake.nix
 	yamlfmt \
 		--exclude infra/modules/cluster/roles/secrets/vars/main.yml \
 		--exclude infra/*/secrets.yaml \
