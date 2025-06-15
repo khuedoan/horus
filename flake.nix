@@ -6,15 +6,17 @@
   outputs =
     { self, nixpkgs }:
     let
-      supportedSystems = nixpkgs.lib.genAttrs [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
+      forAllSystems =
+        function:
+        nixpkgs.lib.genAttrs [
+          "x86_64-linux"
+          "aarch64-linux"
+        ] (system: function (import nixpkgs { inherit system; }));
     in
     {
-      devShells = supportedSystems (system: {
+      devShells = forAllSystems (pkgs: {
         default =
-          with nixpkgs.legacyPackages.${system};
+          with pkgs;
           mkShell {
             packages = [
               age
@@ -36,12 +38,6 @@
               wireguard-tools
               yamlfmt
               yamllint
-
-              (python3.withPackages (
-                p: with p; [
-                  kubernetes
-                ]
-              ))
             ];
           };
       });
