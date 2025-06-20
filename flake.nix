@@ -11,6 +11,7 @@
         nixpkgs.lib.genAttrs [
           "x86_64-linux"
           "aarch64-linux"
+          "aarch64-darwin"
         ] (system: function (import nixpkgs { inherit system; }));
     in
     {
@@ -38,6 +39,10 @@
               wireguard-tools
               yamlfmt
               yamllint
+
+              (python3.withPackages (p: with p; [
+                kubernetes
+              ]))
             ];
           };
       });
