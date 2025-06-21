@@ -65,16 +65,23 @@
 
 ## Features
 
-### Infrastructure
+- Unified hybrid cloud platform
+- TODO
 
-Oracle Cloud was chosen due to their very generous free tier.
+## Estimated cost
 
 | Provider        | Service                     | Usage             | Pricing                        |
 | :--             | :--                         | :--               | :--                            |
-| Terraform Cloud | Workspace                   | 1                 | Free                           |
+| Cloudflare      | R2 Bucket (Terraform state) | 2                 | Free                           |
+| Cloudflare      | Domain                      | 2                 | 1.67$/month                    |
+| Cloudflare      | Load Balancer               | 1                 | 5$/month                       |
+| Cloudflare      | Tunnel                      | 2                 | Free                           |
 | Oracle Cloud    | Virtual Cloud Network       | 1                 | Free                           |
 | Oracle Cloud    | `VM.Standard.A1.Flex` (ARM) | 4 cores, 24GB mem | Free (yes, you read it right!) |
 | Oracle Cloud    | Block Storage               | 200GB             | Free                           |
+| Metal           | Hardware depreciation       |                   | 6.36$/month                    |
+| Metal           | Electricity                 |                   | 3$/month                       |
+| **Total**       |                             |                   | 16.03$/month                   |
 
 ## Get started
 
