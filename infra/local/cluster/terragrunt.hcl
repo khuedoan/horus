@@ -7,5 +7,5 @@ terraform {
 }
 
 inputs = {
-  name = "cloudlab"
+  name = "local"
 }

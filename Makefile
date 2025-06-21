@@ -50,4 +50,4 @@ update:
 
 clean:
 	docker compose down --remove-orphans --volumes
-	k3d cluster delete cloudlab
+	k3d cluster delete local
