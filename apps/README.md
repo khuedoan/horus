@@ -2,6 +2,9 @@
 
 TODO automate this convention:
 
+- Namespace is basically tenant
+- 1 cluster per env (multi region workers, single region masters), so env is basically equivalant with cluster
+
 `apps/$NAMESPACE/$APP/$CLUSTER.yaml`
 
 ```sh
