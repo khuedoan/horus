@@ -5,6 +5,63 @@
 > use cases, so it might not be directly useful to you. For a ready-to-use
 > solution, please refer to my [homelab project](https://github.com/khuedoan/homelab).
 
+## Project structure
+
+```
+├── flake.nix                             # Contains dependencies required by this project for both local and CI/CD
+├── Makefile                              # Entry point for all manual actions
+├── compose.yaml                          # Servers required for running locally
+├── infra                                 # Infrastructure definition
+│   ├── modules                           # Terraform modules
+│   │   ├── network
+│   │   ├── instance
+│   │   ├── cluster
+│   │   └── ...
+│   ├── local                             # Terragrunt configuration for the local environment
+│   │   └── ...
+│   └── ${ENV}                            # Terragrunt configuration for the ${ENV} environment
+│       ├── root.hcl                      # Root config used by other Terragrunt files
+│       ├── secrets.yaml                  # Encrypted secrets
+│       ├── tfstate                       # Bootstrap Terraform state
+│       ├── ${CLOUD}
+│       │   └── ${REGION}
+│       │       └── ${MODULE}
+│       │           └── terragrunt.hcl
+│       ├── metal
+│       │   └── vn-south-1
+│       │       ├── bootstrap
+│       │       │   └── terragrunt.hcl
+│       │       └── cluster
+│       │           └── terragrunt.hcl
+│       └── ...
+├── platform                              # Highly privileged platform components
+│   └── ${ENV}
+│       ├── grafana.yaml
+│       ├── temporal.yaml
+│       ├── wireguard.yaml
+│       └── ...
+├── apps                                  # User applications, standardized with strict controls
+│   ├── ${NAMESPACE}
+│   │   └── ${APP}
+│   │       └── ${ENV}.yaml
+│   └── khuedoan
+│       └── blog
+│           ├── local.yaml
+│           └── production.yaml
+├── controller                            # Automation controller for the entire project - think GitHub Actions, but better
+│   ├── activities                        # Temporal activities (git clone, terragrunt apply, etc.)
+│   │   ├── git.go
+│   │   ├── terragrunt.go
+│   │   └── ...
+│   ├── workflows                         # Temporal workflows, define a sequence of activities
+│   │   ├── infra.go
+│   │   ├── app.go
+│   │   └── ...
+│   ├── worker                            # Worker process that executes the workflows
+│   └── Dockerfile                        # Builds the image for the controller, can run locally or on a cluster
+└── test                                  # High level tests
+```
+
 ## Features
 
 ### Infrastructure
