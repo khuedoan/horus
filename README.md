@@ -8,6 +8,7 @@
 ## Project structure
 
 ```
+.
 ├── flake.nix                             # Contains dependencies required by this project for both local and CI/CD
 ├── Makefile                              # Entry point for all manual actions
 ├── compose.yaml                          # Servers required for running locally
