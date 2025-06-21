@@ -396,6 +396,70 @@ func (s *InfraWorkflowTestSuite) TestInfraWorkflow_WorkerFailureRetry() {
 	s.True(result.Nodes["module1"])
 }
 
+func (s *InfraWorkflowTestSuite) TestInfraWorkflow_NoOldRevisionProvided() {
+	// Test that when oldRevision is not provided, all modules are deployed
+	input := InfraInputs{
+		Url:         "https://github.com/example/repo.git",
+		Revision:    "main",
+		OldRevision: "", // Empty string - no old revision provided
+		Stack:       "dev",
+	}
+	repoPath := "/tmp/infra-12345"
+
+	// Full graph with all modules
+	graph := &activities.Graph{
+		Nodes: map[string]bool{
+			"vpc":          true,
+			"database":     true,
+			"loadbalancer": true,
+			"app":          true,
+			"monitoring":   true,
+		},
+		Edges: map[string][]string{
+			"app":          {"database", "loadbalancer"},
+			"database":     {"vpc"},
+			"loadbalancer": {"vpc"},
+			"monitoring":   {"app"},
+		},
+	}
+
+	// When oldRevision is empty, the workflow should use the full graph
+	// without calling ChangedModules or PruneGraph activities
+
+	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(repoPath, nil)
+	s.env.OnActivity(activities.TerragruntGraph, mock.Anything, repoPath+"/infra/"+input.Stack).Return(graph, nil)
+
+	// Mock TerragruntApply calls in dependency order for all modules
+	// Level 0: vpc
+	s.env.OnActivity(activities.TerragruntApply, mock.Anything, input.Url, input.Revision, "vpc", input.Stack).Return(nil)
+	// Level 1: database, loadbalancer
+	s.env.OnActivity(activities.TerragruntApply, mock.Anything, input.Url, input.Revision, "database", input.Stack).Return(nil)
+	s.env.OnActivity(activities.TerragruntApply, mock.Anything, input.Url, input.Revision, "loadbalancer", input.Stack).Return(nil)
+	// Level 2: app
+	s.env.OnActivity(activities.TerragruntApply, mock.Anything, input.Url, input.Revision, "app", input.Stack).Return(nil)
+	// Level 3: monitoring
+	s.env.OnActivity(activities.TerragruntApply, mock.Anything, input.Url, input.Revision, "monitoring", input.Stack).Return(nil)
+
+	s.env.ExecuteWorkflow(Infra, input)
+
+	s.True(s.env.IsWorkflowCompleted())
+	s.NoError(s.env.GetWorkflowError())
+
+	var result *activities.Graph
+	s.NoError(s.env.GetWorkflowResult(&result))
+
+	// Verify that all modules are in the result graph
+	s.True(result.Nodes["vpc"])
+	s.True(result.Nodes["database"])
+	s.True(result.Nodes["loadbalancer"])
+	s.True(result.Nodes["app"])
+	s.True(result.Nodes["monitoring"])
+
+	// Verify that the result graph has the same structure as the original
+	s.Equal(len(graph.Nodes), len(result.Nodes))
+	s.Equal(len(graph.Edges), len(result.Edges))
+}
+
 func TestInfraWorkflowTestSuite(t *testing.T) {
 	suite.Run(t, new(InfraWorkflowTestSuite))
 }

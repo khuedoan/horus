@@ -43,24 +43,30 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 	})
 
 	var graph *activities.Graph
-	var changedModules []string
-
-	graphFuture := workflow.ExecuteActivity(analysisCtx, activities.TerragruntGraph, path+"/infra/"+input.Stack)
-	changedFuture := workflow.ExecuteActivity(analysisCtx, activities.ChangedModules, path, input.OldRevision)
-
-	if err := graphFuture.Get(ctx, &graph); err != nil {
-		return nil, err
-	}
-	if err := changedFuture.Get(ctx, &changedModules); err != nil {
-		return nil, err
-	}
-
 	var prunedGraph *activities.Graph
-	if err := workflow.ExecuteActivity(analysisCtx, activities.PruneGraph, graph, changedModules).Get(ctx, &prunedGraph); err != nil {
+
+	// Get the terragrunt graph
+	if err := workflow.ExecuteActivity(analysisCtx, activities.TerragruntGraph, path+"/infra/"+input.Stack).Get(ctx, &graph); err != nil {
 		return nil, err
 	}
 
-	logger.Info("Graph pruning completed", "nodes", len(prunedGraph.Nodes))
+	// If oldRevision is not provided, use the full graph (no pruning)
+	if input.OldRevision == "" {
+		logger.Info("No oldRevision provided, using full graph", "nodes", len(graph.Nodes))
+		prunedGraph = graph
+	} else {
+		// Determine changed modules and prune graph
+		var changedModules []string
+		if err := workflow.ExecuteActivity(analysisCtx, activities.ChangedModules, path, input.OldRevision).Get(ctx, &changedModules); err != nil {
+			return nil, err
+		}
+
+		if err := workflow.ExecuteActivity(analysisCtx, activities.PruneGraph, graph, changedModules).Get(ctx, &prunedGraph); err != nil {
+			return nil, err
+		}
+
+		logger.Info("Graph pruning completed", "nodes", len(prunedGraph.Nodes))
+	}
 
 	for levelIndex, level := range prunedGraph.TopologicalSort() {
 		logger.Info("Starting terragrunt apply", "level", levelIndex, "modules", level)
