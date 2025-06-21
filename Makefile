@@ -2,8 +2,6 @@
 .PHONY: default compose infra apps test update
 
 env ?= local
-# TODO multiple clusters
-export KUBECONFIG = $(shell pwd)/cluster/kubeconfig.yaml
 
 default: infra
 
@@ -15,7 +13,7 @@ infra: compose
 	temporal workflow start \
 		--task-queue cloudlab \
 		--type Infra \
-		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "infra-rewrite", "oldRevision": "790763a8166e306f34559870c60e818505117e6b", "stack": "local" }'
+		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "oldRevision": "790763a8166e306f34559870c60e818505117e6b", "stack": "local" }'
 
 apps:
 	# TODO auto bootstrap
@@ -27,7 +25,7 @@ platform:
 
 test:
 	cd controller && go test ./...
-	cd test/e2e && go test
+	cd test && go test
 
 fmt:
 	nixfmt flake.nix
@@ -39,7 +37,7 @@ fmt:
 	tofu fmt -recursive
 	cd controller && go fmt ./...
 	cd infra/modules/tfstate && go fmt ./...
-	cd test/e2e && go fmt ./...
+	cd test && go fmt ./...
 
 update:
 	nix flake update

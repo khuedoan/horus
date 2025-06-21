@@ -40,9 +40,11 @@
               yamlfmt
               yamllint
 
-              (python3.withPackages (p: with p; [
-                kubernetes
-              ]))
+              (python3.withPackages (
+                p: with p; [
+                  kubernetes
+                ]
+              ))
             ];
           };
       });
