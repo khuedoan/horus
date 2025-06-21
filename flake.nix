@@ -27,6 +27,7 @@
               go
               k3d
               kubectl
+              kubernetes-helm
               nixfmt-rfc-style
               openssh
               opentofu

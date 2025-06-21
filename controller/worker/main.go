@@ -23,14 +23,17 @@ func main() {
 
 	w := worker.New(temporalClient, "cloudlab", worker.Options{})
 
-	w.RegisterWorkflow(workflows.Infra)
-	w.RegisterWorkflow(workflows.Platform)
 	w.RegisterActivity(activities.Clone)
 	w.RegisterActivity(activities.ChangedModules)
 	w.RegisterActivity(activities.TerragruntGraph)
 	w.RegisterActivity(activities.PruneGraph)
 	w.RegisterActivity(activities.TerragruntApply)
 	w.RegisterActivity(activities.PushManifests)
+	w.RegisterActivity(activities.PushRenderedHelm)
+
+	w.RegisterWorkflow(workflows.Infra)
+	w.RegisterWorkflow(workflows.Platform)
+	w.RegisterWorkflow(workflows.Apps)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

@@ -4,7 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
+	"os"
 	"os/exec"
+	"path"
+	"path/filepath"
 
 	"go.temporal.io/sdk/activity"
 )
@@ -40,4 +44,48 @@ func PushManifests(ctx context.Context, path string, image string) (*PushResult,
 	}
 
 	return &result, nil
+}
+
+func PushRenderedHelm(ctx context.Context, appsPath, namespace, app, cluster, registry string) (*PushResult, error) {
+	logger := activity.GetLogger(ctx)
+
+	tmpDir, err := os.MkdirTemp("", fmt.Sprintf("%s-%s-", app, cluster))
+	if err != nil {
+		logger.Error("failed to create temp dir", "error", err)
+		return nil, err
+	}
+	defer os.RemoveAll(tmpDir)
+
+	cmd := exec.CommandContext(
+		ctx,
+		"nix", "develop", "--command",
+		"helm", "template", "--namespace", namespace, app, "oci://ghcr.io/bjw-s-labs/helm/app-template:4.1.1", "--values", path.Join(namespace, app, cluster+".yaml"), "--output-dir", tmpDir,
+	)
+	cmd.Dir = appsPath
+
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+
+	logger.Info("running helm template", "cmd", cmd.String())
+
+	if err := cmd.Run(); err != nil {
+		logger.Error("helm template failed", "error", err, "stderr", stderr.String())
+		return nil, err
+	}
+
+	outputPath, err := filepath.Abs(tmpDir)
+	if err != nil {
+		logger.Error("failed to get absolute path to rendered manifests", "error", err)
+		return nil, err
+	}
+
+	imageRef := fmt.Sprintf("%s/%s/%s:%s", registry, namespace, app, cluster)
+	result, err := PushManifests(ctx, outputPath, imageRef)
+	if err != nil {
+		logger.Error("failed to push manifests", "error", err)
+		return nil, err
+	}
+
+	return result, nil
 }

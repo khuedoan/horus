@@ -1,5 +1,5 @@
 .POSIX:
-.PHONY: default compose infra apps test update
+.PHONY: default compose infra platform apps test update
 
 env ?= local
 
@@ -23,8 +23,11 @@ platform:
 		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "registry": "registry.127.0.0.1.sslip.io", "cluster": "local" }'
 
 apps:
-	# TODO auto bootstrap
-	kubectl apply --server-side=true --namespace argocd --filename apps/${env}
+	# TODO multiple env
+	temporal workflow start \
+		--task-queue cloudlab \
+		--type Apps \
+		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "registry": "registry.127.0.0.1.sslip.io", "cluster": "local" }'
 
 test:
 	cd controller && go test ./...
