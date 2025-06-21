@@ -25,7 +25,7 @@ type PushResult struct {
 
 func PushManifests(ctx context.Context, path string, image string) (*PushResult, error) {
 	logger := activity.GetLogger(ctx)
-	cmd := exec.CommandContext(ctx, "nix", "develop", "--command", "oras", "push", "--format=json", "--plain-http", image, ".")
+	cmd := exec.CommandContext(ctx, "oras", "push", "--format=json", "--plain-http", image, ".")
 	cmd.Dir = path
 
 	var stdout, stderr bytes.Buffer
@@ -58,7 +58,6 @@ func PushRenderedHelm(ctx context.Context, appsPath, namespace, app, cluster, re
 
 	cmd := exec.CommandContext(
 		ctx,
-		"nix", "develop", "--command",
 		"helm", "template", "--namespace", namespace, app, "oci://ghcr.io/bjw-s-labs/helm/app-template:4.1.1", "--values", path.Join(namespace, app, cluster+".yaml"), "--output-dir", tmpDir,
 	)
 	cmd.Dir = appsPath

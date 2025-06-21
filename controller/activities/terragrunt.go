@@ -13,7 +13,7 @@ import (
 )
 
 func TerragruntGraph(ctx context.Context, path string) (*Graph, error) {
-	cmd := exec.CommandContext(ctx, "nix", "develop", "--command", "terragrunt", "dag", "graph")
+	cmd := exec.CommandContext(ctx, "terragrunt", "dag", "graph")
 	cmd.Dir = path
 	output, err := cmd.Output()
 	if err != nil {
@@ -38,7 +38,7 @@ func TerragruntApply(ctx context.Context, repoUrl string, revision string, modul
 
 	fullPath := filepath.Join(repoPath, "infra", stack, modulePath)
 
-	cmd := exec.CommandContext(ctx, "nix", "develop", "--command", "terragrunt", "apply", "--backend-bootstrap", "--auto-approve")
+	cmd := exec.CommandContext(ctx, "terragrunt", "apply", "--backend-bootstrap", "--auto-approve")
 	cmd.Dir = fullPath
 
 	// Create pipes to capture output and send heartbeats

@@ -14,6 +14,13 @@ FROM docker.io/nixos/nix
 
 RUN echo "experimental-features = flakes nix-command" >> /etc/nix/nix.conf
 
+# TODO use native nix develop, currently it's a bit slow
+RUN nix-env --install --quiet --attr \
+    nixpkgs.kubernetes-helm \
+    nixpkgs.opentofu \
+    nixpkgs.oras \
+    nixpkgs.terragrunt
+
 COPY --from=builder /bin/worker /bin/worker
 
 CMD ["/bin/worker"]
