@@ -3,7 +3,7 @@
 
 env ?= local
 
-default: infra
+default: infra platform
 
 compose:
 	docker compose up --build --detach
@@ -15,13 +15,16 @@ infra: compose
 		--type Infra \
 		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "oldRevision": "790763a8166e306f34559870c60e818505117e6b", "stack": "local" }'
 
+platform:
+	# TODO multiple env
+	temporal workflow start \
+		--task-queue cloudlab \
+		--type Platform \
+		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "registry": "registry.127.0.0.1.sslip.io", "cluster": "local" }'
+
 apps:
 	# TODO auto bootstrap
 	kubectl apply --server-side=true --namespace argocd --filename apps/${env}
-
-platform:
-	# TODO auto bootstrap
-	kubectl apply --server-side=true --namespace argocd --filename platform/${env}
 
 test:
 	cd controller && go test ./...

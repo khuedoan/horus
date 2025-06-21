@@ -6,6 +6,7 @@ provider "registry.opentofu.org/moio/k3d" {
   constraints = "0.0.12"
   hashes = [
     "h1:Z20ggDhtPcOdAh5e94Kc+Sq7NkeHwQRKx4Llb7gUT+o=",
+    "h1:pgW0sSuX0QATTpPVIytOsMlXaDJ/pHpg6rFnar3jJNw=",
     "zh:57cce978c77dc5505d902e3ba3b1ea61d85db82465a232c71f4821052cd81246",
     "zh:8a703d08584e2f53aa2492944e1eae1c432617a060529151d3dfb57c99343250",
     "zh:90d76a028be359065bcd295ec591c6a05df531dd2d7d035f4ab8f23e7d83df2a",
