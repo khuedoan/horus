@@ -2,6 +2,7 @@ package workflows
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"cloudlab/controller/activities"
@@ -21,18 +22,16 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Infra workflow started", "infra", input)
 
-	// Clone activity: 30s timeout, quick retry on worker failure
 	cloneCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 		StartToCloseTimeout: 1 * time.Minute,
-		RetryPolicy: &temporal.RetryPolicy{
-			MaximumAttempts: 3,
-		},
 	})
 
-	var path string
-	if err := workflow.ExecuteActivity(cloneCtx, activities.Clone, input.Url, input.Revision).Get(ctx, &path); err != nil {
+	var workspace string
+	if err := workflow.ExecuteActivity(cloneCtx, activities.Clone, input.Url, input.Revision).Get(ctx, &workspace); err != nil {
 		return nil, err
 	}
+
+	defer os.RemoveAll(workspace)
 
 	// Graph and analysis activities: moderate timeout
 	analysisCtx := workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
@@ -46,7 +45,7 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 	var prunedGraph *activities.Graph
 
 	// Get the terragrunt graph
-	if err := workflow.ExecuteActivity(analysisCtx, activities.TerragruntGraph, path+"/infra/"+input.Stack).Get(ctx, &graph); err != nil {
+	if err := workflow.ExecuteActivity(analysisCtx, activities.TerragruntGraph, workspace+"/infra/"+input.Stack).Get(ctx, &graph); err != nil {
 		return nil, err
 	}
 
@@ -57,7 +56,7 @@ func Infra(ctx workflow.Context, input InfraInputs) (*activities.Graph, error) {
 	} else {
 		// Determine changed modules and prune graph
 		var changedModules []string
-		if err := workflow.ExecuteActivity(analysisCtx, activities.ChangedModules, path, input.OldRevision).Get(ctx, &changedModules); err != nil {
+		if err := workflow.ExecuteActivity(analysisCtx, activities.ChangedModules, workspace, input.OldRevision).Get(ctx, &changedModules); err != nil {
 			return nil, err
 		}
 

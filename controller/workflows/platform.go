@@ -1,11 +1,11 @@
 package workflows
 
 import (
+	"os"
 	"time"
 
 	"cloudlab/controller/activities"
 
-	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -20,31 +20,27 @@ func Platform(ctx workflow.Context, input PlatformInput) error {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Platform workflow started", "platform", input)
 
-	var path string
+	var workspace string
 	if err := workflow.ExecuteActivity(
 		workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 			StartToCloseTimeout: 1 * time.Minute,
-			RetryPolicy: &temporal.RetryPolicy{
-				MaximumAttempts: 3,
-			},
 		}),
 		activities.Clone,
 		input.Url,
 		input.Revision,
-	).Get(ctx, &path); err != nil {
+	).Get(ctx, &workspace); err != nil {
 		return err
 	}
+
+	defer os.RemoveAll(workspace)
 
 	var pushResult *activities.PushResult
 	if err := workflow.ExecuteActivity(
 		workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-			StartToCloseTimeout: 5 * time.Minute,
-			RetryPolicy: &temporal.RetryPolicy{
-				MaximumAttempts: 2,
-			},
+			StartToCloseTimeout: 1 * time.Minute,
 		}),
 		activities.PushManifests,
-		path+"/platform/"+input.Cluster,
+		workspace+"/platform/"+input.Cluster,
 		input.Registry+"/platform:"+input.Cluster,
 	).Get(ctx, &pushResult); err != nil {
 		return err

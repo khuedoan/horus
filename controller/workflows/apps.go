@@ -1,13 +1,13 @@
 package workflows
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"cloudlab/controller/activities"
 
-	"go.temporal.io/sdk/temporal"
 	"go.temporal.io/sdk/workflow"
 )
 
@@ -22,27 +22,27 @@ func Apps(ctx workflow.Context, input PlatformInput) error {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Platform workflow started", "platform", input)
 
-	var repoPath string
+	var workspace string
 	if err := workflow.ExecuteActivity(
 		workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 			StartToCloseTimeout: 1 * time.Minute,
-			RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 3},
 		}),
 		activities.Clone,
 		input.Url,
 		input.Revision,
-	).Get(ctx, &repoPath); err != nil {
+	).Get(ctx, &workspace); err != nil {
 		return err
 	}
 
-	appsDir := repoPath + "/apps"
+	defer os.RemoveAll(workspace)
+
+	appsDir := workspace + "/apps"
 
 	// TODO this should be a separate activity
 	var matchedPaths []string
 	if err := workflow.ExecuteActivity(
 		workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-			StartToCloseTimeout: 1 * time.Minute,
-			RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 2},
+			StartToCloseTimeout: 10 * time.Second,
 		}),
 		activities.DiscoverApps,
 		appsDir,
@@ -51,8 +51,7 @@ func Apps(ctx workflow.Context, input PlatformInput) error {
 		return err
 	}
 	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-		StartToCloseTimeout: 5 * time.Minute,
-		RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 2},
+		StartToCloseTimeout: 1 * time.Minute,
 	})
 
 	var futures []workflow.Future
