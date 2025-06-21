@@ -25,7 +25,7 @@ ingress:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-      - host: notes.127-0-0-1.nip.io
+      - host: notes.127.0.0.1.sslip.io
         paths:
           - path: /
             pathType: Prefix
@@ -34,7 +34,7 @@ ingress:
               port: 3000
     tls:
       - hosts:
-          - notes.127-0-0-1.nip.io
+          - notes.127.0.0.1.sslip.io
         secretName: notes-tls-certificate
 persistence:
   data:

@@ -49,13 +49,13 @@ spec:
             - name: TEMPORAL_AUTH_ENABLED
               value: "true"
             - name: TEMPORAL_AUTH_PROVIDER_URL
-              value: "https://dex.c127-0-0-1.nip.io"
+              value: "https://dex.c127.0.0.1.sslip.io"
             - name: TEMPORAL_AUTH_ISSUER_URL
-              value: "https://dex.127-0-0-1.nip.io"
+              value: "https://dex.127.0.0.1.sslip.io"
             - name: TEMPORAL_AUTH_CLIENT_ID
               value: "temporal"
             - name: TEMPORAL_AUTH_CALLBACK_URL
-              value: "https://temporal.127-0-0-1.nip.io/auth/sso/callback"
+              value: "https://temporal.127.0.0.1.sslip.io/auth/sso/callback"
             - name: TEMPORAL_AUTH_SCOPES
               value: "openid,profile,email"
           additionalEnvSecretName: temporal-web
@@ -65,8 +65,8 @@ spec:
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
             hosts:
-              - temporal.127-0-0-1.nip.io
+              - temporal.127.0.0.1.sslip.io
             tls:
               - secretName: temporal-tls-certificate
                 hosts:
-                  - temporal.127-0-0-1.nip.io
+                  - temporal.127.0.0.1.sslip.io

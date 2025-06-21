@@ -41,7 +41,7 @@ resource "k3d_cluster" "this" {
         # node. That means this development cluster can only have 1 node unless
         # we have RWX and use a DaemonSet for the in-cluster registry.
         # See also the nodePort in ../../system/registry.yaml
-        "registry.127-0-0-1.nip.io" = {
+        "registry.127.0.0.1.sslip.io" = {
           endpoint = [
             "http://localhost:30000"
           ]

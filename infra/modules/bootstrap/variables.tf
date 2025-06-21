@@ -13,7 +13,7 @@ variable "credentials" {
 
 variable "cluster_domain" {
   type    = string
-  default = "127-0-0-1.nip.io"
+  default = "127.0.0.1.sslip.io"
 }
 
 variable "platform" {

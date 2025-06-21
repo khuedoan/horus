@@ -27,7 +27,7 @@ spec:
           strategy: openid
           openid:
             client_id: kiali
-            issuer_uri: https://dex.127-0-0-1.nip.io
+            issuer_uri: https://dex.127.0.0.1.sslip.io
             disable_rbac: true
         external_services:
           prometheus:
@@ -45,7 +45,7 @@ spec:
               spec:
                 ingressClassName: nginx
                 rules:
-                  - host: kiali.127-0-0-1.nip.io
+                  - host: kiali.127.0.0.1.sslip.io
                     http:
                       paths:
                         - backend:
@@ -57,8 +57,8 @@ spec:
                           pathType: Prefix
                 tls:
                   - hosts:
-                      - kiali.127-0-0-1.nip.io
+                      - kiali.127.0.0.1.sslip.io
                     secretName: kiali-tls-certificate
         server:
-          web_fqdn: kiali.127-0-0-1.nip.io
+          web_fqdn: kiali.127.0.0.1.sslip.io
           web_root: /

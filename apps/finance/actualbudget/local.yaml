@@ -22,7 +22,7 @@ ingress:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-      - host: budget.127-0-0-1.nip.io
+      - host: budget.127.0.0.1.sslip.io
         paths:
           - path: /
             pathType: Prefix
@@ -31,7 +31,7 @@ ingress:
               port: http
     tls:
       - hosts:
-          - budget.127-0-0-1.nip.io
+          - budget.127.0.0.1.sslip.io
         secretName: actualbudget-tls-certificate
 persistence:
   data:

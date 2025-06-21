@@ -51,7 +51,7 @@ ingress:
     annotations:
       cert-manager.io/cluster-issuer: letsencrypt-prod
     hosts:
-      - host: homelab.127-0-0-1.nip.io
+      - host: homelab.127.0.0.1.sslip.io
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -60,7 +60,7 @@ ingress:
               port: http
     tls:
       - hosts:
-          - homelab.127-0-0-1.nip.io
+          - homelab.127.0.0.1.sslip.io
         secretName: homelab-docs-tls-certificate
 persistence:
   source:

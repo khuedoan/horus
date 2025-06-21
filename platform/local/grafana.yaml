@@ -29,11 +29,11 @@ spec:
           annotations:
             cert-manager.io/cluster-issuer: letsencrypt-prod
           hosts:
-            - grafana.127-0-0-1.nip.io
+            - grafana.127.0.0.1.sslip.io
           tls:
             - secretName: grafana-general-tls
               hosts:
-                - grafana.127-0-0-1.nip.io
+                - grafana.127.0.0.1.sslip.io
         sidecar:
           dashboards:
             enabled: true
@@ -42,7 +42,7 @@ spec:
         envFromSecret: grafana-secrets
         grafana.ini:
           server:
-            root_url: https://grafana.127-0-0-1.nip.io
+            root_url: https://grafana.127.0.0.1.sslip.io
           auth.generic_oauth:
             enabled: true
             allow_sign_up: true
@@ -50,6 +50,6 @@ spec:
             client_id: grafana
             client_secret: $__env{SSO_CLIENT_SECRET}
             scopes: openid profile email groups
-            auth_url: https://dex.127-0-0-1.nip.io/auth
-            token_url: https://dex.127-0-0-1.nip.io/token
-          api_url: https://dex.127-0-0-1.nip.io/userinfo
+            auth_url: https://dex.127.0.0.1.sslip.io/auth
+            token_url: https://dex.127.0.0.1.sslip.io/token
+          api_url: https://dex.127.0.0.1.sslip.io/userinfo

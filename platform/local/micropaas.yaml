@@ -39,7 +39,7 @@ spec:
                   REGISTRY_HOST: docker.io/khuedoan
                   GITOPS_REPO: cloudlab
                   GIT_USER_NAME: Khue's Bot
-                  GIT_USER_EMAIL: mail@127-0-0-1.nip.io
+                  GIT_USER_EMAIL: mail@127.0.0.1.sslip.io
                   ARGOCD_WEBHOOK_ENDPOINT: http://argocd-server.argocd.svc.cluster.local/api/webhook
               docker:
                 image:
@@ -74,7 +74,7 @@ spec:
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
             hosts:
-              - host: micropaas.127-0-0-1.nip.io
+              - host: micropaas.127.0.0.1.sslip.io
                 paths:
                   - path: /
                     pathType: Prefix
@@ -83,7 +83,7 @@ spec:
                       port: 80
             tls:
               - hosts:
-                  - micropaas.127-0-0-1.nip.io
+                  - micropaas.127.0.0.1.sslip.io
                 secretName: micropaas-tls-certificate
         persistence:
           data:

@@ -38,7 +38,7 @@ spec:
                   - sh
                   - -c
                   - |
-                    rad auth --alias=radicle.127-0-0-1.nip.io
+                    rad auth --alias=radicle.127.0.0.1.sslip.io
                     rad seed rad:zGtLfDcgmBqBUya1qTpzRzpBpoHx
                     rad seed rad:z38YiLVx2e4JC5Xo2qMNDGoMPHE7U
                     rad seed rad:z3pkjF1uaT1cZBrB8tBcCDtXGnrLQ
@@ -112,7 +112,7 @@ spec:
             annotations:
               cert-manager.io/cluster-issuer: letsencrypt-prod
             hosts:
-              - host: radicle.127-0-0-1.nip.io
+              - host: radicle.127.0.0.1.sslip.io
                 paths:
                   - path: /
                     pathType: Prefix
@@ -128,7 +128,7 @@ spec:
                       port: 80
             tls:
               - hosts:
-                  - radicle.127-0-0-1.nip.io
+                  - radicle.127.0.0.1.sslip.io
                   - code.khuedoan.com
                 secretName: radicle-tls-certificate
         persistence:
