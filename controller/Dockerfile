@@ -12,9 +12,7 @@ RUN go build -o /bin/worker ./worker
 
 FROM docker.io/nixos/nix
 
-RUN nix-env --install --quiet --attr \
-    nixpkgs.terragrunt \
-    nixpkgs.opentofu
+RUN echo "experimental-features = flakes nix-command" >> /etc/nix/nix.conf
 
 COPY --from=builder /bin/worker /bin/worker
 
