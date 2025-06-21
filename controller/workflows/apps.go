@@ -1,6 +1,8 @@
 package workflows
 
 import (
+	"path/filepath"
+	"strings"
 	"time"
 
 	"cloudlab/controller/activities"
@@ -20,39 +22,74 @@ func Apps(ctx workflow.Context, input PlatformInput) error {
 	logger := workflow.GetLogger(ctx)
 	logger.Info("Platform workflow started", "platform", input)
 
-	var path string
+	var repoPath string
 	if err := workflow.ExecuteActivity(
 		workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 			StartToCloseTimeout: 1 * time.Minute,
-			RetryPolicy: &temporal.RetryPolicy{
-				MaximumAttempts: 3,
-			},
+			RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 3},
 		}),
 		activities.Clone,
 		input.Url,
 		input.Revision,
-	).Get(ctx, &path); err != nil {
+	).Get(ctx, &repoPath); err != nil {
 		return err
 	}
 
-	var pushResult *activities.PushResult
+	appsDir := repoPath + "/apps"
+
+	// TODO this should be a separate activity
+	var matchedPaths []string
 	if err := workflow.ExecuteActivity(
 		workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
-			StartToCloseTimeout: 5 * time.Minute,
-			RetryPolicy: &temporal.RetryPolicy{
-				MaximumAttempts: 2,
-			},
+			StartToCloseTimeout: 1 * time.Minute,
+			RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 2},
 		}),
-		activities.PushRenderedHelm,
-		// TODO loop through this
-		path+"/apps",
-		"khuedoan",
-		"blog",
+		activities.DiscoverApps,
+		appsDir,
 		input.Cluster,
-		input.Registry,
-	).Get(ctx, &pushResult); err != nil {
+	).Get(ctx, &matchedPaths); err != nil {
 		return err
 	}
+	ctx = workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
+		StartToCloseTimeout: 5 * time.Minute,
+		RetryPolicy:         &temporal.RetryPolicy{MaximumAttempts: 2},
+	})
 
+	var futures []workflow.Future
+	var results []activities.PushResult
+
+	for _, yamlPath := range matchedPaths {
+		parts := strings.Split(filepath.ToSlash(yamlPath), "/")
+		if len(parts) < 4 {
+			logger.Warn("Skipping invalid path", "path", yamlPath)
+			continue
+		}
+
+		namespace := parts[len(parts)-3]
+		app := parts[len(parts)-2]
+
+		logger.Info("Dispatching PushRenderedHelm", "path", yamlPath, "namespace", namespace, "app", app)
+
+		fut := workflow.ExecuteActivity(
+			ctx,
+			activities.PushRenderedApp,
+			appsDir,
+			namespace,
+			app,
+			input.Cluster,
+			input.Registry,
+		)
+		futures = append(futures, fut)
+	}
+
+	for _, fut := range futures {
+		var result activities.PushResult
+		if err := fut.Get(ctx, &result); err != nil {
+			return err
+		}
+		results = append(results, result)
+	}
+
+	logger.Info("Finished pushing all matching apps", "count", len(results))
 	return nil
 }

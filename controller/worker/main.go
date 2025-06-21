@@ -29,7 +29,8 @@ func main() {
 	w.RegisterActivity(activities.PruneGraph)
 	w.RegisterActivity(activities.TerragruntApply)
 	w.RegisterActivity(activities.PushManifests)
-	w.RegisterActivity(activities.PushRenderedHelm)
+	w.RegisterActivity(activities.PushRenderedApp)
+	w.RegisterActivity(activities.DiscoverApps)
 
 	w.RegisterWorkflow(workflows.Infra)
 	w.RegisterWorkflow(workflows.Platform)
