@@ -32,7 +32,9 @@ func main() {
 	w.RegisterActivity(activities.PushRenderedApp)
 	w.RegisterActivity(activities.DiscoverApps)
 	w.RegisterActivity(activities.UpdateAppVersion)
-	w.RegisterActivity(activities.GitSync)
+	w.RegisterActivity(activities.GitAdd)
+	w.RegisterActivity(activities.GitCommit)
+	w.RegisterActivity(activities.GitPush)
 
 	w.RegisterWorkflow(workflows.Infra)
 	w.RegisterWorkflow(workflows.Platform)

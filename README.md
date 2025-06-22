@@ -150,7 +150,7 @@ make
 ## TODOs
 
 - Fix OCI plain HTTP for local development
-- Remove hardcoded git username and email
+- Config git username and email
 - Credentials for the worker (SSH priv + pub + knowhosts?)
 
 ## Acknowledgments and References

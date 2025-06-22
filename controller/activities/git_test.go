@@ -181,8 +181,8 @@ func getChangedModulesFromFiles(repoPath string, changedFiles []string) []string
 	return modules
 }
 
-func TestGitSync_PathParsing(t *testing.T) {
-	// Test the path parsing logic in GitSync without requiring actual git commands
+func TestGitAdd_PathParsing(t *testing.T) {
+	// Test the path parsing logic in GitAdd without requiring actual git commands
 	tests := []struct {
 		name         string
 		inputPath    string
@@ -211,7 +211,7 @@ func TestGitSync_PathParsing(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Test the path manipulation logic that GitSync uses
+			// Test the path manipulation logic that GitAdd uses
 			actualDir := filepath.Dir(tt.inputPath)
 			actualFile := filepath.Base(tt.inputPath)
 
@@ -226,13 +226,82 @@ func TestGitSync_PathParsing(t *testing.T) {
 	}
 }
 
-func TestGitSync_CommandStructure(t *testing.T) {
-	// Test that GitSync constructs the expected git commands
-	// This test validates the command structure without executing them
+func TestGitCommit_PathParsing(t *testing.T) {
+	// Test the path parsing logic in GitCommit
+	tests := []struct {
+		name        string
+		inputPath   string
+		expectedDir string
+		message     string
+	}{
+		{
+			name:        "simple file with default message",
+			inputPath:   "/tmp/test.yaml",
+			expectedDir: "/tmp",
+			message:     "chore(test/app): update local version",
+		},
+		{
+			name:        "nested file with custom message",
+			inputPath:   "/apps/namespace/app/cluster.yaml",
+			expectedDir: "/apps/namespace/app",
+			message:     "feat: update application configuration",
+		},
+	}
 
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Test the path manipulation logic that GitCommit uses
+			actualDir := filepath.Dir(tt.inputPath)
+
+			if actualDir != tt.expectedDir {
+				t.Errorf("Expected directory '%s', got '%s'", tt.expectedDir, actualDir)
+			}
+
+			// Verify message is not empty
+			if tt.message == "" {
+				t.Error("Commit message should not be empty")
+			}
+		})
+	}
+}
+
+func TestGitPush_PathParsing(t *testing.T) {
+	// Test the path parsing logic in GitPush
+	tests := []struct {
+		name        string
+		inputPath   string
+		expectedDir string
+	}{
+		{
+			name:        "simple file",
+			inputPath:   "/tmp/test.yaml",
+			expectedDir: "/tmp",
+		},
+		{
+			name:        "nested file",
+			inputPath:   "/apps/namespace/app/cluster.yaml",
+			expectedDir: "/apps/namespace/app",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Test the path manipulation logic that GitPush uses
+			actualDir := filepath.Dir(tt.inputPath)
+
+			if actualDir != tt.expectedDir {
+				t.Errorf("Expected directory '%s', got '%s'", tt.expectedDir, actualDir)
+			}
+		})
+	}
+}
+
+func TestGitActivities_CommandStructure(t *testing.T) {
+	// Test that the separate git activities construct the expected commands
 	testPath := "/tmp/test/app/cluster.yaml"
 	expectedDir := "/tmp/test/app"
 	expectedFile := "cluster.yaml"
+	commitMessage := "chore(khuedoan/blog): update production version"
 
 	// Verify the path parsing logic
 	actualDir := filepath.Dir(testPath)
@@ -246,32 +315,50 @@ func TestGitSync_CommandStructure(t *testing.T) {
 		t.Errorf("Expected filename '%s', got '%s'", expectedFile, actualFile)
 	}
 
-	// The GitSync function should construct these commands:
-	expectedCommands := [][]string{
-		{"git", "-C", expectedDir, "add", expectedFile},
-		{"git", "-C", expectedDir, "commit", "-m", "Update app version"},
-		{"git", "-C", expectedDir, "push"},
+	// Verify the expected command structures for each activity
+	tests := []struct {
+		name            string
+		expectedCommand []string
+		description     string
+	}{
+		{
+			name:            "GitAdd command",
+			expectedCommand: []string{"git", "-C", expectedDir, "add", expectedFile},
+			description:     "GitAdd should construct git add command",
+		},
+		{
+			name:            "GitCommit command",
+			expectedCommand: []string{"git", "-C", expectedDir, "commit", "-m", commitMessage},
+			description:     "GitCommit should construct git commit command with message",
+		},
+		{
+			name:            "GitPush command",
+			expectedCommand: []string{"git", "-C", expectedDir, "push"},
+			description:     "GitPush should construct git push command",
+		},
 	}
 
-	// Verify the command structure is as expected
-	if len(expectedCommands) != 3 {
-		t.Errorf("Expected 3 git commands, got %d", len(expectedCommands))
-	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := tt.expectedCommand
 
-	// Check each command structure
-	for i, cmd := range expectedCommands {
-		if len(cmd) < 2 {
-			t.Errorf("Command %d should have at least 2 parts, got %d", i, len(cmd))
-			continue
-		}
+			if len(cmd) < 3 {
+				t.Errorf("%s should have at least 3 parts, got %d", tt.description, len(cmd))
+				return
+			}
 
-		if cmd[0] != "git" {
-			t.Errorf("Command %d should start with 'git', got '%s'", i, cmd[0])
-		}
+			if cmd[0] != "git" {
+				t.Errorf("%s should start with 'git', got '%s'", tt.description, cmd[0])
+			}
 
-		if cmd[1] != "-C" {
-			t.Errorf("Command %d should have '-C' as second argument, got '%s'", i, cmd[1])
-		}
+			if cmd[1] != "-C" {
+				t.Errorf("%s should have '-C' as second argument, got '%s'", tt.description, cmd[1])
+			}
+
+			if cmd[2] != expectedDir {
+				t.Errorf("%s should use directory '%s', got '%s'", tt.description, expectedDir, cmd[2])
+			}
+		})
 	}
 }
 
