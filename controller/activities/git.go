@@ -43,7 +43,7 @@ func Clone(ctx context.Context, url string, revision string) (string, error) {
 
 	logger.Info("Cloning repository", "url", url, "revision", revision)
 
-	cmd := exec.CommandContext(ctx, "git", "clone", "--branch", revision, url, path)
+	cmd := exec.CommandContext(ctx, "git", "clone", "--depth", "1", "--branch", revision, url, path)
 	if err := cmd.Run(); err != nil {
 		os.RemoveAll(path)
 		return "", fmt.Errorf("failed to clone repository: %w", err)
@@ -53,11 +53,21 @@ func Clone(ctx context.Context, url string, revision string) (string, error) {
 }
 
 func ChangedModules(ctx context.Context, repoPath string, oldRevision string) ([]string, error) {
+	logger := activity.GetLogger(ctx)
+
+	// Since we now clone with depth 1, we need to fetch the oldRevision before we can diff against it
+	logger.Info("Fetching old revision for comparison", "oldRevision", oldRevision)
+	fetchCmd := exec.CommandContext(ctx, "git", "fetch", "origin", oldRevision)
+	fetchCmd.Dir = repoPath
+	if err := fetchCmd.Run(); err != nil {
+		return nil, fmt.Errorf("failed to fetch old revision %s: %w", oldRevision, err)
+	}
+
 	cmd := exec.CommandContext(ctx, "git", "diff", "--name-only", oldRevision, "HEAD")
 	cmd.Dir = repoPath
 	output, err := cmd.Output()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to run git diff: %w", err)
 	}
 
 	seen := make(map[string]struct{})
