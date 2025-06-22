@@ -30,6 +30,9 @@ services:
     build: ./controller
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      # TODO remove this shit
+      - ssh-config:/root/.ssh
+      - git-config:/root/.config/git
     environment:
       TEMPORAL_HOST: localhost:7233
       TG_NON_INTERACTIVE: true
@@ -41,3 +44,5 @@ services:
         condition: service_healthy
 volumes:
   tfstate: {}
+  ssh-config: {}
+  git-config: {}
