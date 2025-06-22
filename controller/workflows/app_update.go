@@ -95,21 +95,16 @@ func AppUpdate(ctx workflow.Context, input AppUpdateInput) error {
 		return fmt.Errorf("failed to commit changes to git: %w", err)
 	}
 
-	// Step 5: Git push changes
-	if err := workflow.ExecuteActivity(
+	// Step 5 & 6: Execute GitPush and PushRenderedApp concurrently
+	gitPushFuture := workflow.ExecuteActivity(
 		workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 			StartToCloseTimeout: 1 * time.Minute,
 		}),
 		activities.GitPush,
 		workspace,
-	).Get(ctx, nil); err != nil {
-		logger.Error("Failed to push changes to git", "error", err)
-		return fmt.Errorf("failed to push changes to git: %w", err)
-	}
+	)
 
-	// Step 6: Push rendered app to registry
-	var pushResult *activities.PushResult
-	if err := workflow.ExecuteActivity(
+	pushRenderedAppFuture := workflow.ExecuteActivity(
 		workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 			StartToCloseTimeout: 2 * time.Minute,
 		}),
@@ -119,7 +114,17 @@ func AppUpdate(ctx workflow.Context, input AppUpdateInput) error {
 		input.App,
 		input.Cluster,
 		input.Registry,
-	).Get(ctx, &pushResult); err != nil {
+	)
+
+	// Wait for GitPush to complete
+	if err := gitPushFuture.Get(ctx, nil); err != nil {
+		logger.Error("Failed to push changes to git", "error", err)
+		return fmt.Errorf("failed to push changes to git: %w", err)
+	}
+
+	// Wait for PushRenderedApp to complete
+	var pushResult *activities.PushResult
+	if err := pushRenderedAppFuture.Get(ctx, &pushResult); err != nil {
 		logger.Error("Failed to push rendered app to registry", "error", err)
 		return fmt.Errorf("failed to push rendered app to registry: %w", err)
 	}
