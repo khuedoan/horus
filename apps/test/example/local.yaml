@@ -9,7 +9,7 @@ controllers:
       main:
         image:
           repository: zot.zot.svc.cluster.local/example-service
-          tag: v6.9
+          tag: 828c31f942e8913ab2af53a2841c180586c5b7e1
 service:
   main:
     controller: main
