@@ -10,30 +10,30 @@ compose:
 
 infra: compose
 	# TODO multiple env
-	temporal workflow start \
+	@temporal workflow start \
 		--workflow-id infra-manual \
 		--task-queue cloudlab \
 		--type Infra \
 		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "stack": "local" }'
-	temporal workflow result --workflow-id infra-manual
+	@temporal workflow result --workflow-id infra-manual
 
 platform:
 	# TODO multiple env
-	temporal workflow start \
+	@temporal workflow start \
 		--workflow-id platform-manual \
 		--task-queue cloudlab \
 		--type Platform \
 		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "registry": "registry.127.0.0.1.sslip.io", "cluster": "local" }'
-	temporal workflow result --workflow-id platform-manual
+	@temporal workflow result --workflow-id platform-manual
 
 apps:
 	# TODO multiple env
-	temporal workflow start \
+	@temporal workflow start \
 		--workflow-id apps-manual \
 		--task-queue cloudlab \
 		--type Apps \
 		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "registry": "registry.127.0.0.1.sslip.io", "cluster": "local" }'
-	temporal workflow result --workflow-id apps-manual
+	@temporal workflow result --workflow-id apps-manual
 
 test:
 	cd controller && go test ./...
