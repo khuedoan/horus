@@ -66,7 +66,18 @@
 ## Features
 
 - Unified hybrid cloud platform
-- TODO
+- Temporal is used as the automation engine, providing the reliability and
+  performance that generic CI/CD engines can only dream of.
+- Infra:
+  - Essentially `cd "infra/${ENV}" && terragrunt apply --all`
+  - Includes some graph pruning based on changed files for performance
+  - Bootstrap ArgoCD to apply the remaining
+- Platform:
+  - Essentially `kubectl apply -f "platform/${ENV}"`
+  - However, the runtime doesn’t have access to Git - all manifests are pulled from an OCI registry
+- Apps
+  - Strict and standardized
+  - Uses the rendered manifests pattern, essentially `helm template && oras push`
 
 ## Estimated cost
 
