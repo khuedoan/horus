@@ -25,7 +25,11 @@ func PushRenderedApp(ctx context.Context, appsPath, namespace, app, cluster, reg
 
 	cmd := exec.CommandContext(
 		ctx,
-		"helm", "template", "--namespace", namespace, app, "oci://ghcr.io/bjw-s-labs/helm/app-template:4.1.1", "--values", path.Join(namespace, app, cluster+".yaml"), "--output-dir", tmpDir,
+		"helm", "template",
+		"--namespace", namespace,
+		app,
+		"oci://ghcr.io/bjw-s-labs/helm/app-template:4.1.1",
+		"--values", path.Join(namespace, app, cluster+".yaml"),
 	)
 	cmd.Dir = appsPath
 
@@ -37,6 +41,11 @@ func PushRenderedApp(ctx context.Context, appsPath, namespace, app, cluster, reg
 
 	if err := cmd.Run(); err != nil {
 		logger.Error("helm template failed", "error", err, "stderr", stderr.String())
+		return nil, err
+	}
+
+	if err := os.WriteFile(filepath.Join(tmpDir, "rendered.yaml"), stdout.Bytes(), 0644); err != nil {
+		logger.Error("failed to write rendered output to file", "error", err)
 		return nil, err
 	}
 
