@@ -31,10 +31,13 @@ func main() {
 	w.RegisterActivity(activities.PushManifests)
 	w.RegisterActivity(activities.PushRenderedApp)
 	w.RegisterActivity(activities.DiscoverApps)
+	w.RegisterActivity(activities.UpdateAppVersion)
+	w.RegisterActivity(activities.GitSync)
 
 	w.RegisterWorkflow(workflows.Infra)
 	w.RegisterWorkflow(workflows.Platform)
 	w.RegisterWorkflow(workflows.Apps)
+	w.RegisterWorkflow(workflows.AppUpdate)
 
 	err = w.Run(worker.InterruptCh())
 	if err != nil {

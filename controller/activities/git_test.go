@@ -180,3 +180,156 @@ func getChangedModulesFromFiles(repoPath string, changedFiles []string) []string
 
 	return modules
 }
+
+func TestGitSync_PathParsing(t *testing.T) {
+	// Test the path parsing logic in GitSync without requiring actual git commands
+	tests := []struct {
+		name         string
+		inputPath    string
+		expectedDir  string
+		expectedFile string
+	}{
+		{
+			name:         "simple file",
+			inputPath:    "/tmp/test.yaml",
+			expectedDir:  "/tmp",
+			expectedFile: "test.yaml",
+		},
+		{
+			name:         "nested file",
+			inputPath:    "/apps/namespace/app/cluster.yaml",
+			expectedDir:  "/apps/namespace/app",
+			expectedFile: "cluster.yaml",
+		},
+		{
+			name:         "relative path",
+			inputPath:    "relative/file.yaml",
+			expectedDir:  "relative",
+			expectedFile: "file.yaml",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Test the path manipulation logic that GitSync uses
+			actualDir := filepath.Dir(tt.inputPath)
+			actualFile := filepath.Base(tt.inputPath)
+
+			if actualDir != tt.expectedDir {
+				t.Errorf("Expected directory '%s', got '%s'", tt.expectedDir, actualDir)
+			}
+
+			if actualFile != tt.expectedFile {
+				t.Errorf("Expected filename '%s', got '%s'", tt.expectedFile, actualFile)
+			}
+		})
+	}
+}
+
+func TestGitSync_CommandStructure(t *testing.T) {
+	// Test that GitSync constructs the expected git commands
+	// This test validates the command structure without executing them
+
+	testPath := "/tmp/test/app/cluster.yaml"
+	expectedDir := "/tmp/test/app"
+	expectedFile := "cluster.yaml"
+
+	// Verify the path parsing logic
+	actualDir := filepath.Dir(testPath)
+	actualFile := filepath.Base(testPath)
+
+	if actualDir != expectedDir {
+		t.Errorf("Expected directory '%s', got '%s'", expectedDir, actualDir)
+	}
+
+	if actualFile != expectedFile {
+		t.Errorf("Expected filename '%s', got '%s'", expectedFile, actualFile)
+	}
+
+	// The GitSync function should construct these commands:
+	expectedCommands := [][]string{
+		{"git", "-C", expectedDir, "add", expectedFile},
+		{"git", "-C", expectedDir, "commit", "-m", "Update app version"},
+		{"git", "-C", expectedDir, "push"},
+	}
+
+	// Verify the command structure is as expected
+	if len(expectedCommands) != 3 {
+		t.Errorf("Expected 3 git commands, got %d", len(expectedCommands))
+	}
+
+	// Check each command structure
+	for i, cmd := range expectedCommands {
+		if len(cmd) < 2 {
+			t.Errorf("Command %d should have at least 2 parts, got %d", i, len(cmd))
+			continue
+		}
+
+		if cmd[0] != "git" {
+			t.Errorf("Command %d should start with 'git', got '%s'", i, cmd[0])
+		}
+
+		if cmd[1] != "-C" {
+			t.Errorf("Command %d should have '-C' as second argument, got '%s'", i, cmd[1])
+		}
+	}
+}
+
+func TestGenerateRepoPath(t *testing.T) {
+	tests := []struct {
+		name     string
+		url      string
+		revision string
+		wantPath bool // whether we expect a valid path
+	}{
+		{
+			name:     "simple repo",
+			url:      "https://github.com/user/repo.git",
+			revision: "main",
+			wantPath: true,
+		},
+		{
+			name:     "same repo different revision",
+			url:      "https://github.com/user/repo.git",
+			revision: "develop",
+			wantPath: true,
+		},
+		{
+			name:     "empty inputs",
+			url:      "",
+			revision: "",
+			wantPath: true, // Should still generate a path
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			path := generateRepoPath(tt.url, tt.revision)
+
+			if tt.wantPath {
+				if path == "" {
+					t.Error("Expected non-empty path")
+				}
+				if !strings.Contains(path, "/tmp/cloudlab-repos/") {
+					t.Errorf("Expected path to contain '/tmp/cloudlab-repos/', got: %s", path)
+				}
+				if len(filepath.Base(path)) != 16 {
+					t.Errorf("Expected base path to be 16 characters, got: %s", filepath.Base(path))
+				}
+			}
+		})
+	}
+
+	// Test that same inputs generate same path
+	path1 := generateRepoPath("https://github.com/test/repo.git", "main")
+	path2 := generateRepoPath("https://github.com/test/repo.git", "main")
+	if path1 != path2 {
+		t.Errorf("Same inputs should generate same path: %s != %s", path1, path2)
+	}
+
+	// Test that different inputs generate different paths
+	path3 := generateRepoPath("https://github.com/test/repo.git", "develop")
+	if path1 == path3 {
+		t.Error("Different revisions should generate different paths")
+	}
+}

@@ -147,6 +147,12 @@ Build the infrastructure:
 make
 ```
 
+## TODOs
+
+- Fix OCI plain HTTP for local development
+- Remove hardcoded git username and email
+- Credentials for the worker (SSH priv + pub + knowhosts?)
+
 ## Acknowledgments and References
 
 - [Oracle Terraform Modules](https://github.com/oracle-terraform-modules)

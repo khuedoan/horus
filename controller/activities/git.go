@@ -86,3 +86,30 @@ func ChangedModules(ctx context.Context, repoPath string, oldRevision string) ([
 
 	return modules, nil
 }
+
+func GitSync(ctx context.Context, path string) error {
+	logger := activity.GetLogger(ctx)
+
+	dir := filepath.Dir(path)
+	relPath := filepath.Base(path)
+
+	cmds := [][]string{
+		{"git", "-C", dir, "config", "user.name", "Bot"},
+		{"git", "-C", dir, "config", "user.email", "bot@khuedoan.com"},
+		{"git", "-C", dir, "add", relPath},
+		{"git", "-C", dir, "commit", "-m", "Update app version"},
+		{"git", "-C", dir, "push"},
+	}
+
+	for _, args := range cmds {
+		cmd := exec.Command(args[0], args[1:]...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		if err := cmd.Run(); err != nil {
+			logger.Error("command %v failed: %w", args, err)
+			return err
+		}
+	}
+
+	return nil
+}
