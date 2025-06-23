@@ -49,7 +49,7 @@ func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_Success() {
 
 	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
 	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
-		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(nil)
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(true, nil)
 	s.env.OnActivity(activities.GitAdd, mock.Anything, appFilePath).Return(nil)
 	s.env.OnActivity(activities.GitCommit, mock.Anything, workspace, "chore(khuedoan/blog): update production version").Return(nil)
 	s.env.OnActivity(activities.GitPush, mock.Anything, workspace).Return(nil)
@@ -100,7 +100,7 @@ func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_UpdateAppVersionFailure() {
 
 	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
 	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
-		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(false,
 		errors.New("failed to read file: no such file or directory"))
 
 	s.env.ExecuteWorkflow(AppUpdate, input)
@@ -127,7 +127,7 @@ func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_GitAddFailure() {
 
 	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
 	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
-		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(nil)
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(true, nil)
 	s.env.OnActivity(activities.GitAdd, mock.Anything, appFilePath).Return(
 		errors.New("git add failed: file not found"))
 
@@ -155,7 +155,7 @@ func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_GitCommitFailure() {
 
 	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
 	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
-		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(nil)
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(true, nil)
 	s.env.OnActivity(activities.GitAdd, mock.Anything, appFilePath).Return(nil)
 	s.env.OnActivity(activities.GitCommit, mock.Anything, workspace, "chore(khuedoan/notes): update production version").Return(
 		errors.New("git commit failed: nothing to commit"))
@@ -184,7 +184,7 @@ func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_GitPushFailure() {
 
 	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
 	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
-		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(nil)
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(true, nil)
 	s.env.OnActivity(activities.GitAdd, mock.Anything, appFilePath).Return(nil)
 	s.env.OnActivity(activities.GitCommit, mock.Anything, workspace, "chore(khuedoan/notes): update production version").Return(nil)
 	s.env.OnActivity(activities.GitPush, mock.Anything, workspace).Return(
@@ -214,7 +214,7 @@ func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_PushRenderedAppFailure() {
 
 	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
 	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
-		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(nil)
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(true, nil)
 	s.env.OnActivity(activities.GitAdd, mock.Anything, appFilePath).Return(nil)
 	s.env.OnActivity(activities.GitCommit, mock.Anything, workspace, "chore(khuedoan/notes): update production version").Return(nil)
 	s.env.OnActivity(activities.GitPush, mock.Anything, workspace).Return(nil)
@@ -251,7 +251,7 @@ func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_MultipleImages() {
 
 	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
 	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
-		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(nil)
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(true, nil)
 	s.env.OnActivity(activities.GitAdd, mock.Anything, appFilePath).Return(nil)
 	s.env.OnActivity(activities.GitCommit, mock.Anything, workspace, "chore(test/example): update local version").Return(nil)
 	s.env.OnActivity(activities.GitPush, mock.Anything, workspace).Return(nil)
@@ -286,7 +286,7 @@ func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_RealWorldExample() {
 
 	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
 	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
-		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(nil)
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(true, nil)
 	s.env.OnActivity(activities.GitAdd, mock.Anything, appFilePath).Return(nil)
 	s.env.OnActivity(activities.GitCommit, mock.Anything, workspace, "chore(khuedoan/blog): update production version").Return(nil)
 	s.env.OnActivity(activities.GitPush, mock.Anything, workspace).Return(nil)
@@ -340,12 +340,37 @@ func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_EmptyImages() {
 
 	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
 	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
-		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(nil)
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(true, nil)
 	s.env.OnActivity(activities.GitAdd, mock.Anything, appFilePath).Return(nil)
 	s.env.OnActivity(activities.GitCommit, mock.Anything, workspace, "chore(test/app): update local version").Return(nil)
 	s.env.OnActivity(activities.GitPush, mock.Anything, workspace).Return(nil)
 	s.env.OnActivity(activities.PushRenderedApp, mock.Anything,
 		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.Registry).Return(mockPushResult, nil)
+
+	s.env.ExecuteWorkflow(AppUpdate, input)
+
+	s.True(s.env.IsWorkflowCompleted())
+	s.NoError(s.env.GetWorkflowError())
+}
+
+func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_NoChanges() {
+	input := AppUpdateInput{
+		Url:       "https://github.com/example/cloudlab.git",
+		Revision:  "main",
+		Namespace: "test",
+		App:       "app",
+		Cluster:   "local",
+		Registry:  "registry.example.com",
+		NewImages: []activities.Image{
+			{Repository: "docker.io/test/app", Tag: "existing-tag"}, // Same tag as already in file
+		},
+	}
+	workspace := "/tmp/cloudlab-repos/nochange123"
+
+	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
+	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(false, nil)
+	// Note: No other activities should be called when there are no changes
 
 	s.env.ExecuteWorkflow(AppUpdate, input)
 
@@ -374,7 +399,7 @@ func (s *AppUpdateWorkflowTestSuite) TestAppUpdate_SpecialCharactersInPath() {
 
 	s.env.OnActivity(activities.Clone, mock.Anything, input.Url, input.Revision).Return(workspace, nil)
 	s.env.OnActivity(activities.UpdateAppVersion, mock.Anything,
-		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(nil)
+		workspace+"/apps", input.Namespace, input.App, input.Cluster, input.NewImages).Return(true, nil)
 	s.env.OnActivity(activities.GitAdd, mock.Anything, appFilePath).Return(nil)
 	s.env.OnActivity(activities.GitCommit, mock.Anything, workspace, "chore(test-namespace/app-with-dashes): update staging-env version").Return(nil)
 	s.env.OnActivity(activities.GitPush, mock.Anything, workspace).Return(nil)

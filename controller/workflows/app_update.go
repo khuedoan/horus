@@ -48,6 +48,7 @@ func AppUpdate(ctx workflow.Context, input AppUpdateInput) error {
 	}()
 
 	appsDir := filepath.Join(workspace, "apps")
+	var changed bool
 	if err := workflow.ExecuteActivity(
 		workflow.WithActivityOptions(ctx, workflow.ActivityOptions{
 			StartToCloseTimeout: 30 * time.Second,
@@ -58,7 +59,7 @@ func AppUpdate(ctx workflow.Context, input AppUpdateInput) error {
 		input.App,
 		input.Cluster,
 		input.NewImages,
-	).Get(ctx, nil); err != nil {
+	).Get(ctx, &changed); err != nil {
 		logger.Error("failed to update app version", "error", err)
 		return fmt.Errorf("failed to update app version: %w", err)
 	}
@@ -66,7 +67,14 @@ func AppUpdate(ctx workflow.Context, input AppUpdateInput) error {
 	logger.Info("App version updated successfully",
 		"namespace", input.Namespace,
 		"app", input.App,
-		"cluster", input.Cluster)
+		"cluster", input.Cluster,
+		"changed", changed)
+
+	// Skip remaining steps if no changes were made
+	if !changed {
+		logger.Info("No changes detected, skipping remaining steps")
+		return nil
+	}
 
 	// Step 3: Git add changes
 	appFilePath := filepath.Join(appsDir, input.Namespace, input.App, fmt.Sprintf("%s.yaml", input.Cluster))

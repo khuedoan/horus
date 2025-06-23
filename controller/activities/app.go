@@ -90,7 +90,8 @@ type Image struct {
 	Tag        string
 }
 
-func updateImageTags(node *yaml.Node, newImages []Image) error {
+func updateImageTags(node *yaml.Node, newImages []Image) (bool, error) {
+	changed := false
 	var walk func(n *yaml.Node)
 	walk = func(n *yaml.Node) {
 		if n.Kind != yaml.MappingNode {
@@ -116,8 +117,9 @@ func updateImageTags(node *yaml.Node, newImages []Image) error {
 				}
 				if repoNode != nil && tagNode != nil {
 					for _, img := range newImages {
-						if repoNode.Value == img.Repository {
+						if repoNode.Value == img.Repository && tagNode.Value != img.Tag {
 							tagNode.Value = img.Tag
+							changed = true
 						}
 					}
 				}
@@ -127,38 +129,42 @@ func updateImageTags(node *yaml.Node, newImages []Image) error {
 		}
 	}
 	walk(node)
-	return nil
+	return changed, nil
 }
 
-func UpdateAppVersion(ctx context.Context, appsDir, namespace, app, cluster string, newImages []Image) error {
+func UpdateAppVersion(ctx context.Context, appsDir, namespace, app, cluster string, newImages []Image) (bool, error) {
 	path := filepath.Join(appsDir, namespace, app, fmt.Sprintf("%s.yaml", cluster))
 
 	data, err := os.ReadFile(path)
 	if err != nil {
-		return fmt.Errorf("failed to read file: %w", err)
+		return false, fmt.Errorf("failed to read file: %w", err)
 	}
 
 	var node yaml.Node
 	if err := yaml.Unmarshal(data, &node); err != nil {
-		return fmt.Errorf("failed to unmarshal YAML: %w", err)
+		return false, fmt.Errorf("failed to unmarshal YAML: %w", err)
 	}
 
-	if err := updateImageTags(&node, newImages); err != nil {
-		return fmt.Errorf("failed to update image tags: %w", err)
+	changed, err := updateImageTags(&node, newImages)
+	if err != nil {
+		return false, fmt.Errorf("failed to update image tags: %w", err)
 	}
 
-	var buf bytes.Buffer
-	encoder := yaml.NewEncoder(&buf)
-	encoder.SetIndent(2)
+	if changed {
+		var buf bytes.Buffer
+		encoder := yaml.NewEncoder(&buf)
+		encoder.SetIndent(2)
 
-	if err := encoder.Encode(&node); err != nil {
-		return fmt.Errorf("failed to encode YAML: %w", err)
+		if err := encoder.Encode(&node); err != nil {
+			return false, fmt.Errorf("failed to encode YAML: %w", err)
+		}
+		encoder.Close()
+
+		newData := buf.Bytes()
+		if err := os.WriteFile(path, newData, 0644); err != nil {
+			return false, fmt.Errorf("failed to write YAML file: %w", err)
+		}
 	}
-	encoder.Close()
 
-	if err := os.WriteFile(path, buf.Bytes(), 0644); err != nil {
-		return fmt.Errorf("failed to write YAML file: %w", err)
-	}
-
-	return nil
+	return changed, nil
 }

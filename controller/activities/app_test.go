@@ -204,7 +204,7 @@ service:
 
 			// Execute UpdateAppVersion
 			ctx := context.Background()
-			err = UpdateAppVersion(ctx, tempDir, namespace, app, cluster, tt.newImages)
+			changed, err := UpdateAppVersion(ctx, tempDir, namespace, app, cluster, tt.newImages)
 
 			if tt.expectError {
 				assert.Error(t, err)
@@ -212,6 +212,7 @@ service:
 			}
 
 			require.NoError(t, err)
+			assert.Equal(t, tt.expectedUpdate, changed, "Expected change result doesn't match")
 
 			// Read the updated file
 			updatedContent, err := os.ReadFile(yamlPath)
@@ -237,7 +238,7 @@ func TestUpdateAppVersion_FileErrors(t *testing.T) {
 	defer os.RemoveAll(tempDir)
 
 	t.Run("non-existent file", func(t *testing.T) {
-		err := UpdateAppVersion(ctx, tempDir, "ns", "app", "cluster", []Image{})
+		_, err := UpdateAppVersion(ctx, tempDir, "ns", "app", "cluster", []Image{})
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to read file")
 	})
@@ -255,7 +256,7 @@ func TestUpdateAppVersion_FileErrors(t *testing.T) {
 		err = os.WriteFile(yamlPath, []byte("invalid: yaml: content: ["), 0644)
 		require.NoError(t, err)
 
-		err = UpdateAppVersion(ctx, tempDir, namespace, app, cluster, []Image{})
+		_, err = UpdateAppVersion(ctx, tempDir, namespace, app, cluster, []Image{})
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to unmarshal YAML")
 	})
@@ -359,7 +360,7 @@ service:
 			err := yaml.Unmarshal([]byte(tt.yamlContent), &node)
 			require.NoError(t, err)
 
-			err = updateImageTags(&node, tt.newImages)
+			_, err = updateImageTags(&node, tt.newImages)
 			require.NoError(t, err)
 
 			// Marshall back to verify changes
@@ -451,7 +452,7 @@ service:
 	}
 
 	ctx := context.Background()
-	err = UpdateAppVersion(ctx, tempDir, namespace, app, cluster, newImages)
+	_, err = UpdateAppVersion(ctx, tempDir, namespace, app, cluster, newImages)
 	require.NoError(t, err)
 
 	// Read the updated file and check indentation
