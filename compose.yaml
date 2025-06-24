@@ -33,6 +33,7 @@ services:
       # TODO remove this shit
       - ssh-config:/root/.ssh
       - git-config:/root/.config/git
+      - .:/usr/local/src/cloudlab
     environment:
       TEMPORAL_HOST: localhost:7233
       TG_NON_INTERACTIVE: true

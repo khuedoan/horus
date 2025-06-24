@@ -14,7 +14,7 @@ infra: compose
 		--workflow-id infra-manual \
 		--task-queue cloudlab \
 		--type Infra \
-		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "stack": "local" }'
+		--input '{ "url": "/usr/local/src/cloudlab", "revision": "master", "stack": "local" }'
 	@temporal workflow result --workflow-id infra-manual
 
 platform:
@@ -23,7 +23,7 @@ platform:
 		--workflow-id platform-manual \
 		--task-queue cloudlab \
 		--type Platform \
-		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "registry": "registry.127.0.0.1.sslip.io", "cluster": "local" }'
+		--input '{ "url": "/usr/local/src/cloudlab", "revision": "master", "registry": "registry.127.0.0.1.sslip.io", "cluster": "local" }'
 	@temporal workflow result --workflow-id platform-manual
 
 apps:
@@ -32,7 +32,7 @@ apps:
 		--workflow-id apps-manual \
 		--task-queue cloudlab \
 		--type Apps \
-		--input '{ "url": "https://github.com/khuedoan/cloudlab", "revision": "master", "registry": "registry.127.0.0.1.sslip.io", "cluster": "local" }'
+		--input '{ "url": "/usr/local/src/cloudlab", "revision": "master", "registry": "registry.127.0.0.1.sslip.io", "cluster": "local" }'
 	@temporal workflow result --workflow-id apps-manual
 
 test:
