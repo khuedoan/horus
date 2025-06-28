@@ -9,7 +9,7 @@ controllers:
       main:
         image:
           repository: zot.zot.svc.cluster.local/khuedoan/blog
-          tag: 6fbd90b77a81e0bcb330fddaa230feff744a7010
+          tag: 14a7a5703e1fc11abb5c30e88a098e5d27a1c57e
 service:
   main:
     controller: main
