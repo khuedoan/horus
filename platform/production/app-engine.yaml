@@ -37,7 +37,7 @@ spec:
                   # TODO bootstrap and build itself
                   # repository: zot.zot.svc.cluster.local/khuedoan/app-engine
                   repository: docker.io/khuedoan/app-engine
-                  tag: 4118f90
+                  tag: 4118f906ab07a17f3dac608f1a690b2215e4d2a5
                   pullPolicy: Always
                 env:
                   TEMPORAL_URL: http://temporal-frontend.temporal:7233
