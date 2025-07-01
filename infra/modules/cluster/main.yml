@@ -4,8 +4,3 @@
     - role: prerequisites
     - role: data
     - role: k3s
-- hosts: localhost
-  roles:
-    - role: secrets
-      tags: secrets
-    - role: bootstrap
