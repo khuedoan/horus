@@ -5,6 +5,7 @@ provider "registry.opentofu.org/hashicorp/oci" {
   version = "7.6.0"
   hashes = [
     "h1:fvwp3c4OPhuKW9gBVW8eInqBE/lXZx/gLFEZRUsHuYE=",
+    "h1:l91jNGp7+F7wgSbEqeqkzPILeUOLVj1mgKMBKeADBn0=",
     "zh:07b8c1b8ddbd9cc62296f8573a8f89d282978b0cf3046dd354028811ac371cc6",
     "zh:17b42ca6aee04b3c903366d029311e7ffbea630882a93d418fbb364a3d91d8bf",
     "zh:1fb9c7841fb556e4d580dc41d906efd40c0d1d7659275b4bb5929f331ee1fea2",
