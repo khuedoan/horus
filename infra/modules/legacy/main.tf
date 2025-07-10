@@ -28,11 +28,3 @@ module "instance" {
     }
   }
 }
-
-module "cluster" {
-  source = "../cluster"
-
-  vault_password     = var.vault_password
-  instance_public_ip = module.instance.public_ip
-  ssh_private_key    = tls_private_key.ssh.private_key_openssh
-}

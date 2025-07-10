@@ -35,3 +35,9 @@ resource "null_resource" "cluster" {
     command     = "ansible-playbook --inventory ${local_file.inventory.filename} --vault-password-file ${local_file.vault_password.filename} ${path.module}/main.yml"
   }
 }
+
+data "local_file" "kubeconfig" {
+  filename = "${path.root}/kubeconfig.yaml"
+
+  depends_on = [null_resource.cluster]
+}

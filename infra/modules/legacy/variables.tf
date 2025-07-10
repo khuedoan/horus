@@ -14,9 +14,3 @@ variable "compartment_description" {
   type        = string
   default     = "Cloudlab Project"
 }
-
-variable "vault_password" {
-  description = "Ansible Vault password"
-  type        = string
-  sensitive   = true
-}
