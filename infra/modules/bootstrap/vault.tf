@@ -48,15 +48,15 @@ resource "kubectl_manifest" "vault" {
         targetRevision = "0.15.0"
         helm = {
           valuesObject = {
-            injector: {
-              enabled: false
+            injector = {
+              enabled = false
             }
             server = {
               ingress = {
-                enabled = true
+                enabled          = true
                 ingressClassName = "nginx"
                 hosts = [{
-                  host = "vault.127.0.0.1.sslip.io"
+                  host = "vault.${var.cluster_domain}"
                   paths = [
                     "/"
                   ]

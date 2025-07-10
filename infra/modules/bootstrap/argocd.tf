@@ -10,7 +10,7 @@ resource "helm_release" "argocd" {
   values = [
     yamlencode({
       global = {
-        domain = "argocd.127.0.0.1.sslip.io"
+        domain = "argocd.${var.cluster_domain}"
         # TODO override to use the latest development version for first class OCI support
         # Remove once ArgoCD 3.1.0 stable is released
         image = {

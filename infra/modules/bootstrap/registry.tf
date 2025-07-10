@@ -44,7 +44,7 @@ resource "kubectl_manifest" "registry" {
               pathtype = "Prefix"
               hosts = [
                 {
-                  host = "registry.127.0.0.1.sslip.io"
+                  host = "registry.${var.cluster_domain}"
                   paths = [
                     {
                       path = "/"

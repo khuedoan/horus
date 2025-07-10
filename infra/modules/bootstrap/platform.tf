@@ -16,7 +16,7 @@ resource "kubectl_manifest" "platform" {
       }
       syncPolicy = local.sync_policy
       source = {
-        repoURL        = "oci://registry.127.0.0.1.sslip.io/platform" # TODO use registry var
+        repoURL        = "oci://registry.${var.cluster_domain}/platform" # TODO use registry var
         targetRevision = var.cluster
         path           = "."
       }
