@@ -7,18 +7,19 @@ resource "kubectl_manifest" "ingress_nginx" {
       name       = "ingress-nginx"
       namespace  = helm_release.argocd.namespace
       finalizers = ["resources-finalizer.argocd.argoproj.io"]
+      labels     = local.common_labels
     }
     spec = {
       project = "default"
       destination = {
         name      = "in-cluster"
-        namespace = "monitoring"
+        namespace = "ingress-nginx"
       }
       syncPolicy = local.sync_policy
       source = {
         repoURL        = "https://kubernetes.github.io/ingress-nginx"
         chart          = "ingress-nginx"
-        targetRevision = "4.11.2"
+        targetRevision = "4.13.0"
         helm = {
           valuesObject = {
             controller = {
