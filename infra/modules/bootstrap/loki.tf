@@ -7,6 +7,7 @@ resource "kubectl_manifest" "loki" {
       name       = "loki"
       namespace  = helm_release.argocd.namespace
       finalizers = ["resources-finalizer.argocd.argoproj.io"]
+      labels     = local.common_labels
     }
     spec = {
       project = "default"
