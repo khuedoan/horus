@@ -7,6 +7,7 @@ resource "kubectl_manifest" "istio_cni" {
       name       = "istio-cni"
       namespace  = helm_release.argocd.namespace
       finalizers = ["resources-finalizer.argocd.argoproj.io"]
+      labels     = local.common_labels
     }
     spec = {
       project = "default"
@@ -41,6 +42,7 @@ resource "kubectl_manifest" "ztunnel" {
       name       = "ztunnel"
       namespace  = helm_release.argocd.namespace
       finalizers = ["resources-finalizer.argocd.argoproj.io"]
+      labels     = local.common_labels
     }
     spec = {
       project = "default"
@@ -72,6 +74,7 @@ resource "kubectl_manifest" "istio_base" {
       name       = "istio-base"
       namespace  = helm_release.argocd.namespace
       finalizers = ["resources-finalizer.argocd.argoproj.io"]
+      labels     = local.common_labels
     }
     spec = {
       project = "default"
@@ -98,6 +101,7 @@ resource "kubectl_manifest" "istiod" {
       name       = "istiod"
       namespace  = helm_release.argocd.namespace
       finalizers = ["resources-finalizer.argocd.argoproj.io"]
+      labels     = local.common_labels
     }
     spec = {
       project = "default"
