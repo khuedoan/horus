@@ -7,6 +7,7 @@ resource "kubectl_manifest" "csi_secrets_store" {
       name       = "csi-secrets-store"
       namespace  = helm_release.argocd.namespace
       finalizers = ["resources-finalizer.argocd.argoproj.io"]
+      labels     = local.common_labels
     }
     spec = {
       project = "default"
@@ -34,6 +35,7 @@ resource "kubectl_manifest" "vault" {
       name       = "vault"
       namespace  = helm_release.argocd.namespace
       finalizers = ["resources-finalizer.argocd.argoproj.io"]
+      labels     = local.common_labels
     }
     spec = {
       project = "default"
@@ -55,11 +57,18 @@ resource "kubectl_manifest" "vault" {
               ingress = {
                 enabled          = true
                 ingressClassName = "nginx"
+                annotations = {
+                  "cert-manager.io/cluster-issuer" = "letsencrypt-prod"
+                }
                 hosts = [{
                   host = "vault.${var.cluster_domain}"
                   paths = [
                     "/"
                   ]
+                }]
+                tls = [{
+                  hosts = ["vault.${var.cluster_domain}"]
+                  secretName = "vault-tls-certificate"
                 }]
               }
             }
