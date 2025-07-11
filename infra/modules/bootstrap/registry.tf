@@ -29,6 +29,46 @@ resource "kubectl_manifest" "registry" {
             podLabels = {
               "istio.io/dataplane-mode" = "ambient"
             }
+            # TODO health check will fail if auth is enabled, fix is waiting for release https://github.com/project-zot/helm-charts/pull/69
+            # strategy = {
+            #   # Avoid boltdb file is already in use
+            #   type = "Recreate"
+            # }
+            # mountConfig = true
+            # configFiles = {
+            #   "config.json" = jsonencode({
+            #     "storage": { "rootDirectory": "/var/lib/registry" },
+            #     "http": {
+            #       "address": "0.0.0.0",
+            #       "port": "5000",
+            #       "externalUrl": "https://registry.${var.cluster_domain}",
+            #       "auth": {
+            #         "openid": {
+            #           "providers": {
+            #             "oidc": {
+            #               "issuer": "https://dex.${var.cluster_domain}",
+            #               "clientid": "registry",
+            #               "clientsecret": "TODO",
+            #               "keypath": "",
+            #               "scopes": ["openid", "profile", "email", "groups"]
+            #             }
+            #           }
+            #         }
+            #       }
+            #     },
+            #     "log": { "level": "info" },
+            #     "extensions": {
+            #       "search": {
+            #         "cve": {
+            #           "updateInterval": "2h"
+            #         }
+            #       },
+            #       "ui": {
+            #         "enable": true
+            #       }
+            #     }
+            #   })
+            # }
             # TODO separate logic for k3d
             service = {
               type = "NodePort"
