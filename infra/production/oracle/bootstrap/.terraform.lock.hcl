@@ -6,6 +6,7 @@ provider "registry.opentofu.org/alekc/kubectl" {
   constraints = "~> 2.0"
   hashes = [
     "h1:AymCb0DCWzmyLqn1qEhVs2pcFUZGT/kxPK+I/BObFH8=",
+    "h1:poWSAAtK4FI1x79C2OyLaNrvWUGTQdr1ZT58edDz+Rs=",
     "zh:0e601ae36ebc32eb8c10aff4c48c1125e471fa09f5668465af7581c9057fa22c",
     "zh:1773f08a412d1a5f89bac174fe1efdfd255ecdda92d31a2e31937e4abf843a2f",
     "zh:1da2db1f940c5d34e31c2384c7bd7acba68725cc1d3ba6db0fec42efe80dbfb7",
@@ -28,6 +29,7 @@ provider "registry.opentofu.org/hashicorp/helm" {
   constraints = "~> 2.17"
   hashes = [
     "h1:69PnHoYrrDrm7C8+8PiSvRGPI55taqL14SvQR/FGM+g=",
+    "h1:ShIag7wqd5Rs+zYpVMpjAh+T0ozr4XGYfSTKWqceQBY=",
     "zh:02690815e35131a42cb9851f63a3369c216af30ad093d05b39001d43da04b56b",
     "zh:27a62f12b29926387f4d71aeeee9f7ffa0ccb81a1b6066ee895716ad050d1b7a",
     "zh:2d0a5babfa73604b3fefc9dab9c87f91c77fce756c2e32b294e9f1290aed26c0",
@@ -44,6 +46,7 @@ provider "registry.opentofu.org/hashicorp/helm" {
 provider "registry.opentofu.org/hashicorp/oci" {
   version = "7.9.0"
   hashes = [
+    "h1:5Ul6JR5DfNDG/5oz+yaSSGfvxx2ybnAcGzihzK6aTWs=",
     "h1:iaZoFUsXr59IrneTY70bZWE+yOUDK7pq6UgtLYRN3YM=",
     "zh:0413a8057c42e244afd9bf5a5ada8db2a88e8f21d85b22fbad497db51cd36dab",
     "zh:22973c7cb040d32b681c63bcd607bc0cf484846d4a30b12e46b571932929674e",
