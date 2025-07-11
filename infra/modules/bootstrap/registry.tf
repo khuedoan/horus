@@ -7,6 +7,7 @@ resource "kubectl_manifest" "registry" {
       name       = "registry"
       namespace  = helm_release.argocd.namespace
       finalizers = ["resources-finalizer.argocd.argoproj.io"]
+      labels     = local.common_labels
     }
     spec = {
       project = "default"
@@ -21,12 +22,14 @@ resource "kubectl_manifest" "registry" {
         targetRevision = "0.1.67"
         helm = {
           valuesObject = {
+            nameOverride = "registry" # Otherwise it will render registry-zot as the service name
             image = {
               repository = "ghcr.io/project-zot/zot"
             }
             podLabels = {
               "istio.io/dataplane-mode" = "ambient"
             }
+            # TODO separate logic for k3d
             service = {
               type = "NodePort"
               port = 80
@@ -35,24 +38,26 @@ resource "kubectl_manifest" "registry" {
               # The range of valid ports is 30000-32767
               nodePort = 30000
             }
-            ingress = {
-              enabled   = true
-              className = "nginx"
-              annotations = {
-                "nginx.ingress.kubernetes.io/proxy-body-size" = "0"
-              }
-              pathtype = "Prefix"
-              hosts = [
-                {
-                  host = "registry.${var.cluster_domain}"
-                  paths = [
-                    {
-                      path = "/"
-                    }
-                  ]
-                }
-              ]
-            }
+            # TODO enable auth and ingress
+            # ingress = {
+            #   enabled   = true
+            #   className = "nginx"
+            #   annotations = {
+            #     "cert-manager.io/cluster-issuer" = "letsencrypt-prod"
+            #     "nginx.ingress.kubernetes.io/proxy-body-size" = "0"
+            #   }
+            #   pathtype = "Prefix"
+            #   hosts = [{
+            #     host = "registry.${var.cluster_domain}"
+            #     paths = [{
+            #       path = "/"
+            #     }]
+            #   }]
+            #   tls = [{
+            #     hosts = ["registry.${var.cluster_domain}"]
+            #     secretName = "registry-tls-certificate"
+            #   }]
+            # }
             persistence = true
             pvc = {
               create  = true
